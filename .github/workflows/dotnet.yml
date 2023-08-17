@@ -25,7 +25,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover,lcov,xml\"
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover,lcov\"
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       env:
