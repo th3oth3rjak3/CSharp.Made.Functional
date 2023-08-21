@@ -114,4 +114,64 @@ public class OptionTests
             .ReduceAsync(() => "something else")
             .TapAsync(str => str.ShouldBe("something else"));
 
+    [TestMethod]
+    public async Task ItShouldMapAsyncWithTaskOfTask() =>
+        await 1.AsAsync()
+            .Optional()
+            .MapAsync(one => one.ToString().AsAsync())
+            .MapAsync(result => (result + "2").AsAsync())
+            .ReduceAsync("something else")
+            .TapAsync(final => final.ShouldBe("12"));
+
+    [TestMethod]
+    public async Task ItShouldMapAndReduceFuncAsyncWithTaskOfTask() =>
+        await 1.AsAsync()
+            .Optional()
+            .MapAsync(one => one.ToString().AsAsync())
+            .MapAsync(result => (result + "2").AsAsync())
+            .ReduceAsync(() => "something else".AsAsync())
+            .TapAsync(final => final.ShouldBe("12"));
+
+    [TestMethod]
+    public async Task ItShouldMapAndReduceAsyncWithTaskOfTask() =>
+        await 1.AsAsync()
+            .Optional()
+            .MapAsync(one => one.ToString().AsAsync())
+            .MapAsync(result => (result + "2").AsAsync())
+            .ReduceAsync("something else".AsAsync())
+            .TapAsync(final => final.ShouldBe("12"));
+
+    [TestMethod]
+    public async Task ItShouldReduceAsyncWithTaskOfTaskAndAsyncReducer() =>
+        await Option.None<int>()
+            .AsAsync()
+            .MapAsync(one => one.ToString().AsAsync())
+            .MapAsync(result => (result + "2").AsAsync())
+            .ReduceAsync("something else".AsAsync())
+            .TapAsync(final => final.ShouldBe("something else"));
+
+    [TestMethod]
+    public async Task ItShouldReduceAsyncWithTaskOfTaskAndFuncAsyncReducer() =>
+        await Option.None<int>()
+            .AsAsync()
+            .MapAsync(one => one.ToString().AsAsync())
+            .MapAsync(result => (result + "2").AsAsync())
+            .ReduceAsync(() => "something else".AsAsync())
+            .TapAsync(final => final.ShouldBe("something else"));
+
+    [TestMethod]
+    public async Task ItShouldHandleAsyncNoneOptions() =>
+        await (null as string)
+            .AsAsync()
+            .Optional()
+            .TapAsync(result => result.ShouldBe(Option.None<string>()));
+
+    [TestMethod]
+    public async Task ItShouldHandleAsyncSomeOptions() =>
+        await AlwaysReturnsNullableString("input")
+            .Optional()
+            .TapAsync(result => result.ShouldBe(Option.Some("input")));
+
+    private static async Task<string?> AlwaysReturnsNullableString(string input) =>
+        await input.AsAsync();
 }
