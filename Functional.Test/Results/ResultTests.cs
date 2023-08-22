@@ -195,4 +195,18 @@ public class ResultTests
                                 f => f.FailureMessages.Count.ShouldBe(1),
                                 f => f.FailureMessages.First().ShouldBe("failure message"))));
 
+    [TestMethod]
+    public async Task ItShouldBindSuccessesWithTasks() =>
+        await Result.Success("something")
+            .Bind(_ => Task.CompletedTask.Success())
+            .ReduceAsync(Task.FromResult("It failed"))
+            .TapAsync(result => result.ShouldBe(Task.CompletedTask));
+
+    [TestMethod]
+    public async Task ItShouldBindFailuresWithTasks() =>
+        await Result.Failure<string>("something")
+            .Bind(_ => Task.CompletedTask.Success())
+            .ReduceAsync(Task.FromResult("It failed"))
+            .TapAsync(result => result.ShouldBeOfType<Task<string>>());
+
 }
