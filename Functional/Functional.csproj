@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<PackageId>CSharp.Made.Functional</PackageId>
-	<Version>1.0.2</Version>
+	<Version>1.0.3</Version>
 	<Authors>Jacob Hathaway</Authors>
 	<Product>Functional Library</Product>
 	  <Description>A C# functional library include Option, Result, and other helpful abstractions.</Description>
