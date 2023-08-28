@@ -172,6 +172,78 @@ public class OptionTests
             .Optional()
             .TapAsync(result => result.ShouldBe(Option.Some("input")));
 
+    [TestMethod]
+    public async Task ItShouldMapOptionOfTaskOfString() =>
+        await Option.Some("input")
+            .Map(input => input.AsAsync())
+            .MapAsync(value => value + "!")
+            .ReduceAsync("Oops.")
+            .TapAsync(result => result.ShouldBe("input!"));
+
+    [TestMethod]
+    public async Task ItShouldMayOptionOfTaskOfStringWhenNone() =>
+        await Option.None<string>()
+            .Map(input => input.AsAsync())
+            .MapAsync(value => value + "!")
+            .ReduceAsync("Oops.")
+            .TapAsync(result => result.ShouldBe("Oops."));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithValue() =>
+        await "input"
+            .AsAsync()
+            .FMap(Option.Some)
+            .ReduceAsync("Oops")
+            .TapAsync(result => result.ShouldBe("input"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithValue() =>
+    await Option.None<Task<string>>()
+        .ReduceAsync("Oops")
+        .TapAsync(result => result.ShouldBe("Oops"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithAsyncValue() =>
+    await "input"
+        .AsAsync()
+        .FMap(Option.Some)
+        .ReduceAsync("Oops".AsAsync())
+        .TapAsync(result => result.ShouldBe("input"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithAsyncValue() =>
+    await Option.None<Task<string>>()
+        .ReduceAsync("Oops".AsAsync())
+        .TapAsync(result => result.ShouldBe("Oops"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithRegularFunction() =>
+    await "input"
+        .AsAsync()
+        .FMap(Option.Some)
+        .ReduceAsync(() => "Oops")
+        .TapAsync(result => result.ShouldBe("input"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithRegularFunction() =>
+    await Option.None<Task<string>>()
+        .ReduceAsync(() => "Oops")
+        .TapAsync(result => result.ShouldBe("Oops"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithAsyncFunction() =>
+    await "input"
+        .AsAsync()
+        .FMap(Option.Some)
+        .ReduceAsync(() => "Oops".AsAsync())
+        .TapAsync(result => result.ShouldBe("input"));
+
+    [TestMethod]
+    public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithAsyncFunction() =>
+    await Option.None<Task<string>>()
+        .ReduceAsync(() => "Oops".AsAsync())
+        .TapAsync(result => result.ShouldBe("Oops"));
+
     private static async Task<string?> AlwaysReturnsNullableString(string input) =>
         await input.AsAsync();
 }

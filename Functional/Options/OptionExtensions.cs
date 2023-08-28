@@ -69,6 +69,21 @@ public static class OptionExtensions
                 none => Option.None<TResult>().AsAsync());
 
     /// <summary>
+    /// When an Option is Some, map the existing
+    /// value to a new type with a provided function.
+    /// </summary>
+    /// <typeparam name="T">The original type.</typeparam>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="option">The option to be mapped.</param>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>A new option.</returns>
+    public static async Task<Option<TResult>> MapAsync<T, TResult>(this Option<Task<T>> option, Func<T, TResult> mapper) =>
+        await option
+            .Match(
+                async some => mapper(await some.Contents).Optional(),
+                none => Option.None<TResult>().AsAsync());
+
+    /// <summary>
     /// Convert a Some into a None when it doesn't match the provided predicate.
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
@@ -163,4 +178,56 @@ public static class OptionExtensions
             .Match(
                 some => some.Contents.AsAsync(),
                 async none => await alternate());
+
+    /// <summary>
+    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// </summary>
+    /// <typeparam name="T">The type of the input.</typeparam>
+    /// <param name="optional">The option to extract contents from when Some.</param>
+    /// <param name="alternate">An alternate value to provide when None.</param>
+    /// <returns>The resulting contents.</returns>
+    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, T alternate) =>
+        await optional
+            .Match(
+                async some => await some.Contents,
+                none => alternate.AsAsync());
+
+    /// <summary>
+    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// </summary>
+    /// <typeparam name="T">The type of the input.</typeparam>
+    /// <param name="optional">The option to extract contents from when Some.</param>
+    /// <param name="alternate">An alternate value to provide when None.</param>
+    /// <returns>The resulting contents.</returns>
+    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, Func<T> alternate) =>
+    await optional
+        .Match(
+            async some => await some.Contents,
+            none => alternate().AsAsync());
+
+    /// <summary>
+    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// </summary>
+    /// <typeparam name="T">The type of the input.</typeparam>
+    /// <param name="optional">The option to extract contents from when Some.</param>
+    /// <param name="alternate">An alternate value to provide when None.</param>
+    /// <returns>The resulting contents.</returns>
+    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, Task<T> alternate) =>
+    await optional
+        .Match(
+            async some => await some.Contents,
+            none => alternate);
+
+    /// <summary>
+    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// </summary>
+    /// <typeparam name="T">The type of the input.</typeparam>
+    /// <param name="optional">The option to extract contents from when Some.</param>
+    /// <param name="alternate">An alternate value to provide when None.</param>
+    /// <returns>The resulting contents.</returns>
+    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, Func<Task<T>> alternate) =>
+    await optional
+        .Match(
+            async some => await some.Contents,
+            none => alternate());
 }
