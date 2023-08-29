@@ -187,6 +187,27 @@ public static class ResultExtensions
                 MatchFailure<TResult>);
 
     /// <summary>
+    /// Perform work on a previous result. When the result is successful, 
+    /// perform work on the result by providing an onSuccess function.
+    /// On failure, the previous failure will be returned as the new result type.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <typeparam name="TResult">The type of the result after performing 
+    /// the onSuccess function.</typeparam>
+    /// <param name="result">The previous result to bind.</param>
+    /// <param name="onSuccess">The function to perform when the 
+    /// previous result is a SuccessResult.</param>
+    /// <returns>The result of the bind operation.</returns>
+    public static async Task<Result<TResult>> BindAsync<TInput, TResult>(this Task<Result<TInput>> result, Func<TInput, Task<Result<TResult>>> onSuccess) =>
+        await (await result)
+            .Match(
+                success =>
+                    success
+                        .Contents
+                        .FMap(onSuccess),
+                MatchFailureAsync<TResult>);
+
+    /// <summary>
     /// Map a successful result from a previous operation to a new result.
     /// </summary>
     /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>

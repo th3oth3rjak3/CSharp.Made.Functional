@@ -231,5 +231,21 @@ public class ResultTests
                         fail => fail.FailureMessages.Count.ShouldBe(1),
                         fail => fail.FailureMessages.First().ShouldBe("error"))));
 
+    [TestMethod]
+    public async Task ItShouldBindSuccessAsyncResults() =>
+        await Result.Success(1)
+            .AsAsync()
+            .BindAsync(one => one.ToString().Success().AsAsync())
+            .ReduceAsync("error")
+            .TapAsync(str => str.ShouldBe("1"));
+
+    [TestMethod]
+    public async Task ItShouldBindFailureAsyncResults() =>
+    await Result.Failure<int>("error")
+        .AsAsync()
+        .BindAsync(one => one.ToString().Success().AsAsync())
+        .ReduceAsync("error")
+        .TapAsync(str => str.ShouldBe("error"));
+
 
 }
