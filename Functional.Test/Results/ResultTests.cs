@@ -1,8 +1,8 @@
 ﻿
+using System.Collections.Immutable;
+
 using Functional.Monadic;
 using Functional.Results;
-
-using System.Collections.Immutable;
 
 using static Functional.Results.ResultExtensions;
 
@@ -194,5 +194,42 @@ public class ResultTests
                             .Tap(
                                 f => f.FailureMessages.Count.ShouldBe(1),
                                 f => f.FailureMessages.First().ShouldBe("failure message"))));
+
+    [TestMethod]
+    public void ItShouldMapSuccessResults() =>
+        Result.Success(1)
+            .Map(one => one.ToString())
+            .ShouldBe(Result.Success("1"));
+
+    [TestMethod]
+    public void ItShouldNotMapFailureResults() =>
+        Result.Failure<int>("error")
+            .Map(one => one.ToString())
+            .Match(
+                success => throw new ShouldAssertException("It should have been a failure."),
+                failure => failure.Tap(
+                    fail => fail.FailureMessages.Count.ShouldBe(1),
+                    fail => fail.FailureMessages.First().ShouldBe("error")))
+            .Ignore();
+
+    [TestMethod]
+    public async Task ItShouldMapSuccessResultsAsync() =>
+        await Result.Success(1)
+            .AsAsync()
+            .MapAsync(one => one.ToString())
+            .TapAsync(res => res.ShouldBe(Result.Success("1")));
+
+    [TestMethod]
+    public async Task ItShouldNotMapFailureResultsAsync() =>
+        await Result.Failure<int>("error")
+            .AsAsync()
+            .MapAsync(one => one.ToString())
+            .TapAsync(res =>
+                res.Match(
+                    success => throw new ShouldAssertException("It should have been a failure."),
+                    failure => failure.Tap(
+                        fail => fail.FailureMessages.Count.ShouldBe(1),
+                        fail => fail.FailureMessages.First().ShouldBe("error"))));
+
 
 }

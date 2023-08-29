@@ -186,4 +186,30 @@ public static class ResultExtensions
                         .FMap(onSuccess),
                 MatchFailure<TResult>);
 
+    /// <summary>
+    /// Map a successful result from a previous operation to a new result.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="TResult">The output contents of the new result.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static Result<TResult> Map<TInput, TResult>(this Result<TInput> result, Func<TInput, TResult> mapper) =>
+        result
+            .Bind(success =>
+                mapper(success).Success());
+
+    /// <summary>
+    /// Map a successful result from a previous operation to a new result.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="TResult">The output contents of the new result.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static async Task<Result<TResult>> MapAsync<TInput, TResult>(this Task<Result<TInput>> result, Func<TInput, TResult> mapper) =>
+        (await result)
+            .Bind(success =>
+                mapper(success).Success());
+
 }
