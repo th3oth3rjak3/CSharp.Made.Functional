@@ -64,7 +64,7 @@ public static class ValidationExtensions
                     inputFailure
                         .FailureMessages
                         .AddRange(failure.FailureMessages)
-                        .FMap(ValidationResult.Failure<TResult>));
+                        .Pipe(ValidationResult.Failure<TResult>));
 
     /// <summary>
     /// Turn any input type into a Success validation result to begin making calls to bind.
@@ -84,7 +84,7 @@ public static class ValidationExtensions
     public static Result<TInput> MatchSuccess<TInput>(ValidationSuccess<TInput> successResult) =>
         successResult
             .Contents
-            .FMap(Result.Success);
+            .Pipe(Result.Success);
 
     /// <summary>
     /// Convert a validation failure to a Result of the same type.
@@ -95,7 +95,7 @@ public static class ValidationExtensions
     public static Result<TResult> MatchFailure<TResult>(ValidationFailure failureResult) =>
         failureResult
             .FailureMessages
-            .FMap(Result.Failure<TResult>);
+            .Pipe(Result.Failure<TResult>);
 
     /// <summary>
     /// Simplify converting validation results to regular results with default behavior.

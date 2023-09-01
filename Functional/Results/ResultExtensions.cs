@@ -109,7 +109,7 @@ public static class ResultExtensions
     /// <returns>The new Result.</returns>
     private static Result<TResult> MatchFailure<TResult>(FailureResult failureResult) =>
         failureResult
-            .FMap(res => Result.Failure<TResult>(res.FailureMessages));
+            .Pipe(res => Result.Failure<TResult>(res.FailureMessages));
 
     /// <summary>
     /// A function used to return a FailureResult as a Result of the provided type.
@@ -120,7 +120,7 @@ public static class ResultExtensions
     /// <returns>A Task with the new result.</returns>
     private static Task<Result<TResult>> MatchFailureAsync<TResult>(FailureResult failureResult) =>
         failureResult
-            .FMap(result => (Result<TResult>)result)
+            .Pipe(result => (Result<TResult>)result)
             .AsAsync();
 
     /// <summary>
@@ -141,7 +141,7 @@ public static class ResultExtensions
                 success =>
                     success
                         .Contents
-                        .FMap(onSuccess),
+                        .Pipe(onSuccess),
                 MatchFailure<TResult>);
 
     /// <summary>
@@ -162,7 +162,7 @@ public static class ResultExtensions
                 async success =>
                     await success
                         .Contents
-                        .FMap(onSuccess),
+                        .Pipe(onSuccess),
                 MatchFailureAsync<TResult>);
 
     /// <summary>
@@ -183,7 +183,7 @@ public static class ResultExtensions
                 success =>
                     success
                         .Contents
-                        .FMap(onSuccess),
+                        .Pipe(onSuccess),
                 MatchFailure<TResult>);
 
     /// <summary>
@@ -204,7 +204,7 @@ public static class ResultExtensions
                 success =>
                     success
                         .Contents
-                        .FMap(onSuccess),
+                        .Pipe(onSuccess),
                 MatchFailureAsync<TResult>);
 
     /// <summary>

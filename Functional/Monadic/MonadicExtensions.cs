@@ -53,7 +53,7 @@ public static class MonadicExtensions
     /// <param name="mapper">A function delegate which transforms the 
     /// input type to the output type.</param>
     /// <returns>The mapped result.</returns>
-    public static TResult FMap<T, TResult>(this T input, Func<T, TResult> mapper) =>
+    public static TResult Pipe<T, TResult>(this T input, Func<T, TResult> mapper) =>
         mapper(input);
 
     /// <summary>
@@ -108,7 +108,7 @@ public static class MonadicExtensions
     /// <param name="input">The input to transform.</param>
     /// <param name="func">The transformation function.</param>
     /// <returns>A result of the function as a task.</returns>
-    public static async Task<TResult> FMapAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, Task<TResult>> func) =>
+    public static async Task<TResult> PipeAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, Task<TResult>> func) =>
         await func((await input));
 
     /// <summary>
@@ -120,7 +120,7 @@ public static class MonadicExtensions
     /// <param name="input">The input to transform.</param>
     /// <param name="func">The transformation function.</param>
     /// <returns>The result of the transformation function.</returns>
-    public static async Task<TResult> FMapAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, TResult> func) =>
+    public static async Task<TResult> PipeAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, TResult> func) =>
         func(await input);
 
 }

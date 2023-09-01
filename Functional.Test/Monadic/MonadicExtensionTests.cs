@@ -15,7 +15,7 @@ public class MonadicExtensionTests
     /// </summary>
     [TestMethod]
     public void MapShouldConvertIntToString() =>
-        1.FMap(value => value.ToString())
+        1.Pipe(value => value.ToString())
             .ShouldBe("1");
 
     /// <summary>
@@ -81,7 +81,7 @@ public class MonadicExtensionTests
     [TestMethod]
     public async Task ItShouldFmapAsyncInputWithNonTaskMapping() =>
         await 1.AsAsync()
-            .FMapAsync(num => num.ToString())
+            .PipeAsync(num => num.ToString())
             .TapAsync(str => str.ShouldBeEquivalentTo("1"));
 
     /// <summary>
@@ -92,7 +92,7 @@ public class MonadicExtensionTests
     [TestMethod]
     public async Task ItShouldFmapAsyncInputWithTaskMapping() =>
         await 1.AsAsync()
-            .FMapAsync(num => Task.FromResult(num.ToString()))
+            .PipeAsync(num => Task.FromResult(num.ToString()))
             .TapAsync(str => str.ShouldBe("1"));
 
     [TestMethod]
@@ -102,7 +102,7 @@ public class MonadicExtensionTests
             "1",
             "2",
         }
-        .FMap(strs => ImmutableList<string>.Empty.AddRange(strs))
+        .Pipe(strs => ImmutableList<string>.Empty.AddRange(strs))
         .Tap(strs => Cons("1", "2").ShouldBeEquivalentTo(strs))
         .Ignore();
 
