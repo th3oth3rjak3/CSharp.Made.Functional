@@ -50,7 +50,7 @@ public static class OptionExtensions
     public static async Task<Option<TResult>> MapAsync<T, TResult>(this Task<Option<T>> option, Func<T, TResult> mapper) =>
         (await option)
             .Match(
-                some => some.Contents.FMap(mapper).Optional(),
+                some => some.Contents.Pipe(mapper).Optional(),
                 none => Option.None<TResult>());
 
     /// <summary>
@@ -65,7 +65,7 @@ public static class OptionExtensions
     public static async Task<Option<TResult>> MapAsync<T, TResult>(this Task<Option<T>> option, Func<T, Task<TResult>> mapper) =>
         await (await option)
             .Match(
-                async some => (await some.Contents.FMap(mapper)).Optional(),
+                async some => (await some.Contents.Pipe(mapper)).Optional(),
                 none => Option.None<TResult>().AsAsync());
 
     /// <summary>

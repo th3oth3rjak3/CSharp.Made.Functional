@@ -37,7 +37,7 @@ public class ValidationResultTests
             .Empty
             .Add("zero")
             .Add("one")
-            .FMap(ValidationResult.Failure<string>)
+            .Pipe(ValidationResult.Failure<string>)
             .Match(
                 success => throw new ShouldAssertException("Shouldn't have succeeded"),
                 failure =>
@@ -50,7 +50,7 @@ public class ValidationResultTests
     public void ItShouldMapSuccessWithSuccessToSuccess() =>
         ValidationResult
             .Success("something")
-            .FMap(something =>
+            .Pipe(something =>
                 something
                     .Bind(something, _ => ValidationResult.Success("anything else successful")))
             .Match(
@@ -61,7 +61,7 @@ public class ValidationResultTests
     public void ItShouldMapSuccessWithFailuresToFailures() =>
         ValidationResult
             .Success("something")
-            .FMap(something =>
+            .Pipe(something =>
                 something
                     .Bind(something, _ => ValidationResult.Failure<string>("It failed")))
             .Match(
@@ -76,7 +76,7 @@ public class ValidationResultTests
     public void ItShouldMapFailureWithSuccesssToFailures() =>
         ValidationResult
             .Failure<string>("failure message")
-            .FMap(something =>
+            .Pipe(something =>
                 something
                     .Bind(something, _ => ValidationResult.Success("something else")))
             .Match(
@@ -91,7 +91,7 @@ public class ValidationResultTests
     public void ItShouldJoinMultipleFailureMessages() =>
         ValidationResult
             .Failure<string>("failure one")
-            .FMap(something =>
+            .Pipe(something =>
                 something
                     .Bind(something, _ => ValidationResult.Failure<string>("failure two")))
             .Match(

@@ -17,7 +17,7 @@ public class ResultTests
             .Empty
             .Add("zero")
             .Add("one")
-            .FMap(strs =>
+            .Pipe(strs =>
                 Result
                     .Failure<string>(strs)
                     .Tap(
@@ -70,7 +70,7 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceSuccessesAsync() =>
         Task.FromResult("success")
-            .FMapAsync(res => res.Success())
+            .PipeAsync(res => res.Success())
             .ReduceAsync("alternate")
             .TapAsync(
                 result => result.ShouldBe("success"));
@@ -78,7 +78,7 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceSuccessWithFuncsAsync() =>
         Task.FromResult("success")
-            .FMapAsync(res => res.Success())
+            .PipeAsync(res => res.Success())
             .ReduceAsync(() => "alternate")
             .TapAsync(
                 Result => Result.ShouldBe("success"));
@@ -86,7 +86,7 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceSuccessWithFuncsAsyncFailure() =>
     Task.FromResult("success")
-        .FMapAsync(res => res.Success())
+        .PipeAsync(res => res.Success())
         .ReduceAsync(_ => "alternate")
         .TapAsync(
             Result => Result.ShouldBe("success"));
@@ -94,7 +94,7 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceFailuresAsync() =>
     Task.FromResult("success")
-        .FMapAsync(res => Result.Failure<string>("failure message"))
+        .PipeAsync(res => Result.Failure<string>("failure message"))
         .ReduceAsync("alternate")
         .TapAsync(
             result => result.ShouldBe("alternate"));
@@ -102,7 +102,7 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceFailuresWithFuncsAsync() =>
         Task.FromResult("success")
-            .FMapAsync(res => Result.Failure<string>("failure message"))
+            .PipeAsync(res => Result.Failure<string>("failure message"))
             .ReduceAsync(() => "alternate")
             .TapAsync(
                 Result => Result.ShouldBe("alternate"));
@@ -110,7 +110,7 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceFailuresWithFuncsAsyncFailure() =>
     Task.FromResult("success")
-        .FMapAsync(res => Result.Failure<string>("failure message"))
+        .PipeAsync(res => Result.Failure<string>("failure message"))
         .ReduceAsync(failure => failure.FailureMessages.First())
         .TapAsync(
             Result => Result.ShouldBe("failure message"));
@@ -246,6 +246,7 @@ public class ResultTests
         .BindAsync(one => one.ToString().Success().AsAsync())
         .ReduceAsync("error")
         .TapAsync(str => str.ShouldBe("error"));
+
 
 
 }

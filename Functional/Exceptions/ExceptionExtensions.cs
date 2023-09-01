@@ -35,7 +35,7 @@ public static class ExceptionExtensions
         try
         {
             return toTry(input)
-                .FMap(res => TryResult.Success(res));
+                .Pipe(res => TryResult.Success(res));
         }
         catch (Exception ex)
         {
@@ -76,7 +76,7 @@ public static class ExceptionExtensions
         try
         {
             return await toTry(input)
-                .FMapAsync(res => TryResult.Success(res));
+                .PipeAsync(res => TryResult.Success(res));
         }
         catch (Exception ex)
         {

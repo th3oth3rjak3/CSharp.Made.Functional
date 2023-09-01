@@ -192,7 +192,7 @@ public class OptionTests
     public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithValue() =>
         await "input"
             .AsAsync()
-            .FMap(Option.Some)
+            .Pipe(Option.Some)
             .ReduceAsync("Oops")
             .TapAsync(result => result.ShouldBe("input"));
 
@@ -206,7 +206,7 @@ public class OptionTests
     public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithAsyncValue() =>
     await "input"
         .AsAsync()
-        .FMap(Option.Some)
+        .Pipe(Option.Some)
         .ReduceAsync("Oops".AsAsync())
         .TapAsync(result => result.ShouldBe("input"));
 
@@ -220,7 +220,7 @@ public class OptionTests
     public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithRegularFunction() =>
     await "input"
         .AsAsync()
-        .FMap(Option.Some)
+        .Pipe(Option.Some)
         .ReduceAsync(() => "Oops")
         .TapAsync(result => result.ShouldBe("input"));
 
@@ -234,7 +234,7 @@ public class OptionTests
     public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithAsyncFunction() =>
     await "input"
         .AsAsync()
-        .FMap(Option.Some)
+        .Pipe(Option.Some)
         .ReduceAsync(() => "Oops".AsAsync())
         .TapAsync(result => result.ShouldBe("input"));
 
