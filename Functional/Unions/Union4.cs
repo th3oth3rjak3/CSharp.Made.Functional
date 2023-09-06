@@ -8,7 +8,8 @@ public sealed class Union4<A, B, C, D>
     private B Item2 { get; init; } = default!;
     private C Item3 { get; init; } = default!;
     private D Item4 { get; init; } = default!;
-    readonly int tag;
+
+    private readonly int tag;
 
     public Union4(A item) { Item1 = item; tag = 1; }
     public Union4(B item) { Item2 = item; tag = 2; }

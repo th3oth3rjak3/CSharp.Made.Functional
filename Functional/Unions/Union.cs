@@ -5,7 +5,8 @@ public sealed class Union<A, B>
 {
     private A Item1 { get; init; } = default!;
     private B Item2 { get; init; } = default!;
-    readonly int tag;
+
+    private readonly int tag;
 
     public Union(A item) { Item1 = item; tag = 1; }
     public Union(B item) { Item2 = item; tag = 2; }
