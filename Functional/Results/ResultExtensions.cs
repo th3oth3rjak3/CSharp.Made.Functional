@@ -1,4 +1,6 @@
-﻿using static Functional.Monadic.MonadicExtensions;
+﻿using System.Collections.Immutable;
+
+using static Functional.Monadic.MonadicExtensions;
 
 namespace Functional.Results;
 
@@ -243,4 +245,39 @@ public static class ResultExtensions
             .Bind(success =>
                 mapper(success).Success());
 
+    /// <summary>
+    /// Bind a List of Results to a Result of List of the inner object.
+    /// </summary>
+    /// <typeparam name="TInput"></typeparam>
+    /// <param name="inputs"></param>
+    /// <returns>A success result when all inner results are a success. A failure result when one or more failures occurred.</returns>
+    public static Result<List<TInput>> BindAll<TInput>(this List<Result<TInput>> inputs) =>
+        new
+        {
+            Output = new List<TInput>(),
+            FailureMessages = ImmutableList<string>.Empty
+        }
+            .Pipe(mutableData =>
+                inputs
+                    .Select(input =>
+                        input
+                            .Match(
+                                success =>
+                                {
+                                    mutableData.Output.Add(success);
+                                    return true;
+                                },
+                                failure =>
+                                {
+                                    _ = mutableData.FailureMessages.AddRange(failure.FailureMessages);
+                                    return false;
+                                }))
+                    .ToList()
+                    .All(result => result == true)
+                    .Pipe(wasSuccessful =>
+                        wasSuccessful switch
+                        {
+                            true => Result.Success(mutableData.Output),
+                            false => Result.Failure<List<TInput>>(mutableData.FailureMessages)
+                        }));
 }

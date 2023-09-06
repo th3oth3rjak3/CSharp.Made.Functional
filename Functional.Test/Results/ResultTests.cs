@@ -267,5 +267,47 @@ public class ResultTests
                 failure => failure.FailureMessages.First())
             .TapAsync(res => res.ShouldBe("error"));
 
+    [TestMethod]
+    public void ItShouldBindAllSuccesses() =>
+        new List<Result<int>>()
+        {
+            Result.Success(1),
+            Result.Success(2),
+            Result.Success(3),
+        }
+            .BindAll()
+            .ShouldBeEquivalentTo(Result.Success(new List<int>() { 1, 2, 3 }));
+
+    [TestMethod]
+    public void ItShouldBindAllFailures() =>
+        new List<Result<int>>()
+        {
+            Result.Failure<int>("one"),
+            Result.Failure<int>("two"),
+            Result.Failure<int>("three")
+        }
+            .BindAll()
+            .ShouldBeEquivalentTo(
+                Result
+                    .Failure<List<int>>(
+                        ImmutableList<string>
+                            .Empty
+                            .Add("one")
+                            .Add("two")
+                            .Add("three")));
+
+    [TestMethod]
+    public void ItShouldBindSuccessAndFailuresToFailure() =>
+        new List<Result<int>>()
+        {
+            Result.Success(1),
+            Result.Success(2),
+            Result.Failure<int>("three")
+        }
+            .BindAll()
+            .ShouldBeEquivalentTo(
+                Result
+                    .Failure<List<int>>("three"));
+
 }
 
