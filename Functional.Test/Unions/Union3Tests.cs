@@ -2,7 +2,6 @@
 
 namespace Functional.Test.Unions;
 
-
 [TestClass]
 public class Union3Tests
 {

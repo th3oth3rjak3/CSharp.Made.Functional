@@ -74,7 +74,7 @@ public static class MonadicExtensions
     /// <returns>The resulting input as a task.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, Func<T, Task> action)
     {
-        await action((await input));
+        await action(await input);
         return await input;
     }
 
@@ -109,7 +109,7 @@ public static class MonadicExtensions
     /// <param name="func">The transformation function.</param>
     /// <returns>A result of the function as a task.</returns>
     public static async Task<TResult> PipeAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, Task<TResult>> func) =>
-        await func((await input));
+        await func(await input);
 
     /// <summary>
     /// Used to wrap an async mapping function that transforms 
