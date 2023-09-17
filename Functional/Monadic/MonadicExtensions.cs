@@ -29,6 +29,16 @@ public static class MonadicExtensions
     }
 
     /// <summary>
+    /// Ignores the output of an async function. C# does this by default in functions
+    /// that return void, but this can be used to declare that the output is
+    /// intentionally ignored.
+    /// </summary>
+    /// <typeparam name="T">Any input type.</typeparam>
+    /// <param name="_">This parameter is ignored.</param>
+    public static Task IgnoreAsync<T>(this Task<T> _) =>
+        Task.CompletedTask;
+
+    /// <summary>
     /// Tap into a value to peform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
     /// </summary>
@@ -40,7 +50,9 @@ public static class MonadicExtensions
     {
         actions
             .ToList()
-            .ForEach(action => action(input));
+            .ForEach(action =>
+                action(input));
+
         return input;
     }
 
@@ -72,9 +84,13 @@ public static class MonadicExtensions
     /// <param name="input">The input to use with the <paramref name="action"/>.</param>
     /// <param name="action">The action to await and call on the <paramref name="input"/>.</param>
     /// <returns>The resulting input as a task.</returns>
-    public static async Task<T> TapAsync<T>(this Task<T> input, Func<T, Task> action)
+    public static async Task<T> TapAsync<T>(this Task<T> input, params Func<T, Task>[] actions)
     {
-        await action(await input);
+        await Task.WhenAll(
+            actions
+                .Select(async action =>
+                    await action(await input)));
+
         return await input;
     }
 
@@ -85,10 +101,19 @@ public static class MonadicExtensions
     /// <param name="input">The input used in the async action.</param>
     /// <param name="action">The action to perform on the input.</param>
     /// <returns></returns>
-    public static async Task<T> TapAsync<T>(this T input, Func<T, Task> action) =>
-        await input
-            .AsAsync()
-            .TapAsync(input => action(input));
+    public static async Task<T> TapAsync<T, TResult>(
+        this Task<T> input,
+        params Func<T, Task<TResult>>[] actions)
+    {
+        await Task
+            .WhenAll(
+                actions
+                    .Select(async action =>
+                        await action(await input)))
+            .IgnoreAsync();
+
+        return await input;
+    }
 
     /// <summary>
     /// Used to perform an action which returns void on an input that is a Task.
@@ -97,8 +122,9 @@ public static class MonadicExtensions
     /// <param name="input">The input to be awaited and then acted upon.</param>
     /// <param name="action">The action to perform after awaiting the input.</param>
     /// <returns>The input as a task.</returns>
-    public static async Task<T> TapAsync<T>(this Task<T> input, Action<T> action) =>
-        (await input).Tap(input => action(input));
+    public static async Task<T> TapAsync<T>(this Task<T> input, params Action<T>[] actions) =>
+        (await input)
+            .Tap(actions);
 
     /// <summary>
     /// Used to wrap an async function that transforms a Task of <typeparamref name="TInput"/> to <typeparamref name="TInput"/>.
@@ -120,7 +146,9 @@ public static class MonadicExtensions
     /// <param name="input">The input to transform.</param>
     /// <param name="func">The transformation function.</param>
     /// <returns>The result of the transformation function.</returns>
-    public static async Task<TResult> PipeAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, TResult> func) =>
-        func(await input);
+    public static async Task<TResult> PipeAsync<TInput, TResult>(
+        this Task<TInput> input,
+        Func<TInput, TResult> func) =>
+            func(await input);
 
 }

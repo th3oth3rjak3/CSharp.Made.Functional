@@ -67,11 +67,17 @@ public class MonadicExtensionTests
     /// </summary>
     /// <returns>An awaitable task.</returns>
     [TestMethod]
-    public async Task ItShouldTapAsyncWhenNotTask() =>
+    public async Task ItShouldTapAsyncOnlyWhenTIsTask() =>
         await new List<int> { 1 }
-            .Tap(lst => lst.Add(2))
-            .TapAsync(lst => Task.FromResult(lst))
+            .AsAsync()
+            .TapAsync(lst => AddAsync(lst, 2))
             .TapAsync(lst => lst.ShouldBeEquivalentTo(new List<int> { 1, 2 }));
+
+    private static async Task AddAsync<T>(List<T> list, T item)
+    {
+        await Task.Delay(5000);
+        await list.AsAsync().TapAsync(lst => lst.Add(item));
+    }
 
     /// <summary>
     /// It should take a value that is a task and a mapping function which
@@ -112,6 +118,14 @@ public class MonadicExtensionTests
     internal class TestObject
     {
         internal int Value { get; set; }
+
+        internal void AddOne() => Value++;
+
+        internal Task<int> AddOneAsync()
+        {
+            AddOne();
+            return Value.AsAsync();
+        }
     }
 
     /// <summary>
@@ -119,4 +133,22 @@ public class MonadicExtensionTests
     /// </summary>
     /// <param name="Value">The value to store.</param>
     internal record TestRecord(int Value);
+
+    [TestMethod]
+    public async Task ItShouldAllowActionsPassedToTapAsync()
+    {
+        await new TestObject() { Value = 1 }
+            .AsAsync()
+            .TapAsync(obj => obj.AddOne())
+            .TapAsync(obj => obj.Value.ShouldBe(2));
+    }
+
+    [TestMethod]
+    public async Task ItShouldAllowTaskMappersToBePassedToTapAsync() =>
+        await new TestObject() { Value = 1 }
+            .AsAsync()
+            .PipeAsync(obj => obj.AddOneAsync())
+            .TapAsync(obj => Task.FromResult(obj))
+            .TapAsync(number => number.ShouldBe(2));
+
 }
