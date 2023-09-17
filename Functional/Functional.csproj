@@ -1,18 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<PackageId>CSharp.Made.Functional</PackageId>
-	<Version>1.0.11</Version>
+	<Version>1.0.12</Version>
 	<Authors>Jacob Hathaway</Authors>
 	<Product>Functional Library</Product>
 	  <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-  </ItemGroup>
-
 </Project>
