@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-using static Functional.Monadic.MonadicExtensions;
+﻿using static Functional.Monadic.MonadicExtensions;
 
 namespace Functional.Results;
 
@@ -17,12 +15,32 @@ public static class ResultExtensions
     /// <returns>The result of executing the onSuccess or onFailure function.</returns>
     /// <exception cref="InvalidOperationException">Thrown when any other class 
     /// pretends to be a result.</exception>
-    public static async Task<TResult> MatchAsync<TInput, TResult>(
-        this Task<Result<TInput>> result,
+    public static async Task<TResult> MatchAsync<TInput, TResult, TError>(
+        this Task<Result<TInput, TError>> result,
         Func<TInput, TResult> onSuccess,
-        Func<FailureResult<TInput>, TResult> onFailure) =>
+        Func<TError, TResult> onFailure) =>
             (await result)
                 .Match(onSuccess, onFailure);
+
+    /// <summary>
+    /// Match the result to a success or failure and perform some function on either case.
+    /// </summary>
+    /// <typeparam name="TInput">The result input type.</typeparam>
+    /// <typeparam name="TResult">The output type.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="onSuccess">Perform some function on the success result.</param>
+    /// <param name="onFailure">Perform some function on the failure result.</param>
+    /// <returns>The result of executing the onSuccess or onFailure function.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when any other class 
+    /// pretends to be a result.</exception>
+    public static async Task<TResult> MatchAsync<TInput, TResult, TError>(
+        this Task<Result<TInput, TError>> result,
+        Func<TInput, Task<TResult>> onSuccess,
+        Func<TError, Task<TResult>> onFailure) =>
+            await (await result)
+                .Match(
+                    onSuccess,
+                    onFailure);
 
     /// <summary>
     /// When the result is a success, return its contents, otherwise return an alternate value.
@@ -31,7 +49,9 @@ public static class ResultExtensions
     /// <param name="inputResult">The result to unpack.</param>
     /// <param name="alternate">An alternate value.</param>
     /// <returns>When success, the contents, otherwise the alternate.</returns>
-    public static TInput Reduce<TInput>(this Result<TInput> inputResult, TInput alternate) =>
+    public static TSuccess Reduce<TSuccess, TError>(
+        this Result<TSuccess, TError> inputResult,
+        TSuccess alternate) =>
         inputResult
             .Match(
                 success => success,
@@ -49,7 +69,9 @@ public static class ResultExtensions
     /// alternate value.</param>
     /// <returns>When success, the contents, otherwise the return value of
     /// the alternate function.</returns>
-    public static TInput Reduce<TInput>(this Result<TInput> inputResult, Func<TInput> alternate) =>
+    public static TSuccess Reduce<TSuccess, TError>(
+        this Result<TSuccess, TError> inputResult,
+        Func<TSuccess> alternate) =>
         inputResult
             .Match(
                 success => success,
@@ -65,7 +87,9 @@ public static class ResultExtensions
     /// result to return an alternate.</param>
     /// <returns>When success, the contents, otherwise the return
     /// value of the alternate.</returns>
-    public static TInput Reduce<TInput>(this Result<TInput> inputResult, Func<FailureResult<TInput>, TInput> alternate) =>
+    public static TSuccess Reduce<TSuccess, TError>(
+        this Result<TSuccess, TError> inputResult,
+        Func<TError, TSuccess> alternate) =>
         inputResult
             .Match(
                 success => success,
@@ -78,12 +102,14 @@ public static class ResultExtensions
     /// <param name="input">The result to unpack.</param>
     /// <param name="alternate">An alternate value.</param>
     /// <returns>When success, the contents, otherwise the alternate.</returns>
-    public static async Task<TInput> ReduceAsync<TInput>(this Task<Result<TInput>> input, TInput alternate) =>
-        await (await input)
-            .Match(
-                success => success,
-                failure => alternate)
-            .AsAsync();
+    public static async Task<TSuccess> ReduceAsync<TSuccess, TError>(
+        this Task<Result<TSuccess, TError>> input,
+        TSuccess alternate) =>
+            await (await input)
+                .Match(
+                    success => success,
+                    failure => alternate)
+                .AsAsync();
 
     /// <summary>
     /// When the result is a success, return its contents, 
@@ -95,12 +121,14 @@ public static class ResultExtensions
     /// result to return an alternate.</param>
     /// <returns>When success, the contents, otherwise the return
     /// value of the alternate.</returns>
-    public static async Task<TInput> ReduceAsync<TInput>(this Task<Result<TInput>> input, Func<FailureResult<TInput>, TInput> alternate) =>
-        await (await input)
-            .Match(
-                success => success,
-                failure => alternate(failure))
-            .AsAsync();
+    public static async Task<TSuccess> ReduceAsync<TSuccess, TError>(
+        this Task<Result<TSuccess, TError>> input,
+        Func<TError, TSuccess> alternate) =>
+            await (await input)
+                .Match(
+                    success => success,
+                    failure => alternate(failure))
+                .AsAsync();
 
     /// <summary>
     /// When the result is a success, return its contents, 
@@ -114,34 +142,14 @@ public static class ResultExtensions
     /// alternate value.</param>
     /// <returns>When success, the contents, otherwise the return value of
     /// the alternate function.</returns>
-    public static async Task<TInput> ReduceAsync<TInput>(this Task<Result<TInput>> input, Func<TInput> alternate) =>
-        await (await input)
-            .Match(
-                success => success,
-                failure => alternate())
-            .AsAsync();
-
-    /// <summary>
-    /// A function used to return a failure result as a Result of the provided type.
-    /// </summary>
-    /// <typeparam name="TResult">The type of result to return.</typeparam>
-    /// <param name="failureResult">The failure result to convert into a Result.</param>
-    /// <returns>The new Result.</returns>
-    private static Result<TResult> MatchFailure<TInput, TResult>(FailureResult<TInput> failureResult) =>
-        failureResult
-            .Pipe(res => Result.Failure<TResult>(res.FailureMessages));
-
-    /// <summary>
-    /// A function used to return a FailureResult as a Result of the provided type.
-    /// Returns as a Task for async Lambda expressions.
-    /// </summary>
-    /// <typeparam name="TResult">The resulting type.</typeparam>
-    /// <param name="failureResult">The failure result to convert.</param>
-    /// <returns>A Task with the new result.</returns>
-    private static Task<Result<TResult>> MatchFailureAsync<TInput, TResult>(FailureResult<TInput> failureResult) =>
-        failureResult
-            .Pipe(MatchFailure<TInput, TResult>)
-            .AsAsync();
+    public static async Task<TSuccess> ReduceAsync<TSuccess, TError>(
+        this Task<Result<TSuccess, TError>> input,
+        Func<TSuccess> alternate) =>
+            await (await input)
+                .Match(
+                    success => success,
+                    failure => alternate())
+                .AsAsync();
 
     /// <summary>
     /// Perform work on a previous result. When the result is successful, 
@@ -155,12 +163,12 @@ public static class ResultExtensions
     /// <param name="onSuccess">The function to perform when the 
     /// previous result is a SuccessResult.</param>
     /// <returns>The result of the bind operation.</returns>
-    public static Result<TResult> Bind<TInput, TResult>(this Result<TInput> result, Func<TInput, Result<TResult>> onSuccess) =>
-        result
-            .Match(
-                success =>
-                    success.Pipe(onSuccess),
-                MatchFailure<TInput, TResult>);
+    public static Result<TSuccess, TError> Bind<TInput, TSuccess, TError>(
+        this Result<TInput, TError> result,
+        Func<TInput, Result<TSuccess, TError>> binder) =>
+            result
+                .Map(success => binder(success))
+                .Reduce(Result.Failure<TSuccess, TError>);
 
     /// <summary>
     /// Perform work on a previous result. When the result is successful, 
@@ -174,12 +182,12 @@ public static class ResultExtensions
     /// <param name="onSuccess">The function to perform when the 
     /// previous result is a SuccessResult.</param>
     /// <returns>The result of the bind operation.</returns>
-    public static async Task<Result<TResult>> Bind<TInput, TResult>(this Result<TInput> result, Func<TInput, Task<Result<TResult>>> onSuccess) =>
-        await result
-            .Match(
-                async success =>
-                    await success.Pipe(onSuccess),
-                MatchFailureAsync<TInput, TResult>);
+    public static async Task<Result<TSuccess, TError>> BindAsync<TInput, TSuccess, TError>(
+        this Task<Result<TInput, TError>> result,
+        Func<TInput, Result<TSuccess, TError>> binder) =>
+            await result
+                .MapAsync(binder)
+                .ReduceAsync(Result.Failure<TSuccess, TError>);
 
     /// <summary>
     /// Perform work on a previous result. When the result is successful, 
@@ -193,31 +201,29 @@ public static class ResultExtensions
     /// <param name="onSuccess">The function to perform when the 
     /// previous result is a SuccessResult.</param>
     /// <returns>The result of the bind operation.</returns>
-    public static async Task<Result<TResult>> BindAsync<TInput, TResult>(this Task<Result<TInput>> result, Func<TInput, Result<TResult>> onSuccess) =>
-        (await result)
-            .Match(
-                success =>
-                    success.Pipe(onSuccess),
-                MatchFailure<TInput, TResult>);
+    public static async Task<Result<TSuccess, TError>> BindAsync<TInput, TSuccess, TError>(
+        this Task<Result<TInput, TError>> result,
+        Func<TInput, Task<Result<TSuccess, TError>>> binder) =>
+            await result
+                .MapAsync(binder)
+                .ReduceAsync(Result.Failure<TSuccess, TError>);
 
     /// <summary>
-    /// Perform work on a previous result. When the result is successful, 
-    /// perform work on the result by providing an onSuccess function.
-    /// On failure, the previous failure will be returned as the new result type.
+    /// Map a successful result from a previous operation to a new result.
     /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <typeparam name="TResult">The type of the result after performing 
-    /// the onSuccess function.</typeparam>
-    /// <param name="result">The previous result to bind.</param>
-    /// <param name="onSuccess">The function to perform when the 
-    /// previous result is a SuccessResult.</param>
-    /// <returns>The result of the bind operation.</returns>
-    public static async Task<Result<TResult>> BindAsync<TInput, TResult>(this Task<Result<TInput>> result, Func<TInput, Task<Result<TResult>>> onSuccess) =>
-        await (await result)
-            .Match(
-                success =>
-                    success.Pipe(onSuccess),
-                MatchFailureAsync<TInput, TResult>);
+    /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="TSuccess">The type of the converted input.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static Result<TSuccess, TError> Map<TInput, TSuccess, TError>(
+        this Result<TInput, TError> result,
+        Func<TInput, TSuccess> mapper) =>
+            result
+                .Match(
+                    success => Result.Success<TSuccess, TError>(mapper(success)),
+                    failure => Result.Failure<TSuccess, TError>(failure));
 
     /// <summary>
     /// Map a successful result from a previous operation to a new result.
@@ -227,10 +233,11 @@ public static class ResultExtensions
     /// <param name="result">The previous result.</param>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static Result<TResult> Map<TInput, TResult>(this Result<TInput> result, Func<TInput, TResult> mapper) =>
-        result
-            .Bind(success =>
-                mapper(success).Success());
+    public static async Task<Result<TSuccess, TError>> MapAsync<TInput, TSuccess, TError>(
+        this Task<Result<TInput, TError>> result,
+        Func<TInput, TSuccess> mapper) =>
+            (await result)
+                .Map(mapper);
 
     /// <summary>
     /// Map a successful result from a previous operation to a new result.
@@ -240,10 +247,13 @@ public static class ResultExtensions
     /// <param name="result">The previous result.</param>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static async Task<Result<TResult>> MapAsync<TInput, TResult>(this Task<Result<TInput>> result, Func<TInput, TResult> mapper) =>
-        (await result)
-            .Bind(success =>
-                mapper(success).Success());
+    public static async Task<Result<TSuccess, TError>> MapAsync<TInput, TSuccess, TError>(
+        this Task<Result<TInput, TError>> result,
+        Func<TInput, Task<TSuccess>> mapper) =>
+            await (await result)
+                .Match(
+                    success => mapper(success).PipeAsync(Result.Success<TSuccess, TError>),
+                    failure => failure.Pipe(Result.Failure<TSuccess, TError>).AsAsync());
 
     /// <summary>
     /// Bind a List of Results to a Result of List of the inner object.
@@ -251,11 +261,11 @@ public static class ResultExtensions
     /// <typeparam name="TInput"></typeparam>
     /// <param name="inputs"></param>
     /// <returns>A success result when all inner results are a success. A failure result when one or more failures occurred.</returns>
-    public static Result<List<TInput>> BindAll<TInput>(this List<Result<TInput>> inputs) =>
+    public static Result<List<TInput>, List<TError>> BindAll<TInput, TError>(this List<Result<TInput, TError>> inputs) =>
         new
         {
-            Output = new List<TInput>(),
-            FailureMessages = ImmutableList<string>.Empty
+            OutputSuccesses = new List<TInput>(),
+            OutputFailures = new List<TError>()
         }
             .Pipe(mutableData =>
                 inputs
@@ -264,12 +274,12 @@ public static class ResultExtensions
                             .Match(
                                 success =>
                                 {
-                                    mutableData.Output.Add(success);
+                                    mutableData.OutputSuccesses.Add(success);
                                     return true;
                                 },
                                 failure =>
                                 {
-                                    _ = mutableData.FailureMessages.AddRange(failure.FailureMessages);
+                                    mutableData.OutputFailures.Add(failure);
                                     return false;
                                 }))
                     .ToList()
@@ -277,7 +287,7 @@ public static class ResultExtensions
                     .Pipe(wasSuccessful =>
                         wasSuccessful switch
                         {
-                            true => Result.Success(mutableData.Output),
-                            false => Result.Failure<List<TInput>>(mutableData.FailureMessages)
+                            true => Result.Success<List<TInput>, List<TError>>(mutableData.OutputSuccesses),
+                            false => Result.Failure<List<TInput>, List<TError>>(mutableData.OutputFailures)
                         }));
 }
