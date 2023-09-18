@@ -252,4 +252,64 @@ public class OptionTests
                 () => "none")
             .TapAsync(res => res.ShouldBe("none"));
 
+    [TestMethod]
+    public void ItShouldBindOptionsWhenSome() =>
+        Option.Some(1)
+            .Bind(one => one.ToString().Optional())
+            .ShouldBeEquivalentTo(Option.Some("1"));
+
+    [TestMethod]
+    public void ItShouldBindOptionsWhenBecomeNone() =>
+        Option.Some(1)
+            .Bind(one => Option.None<string>())
+            .ShouldBeEquivalentTo(Option.None<string>());
+
+    [TestMethod]
+    public void ItShouldBindOptionsWhenStartAsNone() =>
+        Option.None<int>()
+            .Bind(one => one.ToString().Optional())
+            .ShouldBeEquivalentTo(Option.None<string>());
+
+    [TestMethod]
+    public async Task ItShouldBindAsyncWhenSome() =>
+        await Option.Some(1)
+            .AsAsync()
+            .BindAsync(one => one.ToString().Optional())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.Some("1")));
+
+    [TestMethod]
+    public async Task ItShouldBindAsyncWhenStartAsNone() =>
+        await Option.None<int>()
+            .AsAsync()
+            .BindAsync(one => one.ToString().Optional())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+
+    [TestMethod]
+    public async Task ItShouldBindAsyncWhenBecomesNone() =>
+        await Option.Some(1)
+            .AsAsync()
+            .BindAsync(_ => Option.None<string>())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+
+    [TestMethod]
+    public async Task ItShouldBindAsyncWhenSomeWithTaskBinding() =>
+    await Option.Some(1)
+        .AsAsync()
+        .BindAsync(one => one.ToString().Optional().AsAsync())
+        .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.Some("1")));
+
+    [TestMethod]
+    public async Task ItShouldBindAsyncWhenStartAsNoneWithTaskBinding() =>
+        await Option.None<int>()
+            .AsAsync()
+            .BindAsync(one => one.ToString().Optional().AsAsync())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+
+    [TestMethod]
+    public async Task ItShouldBindAsyncWhenBecomesNoneWithTaskBinding() =>
+        await Option.Some(1)
+            .AsAsync()
+            .BindAsync(_ => Option.None<string>().AsAsync())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+
 }

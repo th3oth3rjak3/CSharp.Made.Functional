@@ -1,16 +1,17 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using Functional.Unions;
 
 namespace Functional.Results;
 
-public sealed record Result<T>
+public sealed record Result<TSuccess, TError>
 {
-    private Union<SuccessResult<T>, FailureResult<T>> Contents { get; init; }
-    public Result(SuccessResult<T> success) => Contents = new Union<SuccessResult<T>, FailureResult<T>>(success);
+    private Union<SuccessResult<TSuccess>, FailureResult<TError>> Contents { get; init; }
+    public Result(SuccessResult<TSuccess> success) =>
+        Contents = new Union<SuccessResult<TSuccess>, FailureResult<TError>>(success);
 
-    public Result(FailureResult<T> failure) => Contents = new Union<SuccessResult<T>, FailureResult<T>>(failure);
+    public Result(FailureResult<TError> failure) =>
+        Contents = new Union<SuccessResult<TSuccess>, FailureResult<TError>>(failure);
 
     /// <summary>
     /// Match the result to a success or failure and perform some function on either case.
@@ -21,11 +22,11 @@ public sealed record Result<T>
     /// <param name="onSuccess">Perform some function on the success result.</param>
     /// <param name="onFailure">Perform some function on the failure result.</param>
     /// <returns>The result of executing the onSuccess or onFailure function.</returns>
-    public TResult Match<TResult>(Func<T, TResult> onSuccess, Func<FailureResult<T>, TResult> onFailure) =>
+    public TResult Match<TResult>(Func<TSuccess, TResult> onSuccess, Func<TError, TResult> onFailure) =>
         Contents
             .Match(
                 success => onSuccess(success.Contents),
-                onFailure);
+                failure => onFailure(failure.Contents));
 }
 
 public static class Result
@@ -33,11 +34,11 @@ public static class Result
     /// <summary>
     /// A result that indicates success.
     /// </summary>
-    /// <typeparam name="TInput">The type of the contents.</typeparam>
+    /// <typeparam name="TSuccess">The type of the contents.</typeparam>
     /// <param name="input">The contents to store.</param>
     /// <returns>A result which indicates success that contains contents.</returns>
-    public static Result<TInput> Success<TInput>(this TInput input) =>
-        new(new SuccessResult<TInput>(input));
+    public static Result<TSuccess, TError> Success<TSuccess, TError>(this TSuccess input) =>
+        new(new SuccessResult<TSuccess>(input));
 
     /// <summary>
     /// A result that indicates failure.
@@ -45,17 +46,8 @@ public static class Result
     /// <typeparam name="TResult">The type of the contents if they had been present.</typeparam>
     /// <param name="message">The message to return with the failure.</param>
     /// <returns>A result which indicates a failure which contains messages about the failure.</returns>
-    public static Result<TResult> Failure<TResult>(string message) =>
-        new(new FailureResult<TResult>(ImmutableList<string>.Empty.Add(message)));
-
-    /// <summary>
-    /// A result that indicates failure.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the contents if they had been present.</typeparam>
-    /// <param name="messages">The messages to return with the failure.</param>
-    /// <returns>A result which indicates a failure which contains messages about the failure.</returns>
-    public static Result<TResult> Failure<TResult>(ImmutableList<string> messages) =>
-        new(new FailureResult<TResult>(messages));
+    public static Result<TSuccess, TError> Failure<TSuccess, TError>(TError error) =>
+        new(new FailureResult<TError>(error));
 
 }
 
@@ -63,4 +55,4 @@ public static class Result
 public record SuccessResult<T>(T Contents);
 
 [ExcludeFromCodeCoverage]
-public record FailureResult<T>(ImmutableList<string> FailureMessages);
+public record FailureResult<T>(T Contents);
