@@ -316,5 +316,34 @@ public class ResultTests
                 Result
                     .Failure<List<int>, List<string>>(new List<string>() { "three" }));
 
+    [TestMethod]
+    public void ItShouldPerformSuccessEffect()
+    {
+        var successEffect = false;
+        var failureEffect = false;
+        void successAction(string _) { successEffect = true; }
+        void failureAction(string _) { failureEffect = true; }
+
+        Result.Success<string, string>("success")
+            .Effect(successAction, failureAction);
+
+        successEffect.ShouldBeTrue();
+        failureEffect.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public void ItShouldPerformFailureEffect()
+    {
+        var successEffect = false;
+        var failureEffect = false;
+        void successAction(string _) { successEffect = true; }
+        void failureAction(string _) { failureEffect = true; }
+
+        Result.Failure<string, string>("failure")
+            .Effect(successAction, failureAction);
+
+        successEffect.ShouldBeFalse();
+        failureEffect.ShouldBeTrue();
+    }
 }
 

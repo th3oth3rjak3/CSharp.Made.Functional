@@ -135,13 +135,11 @@ public class MonadicExtensionTests
     internal record TestRecord(int Value);
 
     [TestMethod]
-    public async Task ItShouldAllowActionsPassedToTapAsync()
-    {
+    public async Task ItShouldAllowActionsPassedToTapAsync() =>
         await new TestObject() { Value = 1 }
             .AsAsync()
             .TapAsync(obj => obj.AddOne())
             .TapAsync(obj => obj.Value.ShouldBe(2));
-    }
 
     [TestMethod]
     public async Task ItShouldAllowTaskMappersToBePassedToTapAsync() =>

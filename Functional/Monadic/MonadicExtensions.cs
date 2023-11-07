@@ -1,7 +1,9 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
+﻿namespace Functional.Monadic;
 
-namespace Functional.Monadic;
+/// <summary>
+/// Extensions to improve the pipelining capability of regular
+/// C# code.
+/// </summary>
 public static class MonadicExtensions
 {
     /// <summary>
@@ -81,8 +83,8 @@ public static class MonadicExtensions
     /// Used to wrap an action function that is asynchronous.
     /// </summary>
     /// <typeparam name="T">The type of the <paramref name="input"/>.</typeparam>
-    /// <param name="input">The input to use with the <paramref name="action"/>.</param>
-    /// <param name="action">The action to await and call on the <paramref name="input"/>.</param>
+    /// <param name="input">The input to use with the <paramref name="actions"/>.</param>
+    /// <param name="actions">The action to await and call on the <paramref name="input"/>.</param>
     /// <returns>The resulting input as a task.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, params Func<T, Task>[] actions)
     {
@@ -99,8 +101,9 @@ public static class MonadicExtensions
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
     /// <param name="input">The input used in the async action.</param>
-    /// <param name="action">The action to perform on the input.</param>
-    /// <returns></returns>
+    /// <param name="actions">The action to perform on the input.</param>
+    /// <typeparam name="TResult">The resulting type after performing actions on the input.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<T> TapAsync<T, TResult>(
         this Task<T> input,
         params Func<T, Task<TResult>>[] actions)
@@ -120,7 +123,7 @@ public static class MonadicExtensions
     /// </summary>
     /// <typeparam name="T">The type of the input.</typeparam>
     /// <param name="input">The input to be awaited and then acted upon.</param>
-    /// <param name="action">The action to perform after awaiting the input.</param>
+    /// <param name="actions">The action to perform after awaiting the input.</param>
     /// <returns>The input as a task.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, params Action<T>[] actions) =>
         (await input)

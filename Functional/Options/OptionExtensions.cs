@@ -1,6 +1,8 @@
-﻿using Functional.Monadic;
+﻿namespace Functional.Options;
 
-namespace Functional.Options;
+/// <summary>
+/// Extensions to improve the functionality of the Option type.
+/// </summary>
 public static class OptionExtensions
 {
     /// <summary>
@@ -56,11 +58,13 @@ public static class OptionExtensions
     /// <param name="option">The option to be mapped.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
-    public static Option<TResult> Map<T, TResult>(this Option<T> option, Func<T, TResult> mapper) =>
-        option
-            .Match(
-                some => mapper(some).Optional(),
-                () => Option.None<TResult>());
+    public static Option<TResult> Map<T, TResult>(
+        this Option<T> option,
+        Func<T, TResult> mapper) =>
+            option
+                .Match(
+                    some => mapper(some).Optional(),
+                    () => Option.None<TResult>());
 
     /// <summary>
     /// When an Option is Some, map the existing
@@ -71,11 +75,13 @@ public static class OptionExtensions
     /// <param name="option">The option to be mapped.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<TResult>> MapAsync<T, TResult>(this Task<Option<T>> option, Func<T, TResult> mapper) =>
-        (await option)
-            .Match(
-                some => some.Pipe(mapper).Optional(),
-                () => Option.None<TResult>());
+    public static async Task<Option<TResult>> MapAsync<T, TResult>(
+        this Task<Option<T>> option,
+        Func<T, TResult> mapper) =>
+            (await option)
+                .Match(
+                    some => some.Pipe(mapper).Optional(),
+                    () => Option.None<TResult>());
 
     /// <summary>
     /// When an Option is Some, map the existing
@@ -86,11 +92,13 @@ public static class OptionExtensions
     /// <param name="option">The option to be mapped.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<TResult>> MapAsync<T, TResult>(this Task<Option<T>> option, Func<T, Task<TResult>> mapper) =>
-        await (await option)
-            .Match(
-                async some => (await some.Pipe(mapper)).Optional(),
-                () => Option.None<TResult>().AsAsync());
+    public static async Task<Option<TResult>> MapAsync<T, TResult>(
+        this Task<Option<T>> option,
+        Func<T, Task<TResult>> mapper) =>
+            await (await option)
+                .Match(
+                    async some => (await some.Pipe(mapper)).Optional(),
+                    () => Option.None<TResult>().AsAsync());
 
     /// <summary>
     /// When an Option is Some, map the existing
@@ -101,11 +109,13 @@ public static class OptionExtensions
     /// <param name="option">The option to be mapped.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<TResult>> MapAsync<T, TResult>(this Option<Task<T>> option, Func<T, TResult> mapper) =>
-        await option
-            .Match(
-                async some => mapper(await some).Optional(),
-                () => Option.None<TResult>().AsAsync());
+    public static async Task<Option<TResult>> MapAsync<T, TResult>(
+        this Option<Task<T>> option,
+        Func<T, TResult> mapper) =>
+            await option
+                .Match(
+                    async some => mapper(await some).Optional(),
+                    () => Option.None<TResult>().AsAsync());
 
     /// <summary>
     /// Convert a Some into a None when it doesn't match the provided predicate.
@@ -171,11 +181,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Task<Option<T>> optional, T alternate) =>
-        (await optional)
-            .Match(
-                some => some,
-                () => alternate);
+    public static async Task<T> ReduceAsync<T>(
+        this Task<Option<T>> optional,
+        T alternate) =>
+            (await optional)
+                .Match(
+                    some => some,
+                    () => alternate);
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -184,11 +196,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Task<Option<T>> optional, Task<T> alternate) =>
-        await (await optional)
-            .Match(
-                some => some.AsAsync(),
-                async () => await alternate);
+    public static async Task<T> ReduceAsync<T>(
+        this Task<Option<T>> optional,
+        Task<T> alternate) =>
+            await (await optional)
+                .Match(
+                    some => some.AsAsync(),
+                    async () => await alternate);
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -197,11 +211,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Task<Option<T>> optional, Func<Task<T>> alternate) =>
-        await (await optional)
-            .Match(
-                some => some.AsAsync(),
-                async () => await alternate());
+    public static async Task<T> ReduceAsync<T>(
+        this Task<Option<T>> optional,
+        Func<Task<T>> alternate) =>
+            await (await optional)
+                .Match(
+                    some => some.AsAsync(),
+                    async () => await alternate());
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -210,11 +226,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, T alternate) =>
-        await optional
-            .Match(
-                async some => await some,
-                () => alternate.AsAsync());
+    public static async Task<T> ReduceAsync<T>(
+        this Option<Task<T>> optional,
+        T alternate) =>
+            await optional
+                .Match(
+                    async some => await some,
+                    () => alternate.AsAsync());
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -223,11 +241,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, Func<T> alternate) =>
-    await optional
-        .Match(
-            async some => await some,
-            () => alternate().AsAsync());
+    public static async Task<T> ReduceAsync<T>(
+        this Option<Task<T>> optional,
+        Func<T> alternate) =>
+            await optional
+                .Match(
+                    async some => await some,
+                    () => alternate().AsAsync());
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -236,11 +256,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, Task<T> alternate) =>
-    await optional
-        .Match(
-            async some => await some,
-            () => alternate);
+    public static async Task<T> ReduceAsync<T>(
+        this Option<Task<T>> optional,
+        Task<T> alternate) =>
+            await optional
+                .Match(
+                    async some => await some,
+                    () => alternate);
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -249,11 +271,13 @@ public static class OptionExtensions
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Option<Task<T>> optional, Func<Task<T>> alternate) =>
-    await optional
-        .Match(
-            async some => await some,
-            () => alternate());
+    public static async Task<T> ReduceAsync<T>(
+        this Option<Task<T>> optional,
+        Func<Task<T>> alternate) =>
+            await optional
+                .Match(
+                    async some => await some,
+                    () => alternate());
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
@@ -263,10 +287,12 @@ public static class OptionExtensions
     /// <param name="optional">The option to bind.</param>
     /// <param name="binder">The binding function.</param>
     /// <returns>An option of the output type.</returns>
-    public static Option<TResult> Bind<TInput, TResult>(this Option<TInput> optional, Func<TInput, Option<TResult>> binder) =>
-        optional
-            .Map(binder)
-            .Reduce(Option.None<TResult>());
+    public static Option<TResult> Bind<TInput, TResult>(
+        this Option<TInput> optional,
+        Func<TInput, Option<TResult>> binder) =>
+            optional
+                .Map(binder)
+                .Reduce(Option.None<TResult>());
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
@@ -276,10 +302,12 @@ public static class OptionExtensions
     /// <param name="optional">The option to bind.</param>
     /// <param name="binder">The binding function.</param>
     /// <returns>An option of the output type.</returns>
-    public static Task<Option<TResult>> BindAsync<TInput, TResult>(this Task<Option<TInput>> optional, Func<TInput, Option<TResult>> binder) =>
-        optional
-            .MapAsync(binder)
-            .ReduceAsync(Option.None<TResult>());
+    public static Task<Option<TResult>> BindAsync<TInput, TResult>(
+        this Task<Option<TInput>> optional,
+        Func<TInput, Option<TResult>> binder) =>
+            optional
+                .MapAsync(binder)
+                .ReduceAsync(Option.None<TResult>());
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
@@ -289,8 +317,29 @@ public static class OptionExtensions
     /// <param name="optional">The option to bind.</param>
     /// <param name="binder">The binding function.</param>
     /// <returns>An option of the output type.</returns>
-    public static Task<Option<TResult>> BindAsync<TInput, TResult>(this Task<Option<TInput>> optional, Func<TInput, Task<Option<TResult>>> binder) =>
+    public static Task<Option<TResult>> BindAsync<TInput, TResult>(
+        this Task<Option<TInput>> optional,
+        Func<TInput, Task<Option<TResult>>> binder) =>
+            optional
+                .MapAsync(binder)
+                .ReduceAsync(Option.None<TResult>());
+
+    /// <summary>
+    /// WARNING: Unwrap will throw an exception if the inner value is None.
+    /// <br /><br />
+    /// Unwrap is used to get the inner value of an Option when the Option type
+    /// contains some value. 
+    /// <br />
+    /// In order to use this safely, it is recommended to first
+    /// check to see if the Option contains some value using 
+    /// <see cref="Option&lt;T&gt;.IsSome"/> or <see cref="Option&lt;T&gt;.IsNone"/>.
+    /// </summary>
+    /// <typeparam name="T">The inner type of the option.</typeparam>
+    /// <param name="optional">The option to unwrap.</param>
+    /// <returns>The inner value of the Option.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when an unwrapping an Option that is None.</exception>
+    public static T Unwrap<T>(this Option<T> optional) =>
         optional
-            .MapAsync(binder)
-            .ReduceAsync(Option.None<TResult>());
+            .Reduce(() =>
+                throw new ArgumentNullException(nameof(optional)));
 }
