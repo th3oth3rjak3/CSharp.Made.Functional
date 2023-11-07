@@ -312,4 +312,30 @@ public class OptionTests
             .BindAsync(_ => Option.None<string>().AsAsync())
             .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
 
+    [TestMethod]
+    public void ItShouldBeSome() =>
+        "some value"
+            .Some()
+            .IsSome
+            .ShouldBeTrue();
+
+    [TestMethod]
+    public void ItShouldntBeNone() =>
+        "some value"
+            .Some()
+            .IsNone
+            .ShouldBeFalse();
+
+    [TestMethod]
+    public void ItShouldBeNone() =>
+        Option.None<string>()
+            .IsNone
+            .ShouldBeTrue();
+
+    [TestMethod]
+    public void ItShouldntBeSome() =>
+        Option.None<string>()
+            .IsSome
+            .ShouldBeFalse();
+
 }

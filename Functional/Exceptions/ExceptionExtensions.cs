@@ -1,8 +1,8 @@
-﻿using Functional.Monadic;
-using Functional.Options;
+﻿namespace Functional.Exceptions;
 
-namespace Functional.Exceptions;
-
+/// <summary>
+/// Extensions to improve exception handling.
+/// </summary>
 public static class ExceptionExtensions
 {
     /// <summary>
@@ -31,7 +31,26 @@ public static class ExceptionExtensions
         try
         {
             return toTry(input)
-                .Pipe(res => TryResult.Success(res));
+                .Pipe(TryResult.Success);
+        }
+        catch (Exception ex)
+        {
+            return TryResult.Failure<TResult>(ex);
+        }
+    }
+
+    /// <summary>
+    /// Try an operation that may throw an exception.
+    /// </summary>
+    /// <typeparam name="TResult">The result of the function to try.</typeparam>
+    /// <param name="toTry">The function to try which may throw an exception.</param>
+    /// <returns>A result which needs to be caught by the Catch method.</returns>
+    public static TryResult<TResult> Try<TResult>(Func<TResult> toTry)
+    {
+        try
+        {
+            return toTry()
+                .Pipe(TryResult.Success);
         }
         catch (Exception ex)
         {
@@ -55,6 +74,21 @@ public static class ExceptionExtensions
             tryResult
                 .Match(
                     success => onSuccess(success),
+                    failure => onFailure(failure));
+
+    /// <summary>
+    /// Catch a TryResult to handle success and failures.
+    /// </summary>
+    /// <typeparam name="T">The type of value returned from the Try operation when successful.</typeparam>
+    /// <param name="tryResult">The result of the Try operation.</param>
+    /// <param name="onFailure">Mapping function to handle the failure case.</param>
+    /// <returns>Either the result of a successful try, or the mapped result after the exception was caught.</returns>
+    public static T Catch<T>(
+        this TryResult<T> tryResult,
+        Func<Exception, T> onFailure) =>
+            tryResult
+                .Match(
+                    success => success,
                     failure => onFailure(failure));
 
     /// <summary>

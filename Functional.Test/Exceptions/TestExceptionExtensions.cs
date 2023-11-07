@@ -2,6 +2,8 @@
 using Functional.Monadic;
 using Functional.Options;
 
+using static Functional.Exceptions.ExceptionExtensions;
+
 namespace Functional.Test.Exceptions;
 
 [TestClass]
@@ -90,5 +92,62 @@ public class TestExceptionExtensions
                 success => success.ToString(),
                 exn => exn.Message)
             .TapAsync(res => res.ShouldBe("error"));
+
+    [DataRow(1)]
+    [TestMethod]
+    public void ItShouldTryWithClosures(int someNumber) =>
+        Try(() => someNumber.ToString())
+            .Catch(exn => exn.Message)
+            .ShouldBe("1");
+
+    [DataRow(1)]
+    [TestMethod]
+    public void ItShouldCatchExceptionsWithClosures(int someNumber) =>
+        Try(() => AlwaysThrows(someNumber))
+            .Catch(exn => exn.Message)
+            .ShouldBe("Something bad happened.");
+
+    [TestMethod]
+    public void ItShouldUnwrapSomeValue() =>
+        "some value"
+            .Some()
+            .Unwrap()
+            .ShouldBe("some value");
+
+    [TestMethod]
+    public void ItShouldThrowWhenUnwrappingNone() =>
+        Try(() => Option.None<string>().Unwrap())
+            .Catch(exn => exn.GetType().Name)
+            .ShouldBe("ArgumentNullException");
+
+    public static string AlwaysThrows(int number) =>
+        throw new Exception("Something bad happened.");
+
+    [TestMethod]
+    public void ItShouldDoEffectsWhenSome()
+    {
+        var wasCalled = false;
+        void whenSome(string _) { wasCalled = true; }
+        void whenNone() { wasCalled = false; }
+
+        "value"
+            .Some()
+            .Tap(someValue => someValue.Effect(whenSome, whenNone));
+
+        wasCalled.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ItShouldDoEffectsWhenNone()
+    {
+        var wasCalled = false;
+        void whenSome(string _) { wasCalled = false; }
+        void whenNone() { wasCalled = true; }
+
+        Option.None<string>()
+            .Effect(whenSome, whenNone);
+
+        wasCalled.ShouldBeTrue();
+    }
 
 }
