@@ -1,8 +1,11 @@
-﻿using Functional.Unions;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Functional.Unions;
 
 namespace Functional.Test.Unions;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class UnionTests
 {
     [TestMethod]
@@ -22,8 +25,8 @@ public class UnionTests
     {
         var typeOneEffect = false;
         var typeTwoEffect = false;
-        void typeOneAction(TypeOne _) { typeOneEffect = true; }
-        void twoTwoAction(TypeTwo _) { typeTwoEffect = true; }
+        void typeOneAction(TypeOne _) => typeOneEffect = true;
+        void twoTwoAction(TypeTwo _) => typeTwoEffect = true;
 
         new Union<TypeOne, TypeTwo>(new TypeOne())
             .Effect(typeOneAction, twoTwoAction);
@@ -37,8 +40,8 @@ public class UnionTests
     {
         var typeOneEffect = false;
         var typeTwoEffect = false;
-        void typeOneAction(TypeOne _) { typeOneEffect = true; }
-        void typeTwoAction(TypeTwo _) { typeTwoEffect = true; }
+        void typeOneAction(TypeOne _) => typeOneEffect = true;
+        void typeTwoAction(TypeTwo _) => typeTwoEffect = true;
 
         new Union<TypeOne, TypeTwo>(new TypeTwo())
             .Effect(typeOneAction, typeTwoAction);
@@ -46,6 +49,5 @@ public class UnionTests
         typeOneEffect.ShouldBeFalse();
         typeTwoEffect.ShouldBeTrue();
     }
-
 }
 

@@ -5,49 +5,50 @@
 /// This is the primary way to return error types from a function
 /// rather than throwing exceptions.
 /// </summary>
-/// <typeparam name="TSuccess">The type of the inner object when successful.</typeparam>
-/// <typeparam name="TError">The type of the inner object when not successful.</typeparam>
-public sealed record Result<TSuccess, TError>
+/// <typeparam name="Ok">The type of the inner object when Ok.</typeparam>
+/// <typeparam name="Error">The type of the inner object when Error.</typeparam>
+[ExcludeFromCodeCoverage]
+public sealed record Result<Ok, Error>
 {
-    private Union<SuccessResult<TSuccess>, FailureResult<TError>> Contents { get; init; }
+    private Union<OkResult<Ok>, ErrorResult<Error>> Contents { get; init; }
 
     /// <summary>
-    /// Construct a new Result from a SuccessResult.
+    /// Construct a new Result from an Ok.
     /// </summary>
-    /// <param name="success">A result which is a success.</param>
-    public Result(SuccessResult<TSuccess> success) =>
-        Contents = new Union<SuccessResult<TSuccess>, FailureResult<TError>>(success);
+    /// <param name="ok">A result which is Ok.</param>
+    public Result(OkResult<Ok> ok) =>
+        Contents = new Union<OkResult<Ok>, ErrorResult<Error>>(ok);
 
     /// <summary>
-    /// Construct a new Result from a FailureResult.
+    /// Construct a new Result from an Error.
     /// </summary>
-    /// <param name="failure">A result which is a failure.</param>
-    public Result(FailureResult<TError> failure) =>
-        Contents = new Union<SuccessResult<TSuccess>, FailureResult<TError>>(failure);
+    /// <param name="error">A result which is an Error.</param>
+    public Result(ErrorResult<Error> error) =>
+        Contents = new Union<OkResult<Ok>, ErrorResult<Error>>(error);
 
     /// <summary>
-    /// Match the result to a success or failure and perform some function on either case.
+    /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
-    /// <param name="onSuccess">Perform some function on the success result.</param>
-    /// <param name="onFailure">Perform some function on the failure result.</param>
-    /// <returns>The result of executing the onSuccess or onFailure function.</returns>
-    public TResult Match<TResult>(Func<TSuccess, TResult> onSuccess, Func<TError, TResult> onFailure) =>
+    /// <param name="whenOk">Perform some function on the Ok result.</param>
+    /// <param name="whenError">Perform some function on the Error result.</param>
+    /// <returns>The result of executing the whenOk or whenError function.</returns>
+    public TResult Match<TResult>(Func<Ok, TResult> whenOk, Func<Error, TResult> whenError) =>
         Contents
             .Match(
-                success => onSuccess(success.Contents),
-                failure => onFailure(failure.Contents));
+                ok => whenOk(ok.Contents),
+                error => whenError(error.Contents));
 
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
-    /// <param name="doWhenSuccess">Perform this action when the value is Success.</param>
-    /// <param name="doWhenFailure">Perform this action when the value is Failure.</param>
-    public void Effect(Action<TSuccess> doWhenSuccess, Action<TError> doWhenFailure) =>
-        this.Contents
+    /// <param name="doWhenOk">Perform this action when the value is Ok.</param>
+    /// <param name="doWhenError">Perform this action when the value is Error.</param>
+    public void Effect(Action<Ok> doWhenOk, Action<Error> doWhenError) =>
+        Contents
             .Effect(
-                success => doWhenSuccess(success.Contents),
-                failure => doWhenFailure(failure.Contents));
+                ok => doWhenOk(ok.Contents),
+                error => doWhenError(error.Contents));
 
 }
 
@@ -59,36 +60,36 @@ public sealed record Result<TSuccess, TError>
 public static class Result
 {
     /// <summary>
-    /// A result that indicates success.
+    /// A result that indicates that the value is Ok.
     /// </summary>
-    /// <typeparam name="TSuccess">The type of the contents.</typeparam>
-    /// <typeparam name="TError">The type if it had been an error.</typeparam>
+    /// <typeparam name="Ok">The type of the contents.</typeparam>
+    /// <typeparam name="Error">The type if it had been an error.</typeparam>
     /// <param name="input">The contents to store.</param>
-    /// <returns>A result which indicates success that contains contents.</returns>
-    public static Result<TSuccess, TError> Success<TSuccess, TError>(this TSuccess input) =>
-        new(new SuccessResult<TSuccess>(input));
+    /// <returns>A result which indicates that the contents are Ok.</returns>
+    public static Result<Ok, Error> Ok<Ok, Error>(this Ok input) =>
+        new(new OkResult<Ok>(input));
 
     /// <summary>
     /// A result that indicates failure.
     /// </summary>
     /// <returns>A result which indicates a failure which contains messages about the failure.</returns>
-    public static Result<TSuccess, TError> Failure<TSuccess, TError>(TError error) =>
-        new(new FailureResult<TError>(error));
+    public static Result<Ok, Error> Error<Ok, Error>(Error error) =>
+        new(new ErrorResult<Error>(error));
 
 }
 
 /// <summary>
-/// A result inidicating success.
+/// A result indicating that the value is Ok.
 /// </summary>
-/// <typeparam name="T">The type of the inner value of the result.</typeparam>
-/// <param name="Contents">The wrapped inner value of the success.</param>
+/// <typeparam name="Ok">The type of the inner value of the result.</typeparam>
+/// <param name="Contents">The wrapped inner value of the Ok.</param>
 [ExcludeFromCodeCoverage]
-public record SuccessResult<T>(T Contents);
+public record OkResult<Ok>(Ok Contents);
 
 /// <summary>
-/// A result indicating failure.
+/// A result indicating an Error.
 /// </summary>
-/// <typeparam name="T">The type of the inner value of the failure.</typeparam>
-/// <param name="Contents">The wrapped inner value of the failure.</param>
+/// <typeparam name="Error">The type of the inner value of the Error.</typeparam>
+/// <param name="Contents">The wrapped inner value of the Error.</param>
 [ExcludeFromCodeCoverage]
-public record FailureResult<T>(T Contents);
+public record ErrorResult<Error>(Error Contents);

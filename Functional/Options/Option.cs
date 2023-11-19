@@ -4,6 +4,7 @@
 /// A wrapper class which contains either Some value or no value (None).
 /// </summary>
 /// <typeparam name="T">The inner type of the Option.</typeparam>
+[ExcludeFromCodeCoverage]
 public sealed record Option<T>
 {
     private Union<Some<T>, None<T>> Contents { get; init; }
@@ -24,7 +25,7 @@ public sealed record Option<T>
     /// Match the option to either Some or None and provide functions to handle each case.
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
-    /// <param name="whenSome">The fucntion to execute when some.</param>
+    /// <param name="whenSome">The function to execute when some.</param>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
     public TResult Match<TResult>(Func<T, TResult> whenSome, Func<TResult> whenNone) =>
@@ -39,20 +40,20 @@ public sealed record Option<T>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     public void Effect(Action<T> doWhenSome, Action doWhenNone) =>
-        this.Contents
+        Contents
             .Effect(some => doWhenSome(some.Contents), _ => doWhenNone());
 
     /// <summary>
     /// Determine if the option contains some value. True when Some, otherwise false.
     /// </summary>
     public bool IsSome =>
-        this.Contents.Match(_ => true, _ => false);
+        Contents.Match(_ => true, _ => false);
 
     /// <summary>
     /// Determine if the option contains no value. True when None, otherwise false.
     /// </summary>
     public bool IsNone =>
-        this.Contents.Match(_ => false, _ => true);
+        Contents.Match(_ => false, _ => true);
 }
 
 /// <summary>
@@ -70,7 +71,7 @@ public static class Option
         new(new Some<T>(entity));
 
     /// <summary>
-    /// Create an Option that respresents no value.
+    /// Create an Option that represents no value.
     /// </summary>
     /// <typeparam name="T">The type of the contents if they had been present.</typeparam>
     /// <returns>A new Option that represents a lack of contents.</returns>

@@ -3,12 +3,20 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<PackageId>CSharp.Made.Functional</PackageId>
-	<Version>1.0.13</Version>
-	<Authors>Jacob Hathaway</Authors>
-	<Product>Functional Library</Product>
-	  <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageId>CSharp.Made.Functional</PackageId>
+    <Version>2.0.0</Version>
+    <Authors>Jacob Hathaway</Authors>
+    <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
+    <PackageTags>Functional;Option;Result;Union;Discriminated Union;</PackageTags>
+    <ProjectUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</ProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="../README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 </Project>

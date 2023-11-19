@@ -1,12 +1,15 @@
-﻿using Functional.Exceptions;
-using Functional.Monadic;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Functional.Common;
+using Functional.Exceptions;
 using Functional.Options;
 
-using static Functional.Exceptions.ExceptionExtensions;
+using static Functional.Exceptions.TryCatch;
 
 namespace Functional.Test.Exceptions;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class TestExceptionExtensions
 {
     private const int oneMillion = 1_000_000;
@@ -28,76 +31,45 @@ public class TestExceptionExtensions
     public void TryShouldSucceed() =>
         oneMillion
             .Try(num => num.ToString())
-            .Catch(str => str, exn => exn.Message)
+            .Catch(exn => exn.Message)
+            .Invoke()
             .ShouldBe(oneMillion.ToString());
 
     [TestMethod]
     public void TryShouldHandleFailures() =>
         oneMillion
             .Try(_ => ItAlwaysThrows("It threw an exception"))
-            .Catch(str => str, exn => exn.Message)
+            .Catch(exn => exn.Message)
+            .Invoke()
             .ShouldBe("It threw an exception");
 
     [TestMethod]
     public async Task TryAsyncShouldSucceed() =>
         await oneMillion
+            .AsAsync()
             .TryAsync(num => num.ToString().AsAsync())
-            .CatchAsync(str => str, exn => exn.Message)
+            .CatchAsync(exn => exn.Message.AsAsync())
+            .InvokeAsync()
             .TapAsync(str => str.ShouldBe(oneMillion.ToString()));
 
     [TestMethod]
-    public async Task TryAsyncShoulCatch() =>
+    public async Task TryAsyncShouldCatch() =>
         await oneMillion
+            .AsAsync()
             .TryAsync(_ => ItAlwaysThrows("It threw an exception").AsAsync())
-            .CatchAsync(str => str, exn => exn.Message)
+            .CatchAsync(exn => exn.Message.AsAsync())
+            .InvokeAsync()
             .TapAsync(str => str.ShouldBe("It threw an exception"));
 
     private static string ItAlwaysThrows(string message) =>
         throw new Exception(message);
-
-    [TestMethod]
-    public void ItShouldMatchTrySuccess() =>
-        TryResult
-            .Success(oneMillion)
-            .Match(
-                success => success.ToString(),
-                exn => exn.Message)
-            .ShouldBe("1000000");
-
-    [TestMethod]
-    public void ItShouldMatchTryFailure() =>
-        TryResult
-            .Failure<int>(new Exception("error"))
-            .Match(
-                success => success.ToString(),
-                exn => exn.Message)
-            .ShouldBe("error");
-
-    [TestMethod]
-    public async Task ITShouldMatchSuccessAsync() =>
-        await TryResult
-            .Success(oneMillion)
-            .AsAsync()
-            .MatchAsync(
-                success => success.ToString(),
-                exn => exn.Message)
-            .TapAsync(res => res.ShouldBe("1000000"));
-
-    [TestMethod]
-    public async Task ItShouldMatchFailureAsync() =>
-        await TryResult
-            .Failure<int>(new Exception("error"))
-            .AsAsync()
-            .MatchAsync(
-                success => success.ToString(),
-                exn => exn.Message)
-            .TapAsync(res => res.ShouldBe("error"));
 
     [DataRow(1)]
     [TestMethod]
     public void ItShouldTryWithClosures(int someNumber) =>
         Try(() => someNumber.ToString())
             .Catch(exn => exn.Message)
+            .Invoke()
             .ShouldBe("1");
 
     [DataRow(1)]
@@ -105,49 +77,136 @@ public class TestExceptionExtensions
     public void ItShouldCatchExceptionsWithClosures(int someNumber) =>
         Try(() => AlwaysThrows(someNumber))
             .Catch(exn => exn.Message)
+            .Invoke()
             .ShouldBe("Something bad happened.");
-
-    [TestMethod]
-    public void ItShouldUnwrapSomeValue() =>
-        "some value"
-            .Some()
-            .Unwrap()
-            .ShouldBe("some value");
-
-    [TestMethod]
-    public void ItShouldThrowWhenUnwrappingNone() =>
-        Try(() => Option.None<string>().Unwrap())
-            .Catch(exn => exn.GetType().Name)
-            .ShouldBe("ArgumentNullException");
 
     public static string AlwaysThrows(int number) =>
         throw new Exception("Something bad happened.");
 
     [TestMethod]
-    public void ItShouldDoEffectsWhenSome()
+    public async Task ItShouldTryCatchAsync() =>
+        await TryAsync(() => ItAlwaysThrows("never").AsAsync())
+            .CatchAsync(exn => exn.Message.Pipe(msg => $"Exception: {msg}").AsAsync())
+            .InvokeAsync()
+            .TapAsync(msg => msg.ShouldBe("Exception: never"));
+
+    [TestMethod]
+    public void ItShouldTryCatchFinally()
     {
-        var wasCalled = false;
-        void whenSome(string _) { wasCalled = true; }
-        void whenNone() { wasCalled = false; }
+        var invocations = 0;
 
-        "value"
-            .Some()
-            .Tap(someValue => someValue.Effect(whenSome, whenNone));
+        Try(() => "success")
+            .Catch(exn => exn.Message)
+            .Finally(() => invocations++)
+            .Invoke()
+            .ShouldBe("success");
 
-        wasCalled.ShouldBeTrue();
+        invocations.ShouldBe(1);
     }
 
     [TestMethod]
-    public void ItShouldDoEffectsWhenNone()
+    public void ItShouldTryCatchFinallyException()
     {
-        var wasCalled = false;
-        void whenSome(string _) { wasCalled = false; }
-        void whenNone() { wasCalled = true; }
+        var invocations = 0;
 
-        Option.None<string>()
-            .Effect(whenSome, whenNone);
+        Try<string>(() => throw new Exception("exception"))
+            .Catch(exn => exn.Message)
+            .Finally(() => invocations++)
+            .Invoke()
+            .ShouldBe("exception");
 
-        wasCalled.ShouldBeTrue();
+        invocations.ShouldBe(1);
     }
 
+    [TestMethod]
+    public void ItShouldTryCatchFinallyWithInput()
+    {
+        var invocations = 0;
+
+        oneMillion
+            .Try(value => value.ToString())
+            .Catch(exn => exn.Message)
+            .Finally(() => invocations++)
+            .Invoke()
+            .ShouldBe(oneMillion.ToString());
+
+        invocations.ShouldBe(1);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTryCatchFinallyWithInputAsync()
+    {
+        var invocations = 0;
+
+        _ = await oneMillion
+            .AsAsync()
+            .TryAsync(value => value.ToString().AsAsync())
+            .CatchAsync(exn => exn.Message.AsAsync())
+            .FinallyAsync(() => invocations++)
+            .InvokeAsync()
+            .TapAsync(value => value.ShouldBe(oneMillion.ToString()));
+
+        invocations.ShouldBe(1);
+    }
+
+    [TestMethod]
+    public void ItShouldTryCatchFinallyWithInputException()
+    {
+        var invocations = 0;
+
+        oneMillion
+            .Try<int, string>(value => throw new Exception("exception"))
+            .Catch(exn => exn.Message)
+            .Finally(() => invocations++)
+            .Invoke()
+            .ShouldBe("exception");
+
+        invocations.ShouldBe(1);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTryCatchFinallyWithInputExceptionAsync()
+    {
+        var invocations = 0;
+
+        _ = await oneMillion
+            .AsAsync()
+            .TryAsync<int, string>(value => throw new Exception("exception"))
+            .CatchAsync(exn => exn.Message.AsAsync())
+            .FinallyAsync(() => invocations++)
+            .InvokeAsync()
+            .TapAsync(value => value.ShouldBe("exception"));
+
+        invocations.ShouldBe(1);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTryCatchFinallyAsync()
+    {
+        var invocations = 0;
+
+        await TryAsync(() => "message".AsAsync())
+            .CatchAsync(exn => exn.Message.AsAsync())
+            .FinallyAsync(() => invocations++)
+            .InvokeAsync()
+            .TapAsync(value => value.ShouldBe("message"))
+            .IgnoreAsync();
+
+        invocations.ShouldBe(1);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTryCatchFinallyExceptionAsync()
+    {
+        var invocations = 0;
+
+        await TryAsync<string>(() => throw new Exception("exception"))
+            .CatchAsync(exn => exn.Message.AsAsync())
+            .FinallyAsync(() => invocations++)
+            .InvokeAsync()
+            .TapAsync(value => value.ShouldBe("exception"))
+            .IgnoreAsync();
+
+        invocations.ShouldBe(1);
+    }
 }
