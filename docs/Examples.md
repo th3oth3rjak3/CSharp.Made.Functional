@@ -125,7 +125,7 @@ public static class Program
 
 
 ### Map, Filter, and Reduce
-In the previous example, we improved the function signature of the `TryFindTodoItem` method. Let's go a step further and find out how we can actually get the value of out an `Option` type using `Map`, `Filter`, and `Reduce`. The `Map` method performs mapping on the internal type that is wrapped by the `Option`. In the example, our internal type is a `TodoItem`. Below we use it to get the title using `Map` in the case that the `Option` is a `Some`. How do we represent a title if the `Option` is `None`? This is where `Reduce` comes in. We can supply an alternate value directly, or we can supply a function that returns an alternate value. The function approach is useful in cases where getting an alternate value might be computationally expensive. Finally, `Filter` is used to convert a `Some` to a `None` when the filter criteria evaluates to true.
+In the example showing the `Optional` extension, we improved the function signature of the `TryFindTodoItem` method. Let's go a step further and find out how we can actually get the value of out an `Option` type using `Map`, `Filter`, and `Reduce`. The `Map` method performs mapping on the internal type that is wrapped by the `Option`. In the example, our internal type is a `TodoItem`. Below we use it to get the title using `Map` in the case that the `Option` is a `Some`. How do we represent a title if the `Option` is `None`? This is where `Reduce` comes in. We can supply an alternate value directly, or we can supply a function that returns an alternate value. The function approach is useful in cases where getting an alternate value might be computationally expensive. Finally, `Filter` is used to convert a `Some` to a `None` when the filter criteria evaluates to true.
 
 
 ```C# title="Program.cs" linenums="1" hl_lines="26-27 31-33 37 40"
@@ -520,6 +520,8 @@ public static class Program
     }
 }
 ```
+### Built-in Methods
+All of the `Union` variants have `Effect` and `Match` built-in. This means that if you create a custom `Union` type, you can use the inner `Union` built-in methods to expose public versions on your custom `Union` type. An example of this is shown in the previous `Animal` example with the `Match` method.
 
 ## Result
 In the previous example, the database operation only ever returned an error. But in real life, database operations would produce a good result sometimes, and an error result other times. We could roughly categorize these as successes and failures. In trying to keep with the same syntax as F#, this library calls successes `Ok` and failures `Error`. This is what a `Result` looks like in F#.
@@ -603,11 +605,512 @@ public static class Program
 }
 ```
 
+### Map and Reduce
+Just like the `Option` type, `Result` has `Map` and `Reduce` methods. `Map` works exactly the same way, in that if the `Result` is `Ok`, then it performs the mapping function on the inner contents. `Reduce`, however has multiple overloaded methods. It can be used in a way that discards the error and returns an alternate value, or it can use the error to then create the alternate value. 
+
+The `Map` function can be called multiple times to perform different transformations therefore pipelining the values from the previous transformation to the next one. This can greatly improve the readability of what is happening to a value as it goes through the pipeline. The example below is contrived in that you could perform the mapping steps all in one operation, but for the sake of demonstration, it's been broken out into multiple `Map` operations. 
+
+`TryPayForMovies` returns a `Result<int, InsufficientFundsError>` which for our purposes means that sometimes the balance is `Ok` and sometimes, usually according to some business or domain logic, it could be an `Error`. Through multiple `Map` steps, we can convert the number to a string, add a `$`, then add some more formatting for readability through the power of composition. To demonstrate various cases, the example uses `Enumerable.Range` to print different results 10 times.
+
+```C# title="Program.cs" linenums="1" hl_lines="10 27-30"
+using Functional.Common;
+using Functional.Results;
+
+namespace ScratchPad;
+
+public record InsufficientFundsError(string Message);
+
+public static class Program
+{
+    public static Result<int, InsufficientFundsError> TryPayForMovies() =>
+        // Let's assume that movies cost $25
+        new Random().Next(100) switch
+        {
+            var balance when balance > 25 =>
+                (balance - 25)
+                    .Pipe(Result.Ok<int, InsufficientFundsError>),
+            var balance =>
+                new InsufficientFundsError($"Movie Error: balance of ${balance} is too low to pay for movies.")
+                    .Pipe(Result.Error<int, InsufficientFundsError>)
+        };
+    public static void Main() =>
+        Enumerable
+            .Range(0, 30)
+            .ToList()
+            .ForEach(_ =>
+                TryPayForMovies()
+                    .Map(balance => balance.ToString())
+                    .Map(strBalance => $"${strBalance}")
+                    .Map(withDollarSign => $"Your balance after paying for the movies: {withDollarSign}")
+                    .Reduce(err => err.Message)
+                    .Tap(Console.WriteLine)
+                    .Ignore());
+}
+```
+### Match
+The previous example can be rewritten using `Match` as well. However, as previously noted, `Map` can be called many times, where `Match` can only be called once. `Match` should be thought of as a replacement for a single `Map` and `Reduce` operation. This way, if there are many `Map` operations to perform, it is possible to do all of them except the last one, then call `Match`.
+
+```C# title="Program.cs" linenums="1" hl_lines="28-32"
+using Functional.Common;
+using Functional.Results;
+
+namespace ScratchPad;
+
+public record InsufficientFundsError(string Message);
+
+public static class Program
+{
+    public static Result<int, InsufficientFundsError> TryPayForMovies() =>
+        // Let's assume that movies cost $25
+        new Random().Next(100) switch
+        {
+            var balance when balance > 25 =>
+                (balance - 25)
+                    .Pipe(Result.Ok<int, InsufficientFundsError>),
+            var balance =>
+                new InsufficientFundsError($"Movie Error: balance of ${balance} is too low to pay for movies.")
+                    .Pipe(Result.Error<int, InsufficientFundsError>)
+        };
+
+    public static void Main() =>
+        Enumerable
+            .Range(0, 30)
+            .ToList()
+            .ForEach(_ =>
+                TryPayForMovies()
+                    .Map(balance => balance.ToString())
+                    .Map(strBalance => $"${strBalance}")
+                    .Match(
+                        withDollarSign => $"Your balance after paying for the movies: {withDollarSign}",
+                        err => err.Message)
+                    .Tap(Console.WriteLine)
+                    .Ignore());
+}
+```
+
+### Bind
+Just like the `Bind` method for `Option`, `Result` also has a `Bind` method for when a mapping operation produces another `Result` type. There is a current limitation on this method which is being explored for a future release where the binding method must also produce the same error type. This usually isn't a problem, but something to be aware of. Much of this limitation can be overcome by using Discriminated Unions for an error type. This way, a binding method could produce a different error perhaps, but if it's a variant of a discriminated union, C# will still see it as the parent discriminated union type. In the following example, let's say that we wanted to pay for a movie and buy dinner. Buying dinner though, depends on whether or not there was money left over after paying for the movies.
+
+```C# title="Program.cs" linenums="1" hl_lines="22 40"
+using Functional.Common;
+using Functional.Results;
+
+namespace ScratchPad;
+
+public record InsufficientFundsError(string Message);
+
+public static class Program
+{
+    public static Result<int, InsufficientFundsError> TryPayForMovies() =>
+        // Let's assume that movies cost $25
+        new Random().Next(100) switch
+        {
+            var balance when balance > 25 =>
+                (balance - 25)
+                    .Pipe(Result.Ok<int, InsufficientFundsError>),
+            var balance =>
+                new InsufficientFundsError($"Movie Error: balance of ${balance} is too low to pay for movies.")
+                    .Pipe(Result.Error<int, InsufficientFundsError>)
+        };
+
+    public static Result<int, InsufficientFundsError> TryBuyDinner(int balance) =>
+        // assuming dinner costs $50
+        balance switch {
+            var bal when bal >= 50 =>
+                (balance - 50)
+                    .Pipe(Result.Ok<int, InsufficientFundsError>),
+            _ => 
+                new InsufficientFundsError($"Dinner Error: balance of ${balance} was too low to pay for dinner.")
+                    .Pipe(Result.Error<int, InsufficientFundsError>)
+        };
+
+
+    public static void Main() =>
+        Enumerable
+            .Range(0, 30)
+            .ToList()
+            .ForEach(_ =>
+                TryPayForMovies()
+                    .Bind(TryBuyDinner)
+                    .Map(balance => balance.ToString())
+                    .Map(strBalance => $"${strBalance}")
+                    .Map(withDollarSign => $"Your balance after paying for the movies: {withDollarSign}")
+                    .Reduce(err => err.Message)
+                    .Tap(Console.WriteLine)
+                    .Ignore());
+}
+```
+### Effect
+Just like `Option` and `Union`, `Result` also has an `Effect` method that allows us to perform some `Action` which returns `void` as a side-effect on our `Result` type. `Effect` is similar to `Match`, but instead of returning value, both arms return `void`. We can use `Effect` in place of the `Map`, `Reduce`, and `Tap` methods used in the previous example.
+
+```C# title="Program.cs" linenums="1" hl_lines="43-46"
+using Functional.Common;
+using Functional.Results;
+
+namespace ScratchPad;
+
+public record InsufficientFundsError(string Message);
+
+public static class Program
+{
+    public static Result<int, InsufficientFundsError> TryPayForMovies() =>
+        // Let's assume that movies cost $25
+        new Random().Next(100) switch
+        {
+            var balance when balance > 25 =>
+                (balance - 25)
+                    .Pipe(Result.Ok<int, InsufficientFundsError>),
+            var balance =>
+                new InsufficientFundsError($"Movie Error: balance of ${balance} is too low to pay for movies.")
+                    .Pipe(Result.Error<int, InsufficientFundsError>)
+        };
+
+    public static Result<int, InsufficientFundsError> TryBuyDinner(int balance) =>
+        // assuming dinner costs $50
+        balance switch
+        {
+            var bal when bal >= 50 =>
+                (balance - 50)
+                    .Pipe(Result.Ok<int, InsufficientFundsError>),
+            _ =>
+                new InsufficientFundsError($"Dinner Error: balance of ${balance} was too low to pay for dinner.")
+                    .Pipe(Result.Error<int, InsufficientFundsError>)
+        };
+
+    public static void Main() =>
+        Enumerable
+            .Range(0, 30)
+            .ToList()
+            .ForEach(_ =>
+                TryPayForMovies()
+                    .Bind(TryBuyDinner)
+                    .Map(balance => balance.ToString())
+                    .Map(strBalance => $"${strBalance}")
+                    .Effect(
+                        withDollarSign =>
+                            Console.WriteLine($"Your balance after paying for dinner and the movies: {withDollarSign}"),
+                        err => Console.WriteLine(err.Message)));
+}
+```
+
+### Async Results
+Asynchronous support is also provided in this library for `Result`. 
+
+Included async methods:
+
+- `MapAsync`
+- `ReduceAsync`
+- `MatchAsync`
+- `BindAsync`
+- `EffectAsync`
+
+```C# title="Program.cs" linenums="1"
+using Functional.Common;
+using Functional.Results;
+
+namespace ScratchPad;
+
+public record CustomError(string Message);
+
+public static class Program
+{
+    public static async Task Main() =>
+        await Result.Success<string, CustomError>("Ok")
+            .AsAsync()
+            .MapAsync(ok => ok + "!")
+            .EffectAsync(
+                ok => Console.WriteLine(ok),
+                err => Console.WriteLine(err.Message));
+}
+```
 
 ## Common Extensions
 
-TODO
+Throughout these examples, there have been a few extension methods that have made functional programming easier to work with in C#. Let's talk about a few of those in detail now.
+
+### Pipe
+`Pipe` is a general-purpose mapping function that works with any type. Due to limitations and naming conflicts in C#, using `Map` again for this purpose was not possible. Because of this, I chose to use the name `Pipe` to match the F# `|>` pipe operator. Pipe allows us to take the results of a previous function, transformation, or other expression and then perform additional transformations on it. Here is a simple example demonstrating its use. There is also a `PipeAsync` method for async processing as well.
+
+```C# title="Program.cs" linenums="1" hl_lines="13"
+using Functional.Common;
+
+namespace ScratchPad;
+
+public record CustomError(string Message);
+
+public static class Program
+{
+    public static int OneMillion => 1_000_000;
+
+    public static void Main() =>
+        OneMillion
+            .Pipe(money => string.Format("{0:C}", money))
+            .Tap(Console.WriteLine)
+            .Ignore();
+}
+```
+
+### Tap
+
+In the previous example, we used the `Tap` method to perform a side-effect the output of the `Pipe` method. The way that `Tap` works, is that it will perform operations on the output of the previous value, and then return that value as its output. For immutable types, the output will be unchanged. However, be warned that if the action performed in the `Tap` method mutates the input, then the output will also have mutated values. Below is an example with a mutable property to demonstrate this behavior. There is also a `TapAsync` method for async processing as well.
+
+```C# title="Program.cs" linenums="1" hl_lines="19"
+using Functional.Common;
+
+namespace ScratchPad;
+
+public class IntClass
+{
+    public int Value { get; set; }
+}
+
+public static class Program
+{
+    public static int OneMillion => 1_000_000;
+
+    public static void Main()
+    {
+        var classValue =
+            OneMillion
+                .Pipe(number => new IntClass { Value = number })
+                .Tap(intClass => intClass.Value += 1)
+                .Pipe(intClass => intClass.Value);
+
+        // Prints "1000001" because the class value was mutated.
+        Console.WriteLine(classValue);
+    }
+
+}
+```
+
+`Tap` allows multiple actions to provided so that many things can be done to the input at once. Here is an example demonstrating adding 1 and then printing the results before saving the value in a variable.
+
+```C# title="Program.cs" linenums="1" hl_lines="19-21"
+using Functional.Common;
+
+namespace ScratchPad;
+
+public class IntClass
+{
+    public int Value { get; set; }
+}
+
+public static class Program
+{
+    public static int OneMillion => 1_000_000;
+
+    public static void Main()
+    {
+        var classValue =
+            OneMillion
+                .Pipe(number => new IntClass { Value = number })
+                .Tap(
+                    intClass => intClass.Value += 1,
+                    intClass => Console.WriteLine($"Printed In Tap: {intClass.Value}"))
+                .Pipe(intClass => intClass.Value);
+
+        // Prints "1000001" because the class value was mutated.
+        Console.WriteLine($"Printed at the end: {classValue}");
+    }
+}
+```
+### Cons
+`Cons` generates an `ImmutableList` of any type that you put in it. In .NET 8 and C# 12, Collection Expressions and Collection Literals help reduce the need for this, but it can still be useful in older versions. See example below for usage.
+
+```C# title="Program.cs" linenums="1" hl_lines="9"
+using static Functional.Common.CommonExtensions;
+
+namespace ScratchPad;
+
+public static class Program
+{
+    public static void Main()
+    {
+        Cons("some", "things", "to", "print")
+            .ForEach(Console.WriteLine);
+    }
+}
+```
+
+### Ignore
+`Ignore` and `IgnoreAsync` are used to ignore the output of a function. In languages like F#, any unused values must be explicitly ignored. In C#, this isn't required. To indicate that a calculated result is ignored, you can add this to the end of the function. `Ignore` produces `void` and `IgnoreAsync` produces a `Task`.
+
+```C# title="Program.cs" linenums="1" hl_lines="11 16"
+using static Functional.Common.CommonExtensions;
+
+namespace ScratchPad;
+
+public static class Program
+{
+    public static async Task Main()
+    {
+        "Some Contents"
+            .Pipe(str => str + "!")
+            .Ignore();
+
+        await "Some Async Contents"
+            .AsAsync()
+            .PipeAsync(str => str + "!")
+            .IgnoreAsync();
+    }
+}
+```
 
 ## Exception Handling
+When interacting with code that can throw Exceptions, we normally reach for the traditional `Try/Catch/Finally` block. CSharp.Made.Functional includes a few methods to deal with exceptions in a more fluent style.
 
-TODO
+### Try, Catch, and Finally
+Use `Try` to begin an operation that can cause an Exception. Use `Catch` to define what should happen with the Exception when it is thrown. `Finally` can also be used to do other cleanup actions. In order to make sure this works correctly, `Try`, `Catch`, and `Finally` aren't executed until `Invoke` is called and it performs all of the actions in a `Try/Catch` or `Try/Catch/Finally` block behind the scenes depending on what options are used in the pipeline. 
+
+In the example below, since we think it could throw, we want to use the `Result` type to help us determine if it was `Ok` or an `Error`. We can make decisions in the `Catch` handler as to whether or not we want to return an `Error` or we can also throw if it truly is a catastrophic exception.
+
+Like all of the other methods in this library, there are also async methods which work the same way.
+
+
+```C# title="Program.cs" linenums="1" hl_lines="22 25 44-45"
+using Functional.Common;
+using Functional.Exceptions;
+using Functional.Results;
+using static Functional.Common.CommonExtensions;
+using static Functional.Exceptions.TryCatch;
+
+namespace ScratchPad;
+
+public record CustomError(string Message);
+
+public static class Program
+{
+    public static int ItMightThrow() =>
+        new Random().Next(100) switch
+        {
+            var value when value > 50 => value,
+            var value => throw new Exception($"Value was {value}")
+        };
+
+    public static void Main()
+    {
+        Try(() =>
+            ItMightThrow()
+                .Pipe(Result.Ok<int, CustomError>))
+            .Catch(exception =>
+                {
+                    // Example logging.
+                    Console.WriteLine(exception.Message);
+                    exception
+                        .InnerExceptionMessage()
+                        .Effect(
+                            err => Console.WriteLine(err), 
+                            () => { /* It was none, don't print anything. */ });
+
+                    return (exception switch 
+                    {
+                        ArgumentNullException => "It was null",
+                        OperationCanceledException => "It was cancelled",
+                        _ => "We don't know why it crashed..."
+                    })
+                    .Pipe(msg => new CustomError(msg))
+                    .Pipe(Result.Error<int, CustomError>);
+                })
+            .Finally(() => Console.WriteLine("Something in the Finally block"))
+            .Invoke()
+            .Match(
+                ok => ok.ToString(),
+                err => err)
+            .Tap(Console.WriteLine)
+            .Ignore();
+    }
+}
+```
+
+`Try` can also be used as an extension method in order to add a `Try/Catch` handler to the end of a function that isn't expected to throw.
+
+```C# title="Program.cs" linenums="1" hl_lines="26 29 48-49"
+using Functional.Common;
+using Functional.Exceptions;
+using Functional.Results;
+using static Functional.Common.CommonExtensions;
+using static Functional.Exceptions.TryCatch;
+
+namespace ScratchPad;
+
+public record CustomError(string Message);
+
+public static class Program
+{
+    public static int ItNeverThrows() =>
+        new Random().Next(100);
+
+    public static int ItMightThrow(int input) =>
+        input switch
+        {
+            var value when value > 50 => value,
+            var value => throw new Exception($"Value was {value}")
+        };
+
+    public static void Main()
+    {
+        ItNeverThrows()
+            .Try(value => 
+                ItMightThrow(value)
+                    .Pipe(Result.Ok<int, CustomError>))
+            .Catch(exception =>
+                {
+                    // Example logging.
+                    Console.WriteLine(exception.Message);
+                    exception
+                        .InnerExceptionMessage()
+                        .Effect(
+                            err => Console.WriteLine(err), 
+                            () => { /* It was none, don't print anything. */ });
+
+                    return (exception switch 
+                    {
+                        ArgumentNullException => "It was null",
+                        OperationCanceledException => "It was cancelled",
+                        _ => "We don't know why it crashed..."
+                    })
+                    .Pipe(msg => new CustomError(msg))
+                    .Pipe(Result.Error<int, CustomError>);
+                })
+            .Finally(() => Console.WriteLine("Something in the Finally block"))
+            .Invoke()
+            .Match(
+                ok => ok.ToString(),
+                err => err)
+            .Tap(Console.WriteLine)
+            .Ignore();
+    }
+}
+```
+
+### Inner Exception Messages
+Exceptions may or may not have an inner exception message. There is a convenience method called `InnerExceptionMessage()` which returns `Option<string>` to safely handle getting an inner exception method.
+
+```C# title="Program.cs" linenums="1" hl_lines="13 21"
+using Functional.Exceptions;
+using static Functional.Exceptions.ExceptionExtensions;
+
+namespace ScratchPad;
+
+public record CustomError(string Message);
+
+public static class Program
+{
+    public static void Main()
+    {
+        new Exception("outer message", new Exception("Inner message"))
+            .InnerExceptionMessage()
+            .Effect(
+                // This will print because there is an inner exception.
+                Console.WriteLine,
+                () => { /* There was no inner exception */ });
+
+        // Nothing will print here because there was no inner exception.
+        new Exception("outer message")
+            .InnerExceptionMessage()
+            .Effect(
+                Console.WriteLine,
+                () => { /* There was no inner exception */ });
+    }
+}
+```

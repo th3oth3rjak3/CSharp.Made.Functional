@@ -24,14 +24,14 @@ global using Functional.Results;
 global using Functional.Unions;
 
 // For extension methods like Pipe/Tap:
-global using Functional.Monadic;
+global using Functional.Common;
 
 // For exception handling extensions:
 global using static Functional.Exceptions.TryCatch;
 global using static Functional.Exceptions.ExceptionExtensions;
 
 // For static methods like Cons:
-global using static Functional.Monadic.MonadicExtensions;
+global using static Functional.Common.CommonExtensions;
 
 // Other usings for other static methods:
 global using static Functional.Options.OptionExtensions;
