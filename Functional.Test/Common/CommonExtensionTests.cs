@@ -3,11 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 
 using static Functional.Common.CommonExtensions;
 
-namespace Functional.Test.Monadic;
+namespace Functional.Test.Common;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
-public class MonadicExtensionTests
+public class CommonExtensionTests
 {
     /// <summary>
     /// Test what happens when when converting an int to a string.

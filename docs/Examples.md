@@ -689,7 +689,7 @@ public static class Program
 ```
 
 ### Bind
-Just like the `Bind` method for `Option`, `Result` also has a `Bind` method for when a mapping operation produces another `Result` type. There is a current limitation on this method which is being explored for a future release where the binding method must also produce the same error type. This usually isn't a problem, but something to be aware of. Much of this limitation can be overcome by using Discriminated Unions for an error type. This way, a binding method could produce a different error perhaps, but if it's a variant of a discriminated union, C# will still see it as the parent discriminated union type. In the following example, let's say that we wanted to pay for a movie and buy dinner. Buying dinner though, depends on whether or not there was money left over after paying for the movies.
+Just like the `Bind` method for `Option`, `Result` also has a `Bind` method for when a mapping operation produces another `Result` type. There is a current limitation on this method where the binding method must also produce the same error type. This usually isn't a problem, but something to be aware of. Much of this limitation can be overcome by using Discriminated Unions for an error type. This way, a binding method could produce a different error perhaps, but if it's a variant of a discriminated union, C# will still see it as the parent discriminated union type. In the following example, let's say that we wanted to pay for a movie and buy dinner. Buying dinner though, depends on whether or not there was money left over after paying for the movies.
 
 ```C# title="Program.cs" linenums="1" hl_lines="22 40"
 using Functional.Common;
@@ -959,20 +959,21 @@ public static class Program
 ## Exception Handling
 When interacting with code that can throw Exceptions, we normally reach for the traditional `Try/Catch/Finally` block. CSharp.Made.Functional includes a few methods to deal with exceptions in a more fluent style.
 
-### Try, Catch, and Finally
-Use `Try` to begin an operation that can cause an Exception. Use `Catch` to define what should happen with the Exception when it is thrown. `Finally` can also be used to do other cleanup actions. In order to make sure this works correctly, `Try`, `Catch`, and `Finally` aren't executed until `Invoke` is called and it performs all of the actions in a `Try/Catch` or `Try/Catch/Finally` block behind the scenes depending on what options are used in the pipeline. 
+### Try
+Use `Try` to perform an operation which could throw an Exception. There are two variants to this method. First, it can be used as a plain static method which expects some function to be performed that returns some kind of value. There is also an extension method that allows a previous value to be used as input to `Try` which is shown in a later example. The return type of these methods is `Result<TResult, Exception>` where `TResult` is the type that the operation returns. Since there are already a lot of useful methods available on `Result`, it makes working with basic `Try/Catch` work simpler. CSharp.Made.Functional does not provide any mechanisms for a `Finally` block and it's recommended to use the standard `Try/Catch/Finally` approach in those cases. Since overly broad Exception catching is not a best practice, it is recommended to use a `Switch Expression` when matching on the `Result` to handle specific exceptions that are expected for this operation.
 
 In the example below, since we think it could throw, we want to use the `Result` type to help us determine if it was `Ok` or an `Error`. We can make decisions in the `Catch` handler as to whether or not we want to return an `Error` or we can also throw if it truly is a catastrophic exception.
 
 Like all of the other methods in this library, there are also async methods which work the same way.
 
 
-```C# title="Program.cs" linenums="1" hl_lines="22 25 44-45"
+```C# title="Program.cs" linenums="1" hl_lines="22-23 35-40"
 using Functional.Common;
 using Functional.Exceptions;
 using Functional.Results;
+
 using static Functional.Common.CommonExtensions;
-using static Functional.Exceptions.TryCatch;
+using static Functional.Exceptions.ExceptionExtensions;
 
 namespace ScratchPad;
 
@@ -987,22 +988,21 @@ public static class Program
             var value => throw new Exception($"Value was {value}")
         };
 
-    public static void Main()
-    {
-        Try(() =>
-            ItMightThrow()
-                .Pipe(Result.Ok<int, CustomError>))
-            .Catch(exception =>
+    public static void Main() => 
+        Try(ItMightThrow)
+            .Match(
+                ok => ok.Pipe(Result.Ok<int, CustomError>),
+                exception =>
                 {
                     // Example logging.
                     Console.WriteLine(exception.Message);
                     exception
                         .InnerExceptionMessage()
                         .Effect(
-                            err => Console.WriteLine(err), 
+                            err => Console.WriteLine(err),
                             () => { /* It was none, don't print anything. */ });
 
-                    return (exception switch 
+                    return (exception switch
                     {
                         ArgumentNullException => "It was null",
                         OperationCanceledException => "It was cancelled",
@@ -1011,25 +1011,21 @@ public static class Program
                     .Pipe(msg => new CustomError(msg))
                     .Pipe(Result.Error<int, CustomError>);
                 })
-            .Finally(() => Console.WriteLine("Something in the Finally block"))
-            .Invoke()
-            .Match(
-                ok => ok.ToString(),
-                err => err)
+            .Match(ok => ok.ToString(), err => err.Message)
             .Tap(Console.WriteLine)
             .Ignore();
-    }
 }
 ```
 
 `Try` can also be used as an extension method in order to add a `Try/Catch` handler to the end of a function that isn't expected to throw.
 
-```C# title="Program.cs" linenums="1" hl_lines="26 29 48-49"
+```C# title="Program.cs" linenums="1" hl_lines="26 39-44"
 using Functional.Common;
 using Functional.Exceptions;
 using Functional.Results;
+
 using static Functional.Common.CommonExtensions;
-using static Functional.Exceptions.TryCatch;
+using static Functional.Exceptions.ExceptionExtensions;
 
 namespace ScratchPad;
 
@@ -1047,23 +1043,22 @@ public static class Program
             var value => throw new Exception($"Value was {value}")
         };
 
-    public static void Main()
-    {
+    public static void Main() =>
         ItNeverThrows()
-            .Try(value => 
-                ItMightThrow(value)
-                    .Pipe(Result.Ok<int, CustomError>))
-            .Catch(exception =>
+            .Try(ItMightThrow)
+            .Match(
+                ok => ok.Pipe(Result.Ok<int, CustomError>),
+                exception =>
                 {
                     // Example logging.
                     Console.WriteLine(exception.Message);
                     exception
                         .InnerExceptionMessage()
                         .Effect(
-                            err => Console.WriteLine(err), 
+                            err => Console.WriteLine(err),
                             () => { /* It was none, don't print anything. */ });
 
-                    return (exception switch 
+                    return (exception switch
                     {
                         ArgumentNullException => "It was null",
                         OperationCanceledException => "It was cancelled",
@@ -1072,14 +1067,11 @@ public static class Program
                     .Pipe(msg => new CustomError(msg))
                     .Pipe(Result.Error<int, CustomError>);
                 })
-            .Finally(() => Console.WriteLine("Something in the Finally block"))
-            .Invoke()
             .Match(
                 ok => ok.ToString(),
-                err => err)
+                err => err.Message)
             .Tap(Console.WriteLine)
             .Ignore();
-    }
 }
 ```
 

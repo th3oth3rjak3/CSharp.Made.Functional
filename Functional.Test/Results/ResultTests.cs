@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using Functional.Common;
+using Functional.Options;
 using Functional.Results;
 
 using static Functional.Results.ResultExtensions;
@@ -346,6 +347,36 @@ public class ResultTests
 
         successEffect.ShouldBeFalse();
         failureEffect.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldDoEffectsAsyncWhenOk()
+    {
+        var msg = "";
+
+        await "123"
+            .Pipe(Result.Ok<string, Exception>)
+            .AsAsync()
+            .EffectAsync(
+                ok => msg = ok,
+                exn => msg = "Exception");
+
+        msg.ShouldBe("123");
+    }
+
+    [TestMethod]
+    public async Task ItShouldDoEffectsAsyncWhenError()
+    {
+        var msg = "";
+
+        await new Exception("Error")
+            .Pipe(Result.Error<string, Exception>)
+            .AsAsync()
+            .EffectAsync(
+                ok => msg = ok,
+                exn => msg = exn.Message);
+
+        msg.ShouldBe("Error");
     }
 }
 

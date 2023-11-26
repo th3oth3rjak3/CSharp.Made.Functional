@@ -424,4 +424,32 @@ public class OptionTests
             .UnwrapAsync()
             .TapAsync(value => value.ShouldBe(0));
 
+    [TestMethod]
+    public async Task ItShouldDoEffectsAsyncWhenSome()
+    {
+        var msg = "";
+
+        await "123"
+            .Some()
+            .AsAsync()
+            .EffectAsync(
+                some => msg = some,
+                () => msg = "None");
+
+        msg.ShouldBe("123");
+    }
+
+    [TestMethod]
+    public async Task ItShouldDoEffectsAsyncWhenNone()
+    {
+        var msg = "";
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectAsync(
+                some => msg = some,
+                () => msg = "None");
+
+        msg.ShouldBe("None");
+    }
 }
