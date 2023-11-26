@@ -28,7 +28,6 @@ global using Functional.Unions;
 global using Functional.Common;
 
 // For exception handling extensions:
-global using static Functional.Exceptions.TryCatch;
 global using static Functional.Exceptions.ExceptionExtensions;
 
 // For static methods like Cons:
