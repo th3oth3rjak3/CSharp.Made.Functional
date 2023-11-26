@@ -6,295 +6,291 @@
 public static class ResultExtensions
 {
     /// <summary>
-    /// Match the result to a success or failure and perform some function on either case.
+    /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
-    /// <typeparam name="TInput">The result input type.</typeparam>
-    /// <typeparam name="TResult">The output type.</typeparam>
-    /// <typeparam name="TError">The type of the expected error.</typeparam>
+    /// <typeparam name="Ok">The result input type.</typeparam>
+    /// <typeparam name="Output">The output type.</typeparam>
+    /// <typeparam name="Error">The type of the expected error.</typeparam>
     /// <param name="result">The previous result.</param>
-    /// <param name="onSuccess">Perform some function on the success result.</param>
-    /// <param name="onFailure">Perform some function on the failure result.</param>
-    /// <returns>The result of executing the onSuccess or onFailure function.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any other class 
-    /// pretends to be a result.</exception>
-    public static async Task<TResult> MatchAsync<TInput, TResult, TError>(
-        this Task<Result<TInput, TError>> result,
-        Func<TInput, TResult> onSuccess,
-        Func<TError, TResult> onFailure) =>
+    /// <param name="whenOk">Perform some function on the Ok result.</param>
+    /// <param name="whenError">Perform some function on the Error result.</param>
+    /// <returns>The result of executing the whenOk or whenError function.</returns>
+    public static async Task<Output> MatchAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Output> whenOk,
+        Func<Error, Output> whenError) =>
             (await result)
-                .Match(onSuccess, onFailure);
+                .Match(whenOk, whenError);
 
     /// <summary>
-    /// Match the result to a success or failure and perform some function on either case.
+    /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
-    /// <typeparam name="TInput">The result input type.</typeparam>
-    /// <typeparam name="TResult">The output type.</typeparam>
-    /// <typeparam name="TError">The error type of the initial result.</typeparam>
+    /// <typeparam name="Ok">The result input type.</typeparam>
+    /// <typeparam name="Output">The output type.</typeparam>
+    /// <typeparam name="Error">The error type of the initial result.</typeparam>
     /// <param name="result">The previous result.</param>
-    /// <param name="onSuccess">Perform some function on the success result.</param>
-    /// <param name="onFailure">Perform some function on the failure result.</param>
-    /// <returns>The result of executing the onSuccess or onFailure function.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any other class 
-    /// pretends to be a result.</exception>
-    public static async Task<TResult> MatchAsync<TInput, TResult, TError>(
-        this Task<Result<TInput, TError>> result,
-        Func<TInput, Task<TResult>> onSuccess,
-        Func<TError, Task<TResult>> onFailure) =>
+    /// <param name="whenOk">Perform some function on the Ok result.</param>
+    /// <param name="whenError">Perform some function on the Error result.</param>
+    /// <returns>The result of executing the whenOk or whenError function.</returns>
+    public static async Task<Output> MatchAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task<Output>> whenOk,
+        Func<Error, Task<Output>> whenError) =>
             await (await result)
                 .Match(
-                    onSuccess,
-                    onFailure);
+                    whenOk,
+                    whenError);
 
     /// <summary>
-    /// When the result is a success, return its contents, otherwise return an alternate value.
+    /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// </summary>
-    /// <typeparam name="TSuccess">The type of the input.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
     /// <param name="inputResult">The result to unpack.</param>
     /// <param name="alternate">An alternate value.</param>
     /// <returns>When success, the contents, otherwise the alternate.</returns>
-    public static TSuccess Reduce<TSuccess, TError>(
-        this Result<TSuccess, TError> inputResult,
-        TSuccess alternate) =>
+    public static Ok Reduce<Ok, Error>(
+        this Result<Ok, Error> inputResult,
+        Ok alternate) =>
         inputResult
             .Match(
-                success => success,
-                failure => alternate);
+                ok => ok,
+                _ => alternate);
 
     /// <summary>
-    /// When the result is a success, return its contents, 
-    /// otherwise execute the function to produce an alternate value.
+    /// When the result is Ok, return its contents, 
+    /// otherwise execute the function to produce an alternate value discarding the error.
     /// This method is good for when the alternate function might be 
     /// computationally expensive.
     /// </summary>
-    /// <typeparam name="TSuccess">The input type.</typeparam>
-    /// <typeparam name="TError">The error type.</typeparam>
+    /// <typeparam name="Ok">The input type.</typeparam>
+    /// <typeparam name="Error">The error type.</typeparam>
     /// <param name="inputResult">The result to unpack.</param>
     /// <param name="alternate">A function that takes no inputs, but produces an
     /// alternate value.</param>
-    /// <returns>When success, the contents, otherwise the return value of
+    /// <returns>When Ok, the contents, otherwise the return value of
     /// the alternate function.</returns>
-    public static TSuccess Reduce<TSuccess, TError>(
-        this Result<TSuccess, TError> inputResult,
-        Func<TSuccess> alternate) =>
+    public static Ok Reduce<Ok, Error>(
+        this Result<Ok, Error> inputResult,
+        Func<Ok> alternate) =>
         inputResult
             .Match(
-                success => success,
-                failure => alternate());
+                ok => ok,
+                _ => alternate());
 
     /// <summary>
-    /// When the result is a success, return its contents, 
-    /// otherwise execute the function to produce an alternate value.
+    /// When the result is Ok, return its contents, 
+    /// otherwise execute the function to produce an alternate value using the error.
     /// </summary>
-    /// <typeparam name="TSuccess">The input type.</typeparam>
-    /// <typeparam name="TError">The error type.</typeparam>
+    /// <typeparam name="Ok">The input type.</typeparam>
+    /// <typeparam name="Error">The error type.</typeparam>
     /// <param name="inputResult">The result to unpack.</param>
-    /// <param name="alternate">A function which uses a failure 
+    /// <param name="alternate">A function which uses an Error 
     /// result to return an alternate.</param>
-    /// <returns>When success, the contents, otherwise the return
+    /// <returns>When Ok, the contents, otherwise the return
     /// value of the alternate.</returns>
-    public static TSuccess Reduce<TSuccess, TError>(
-        this Result<TSuccess, TError> inputResult,
-        Func<TError, TSuccess> alternate) =>
+    public static Ok Reduce<Ok, Error>(
+        this Result<Ok, Error> inputResult,
+        Func<Error, Ok> alternate) =>
         inputResult
             .Match(
-                success => success,
-                failure => alternate(failure));
+                ok => ok,
+                error => alternate(error));
 
     /// <summary>
-    /// When the result is a success, return its contents, otherwise return an alternate value.
+    /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// </summary>
-    /// <typeparam name="TSuccess">The input type.</typeparam>
-    /// <typeparam name="TError">The error type.</typeparam>
+    /// <typeparam name="Ok">The input type.</typeparam>
+    /// <typeparam name="Error">The error type.</typeparam>
     /// <param name="input">The result to unpack.</param>
     /// <param name="alternate">An alternate value.</param>
     /// <returns>When success, the contents, otherwise the alternate.</returns>
-    public static async Task<TSuccess> ReduceAsync<TSuccess, TError>(
-        this Task<Result<TSuccess, TError>> input,
-        TSuccess alternate) =>
+    public static async Task<Ok> ReduceAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> input,
+        Ok alternate) =>
             await (await input)
                 .Match(
-                    success => success,
-                    failure => alternate)
+                    ok => ok,
+                    _ => alternate)
                 .AsAsync();
 
     /// <summary>
-    /// When the result is a success, return its contents, 
+    /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value.
     /// </summary>
-    /// <typeparam name="TSuccess">The input type.</typeparam>
-    /// <typeparam name="TError">The error type.</typeparam>
+    /// <typeparam name="Ok">The input type.</typeparam>
+    /// <typeparam name="Error">The error type.</typeparam>
     /// <param name="input">The result to unpack.</param>
-    /// <param name="alternate">A function which uses a failure 
+    /// <param name="alternate">A function which uses an Error 
     /// result to return an alternate.</param>
-    /// <returns>When success, the contents, otherwise the return
+    /// <returns>When Ok, the contents, otherwise the return
     /// value of the alternate.</returns>
-    public static async Task<TSuccess> ReduceAsync<TSuccess, TError>(
-        this Task<Result<TSuccess, TError>> input,
-        Func<TError, TSuccess> alternate) =>
+    public static async Task<Ok> ReduceAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> input,
+        Func<Error, Ok> alternate) =>
             await (await input)
                 .Match(
-                    success => success,
-                    failure => alternate(failure))
+                    ok => ok,
+                    error => alternate(error))
                 .AsAsync();
 
     /// <summary>
-    /// When the result is a success, return its contents, 
-    /// otherwise execute the function to produce an alternate value.
+    /// When the result is Ok, return its contents, 
+    /// otherwise execute the function to produce an alternate value by discarding the error.
     /// This method is good for when the alternate function might be 
     /// computationally expensive.
     /// </summary>
-    /// <typeparam name="TSuccess">The input type.</typeparam>
-    /// <typeparam name="TError">The error type.</typeparam>
+    /// <typeparam name="Ok">The input type.</typeparam>
+    /// <typeparam name="Error">The error type.</typeparam>
     /// <param name="input">The result to unpack.</param>
     /// <param name="alternate">A function that takes no inputs, but produces an
     /// alternate value.</param>
-    /// <returns>When success, the contents, otherwise the return value of
+    /// <returns>When Ok, the contents, otherwise the return value of
     /// the alternate function.</returns>
-    public static async Task<TSuccess> ReduceAsync<TSuccess, TError>(
-        this Task<Result<TSuccess, TError>> input,
-        Func<TSuccess> alternate) =>
+    public static async Task<Ok> ReduceAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> input,
+        Func<Ok> alternate) =>
             await (await input)
                 .Match(
-                    success => success,
-                    failure => alternate())
+                    ok => ok,
+                    _ => alternate())
                 .AsAsync();
 
     /// <summary>
-    /// Perform work on a previous result. When the result is successful, 
-    /// perform work on the result by providing an onSuccess function.
+    /// Perform work on a previous result. When the result is Ok, 
+    /// perform work on the result by providing a function.
     /// On failure, the previous failure will be returned as the new result type.
     /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <typeparam name="TSuccess">The type of the result after performing 
-    /// the onSuccess function.</typeparam>
-    /// <typeparam name="TError">The type of the error that may result from the binding operation.</typeparam>
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Output">The type of the result after performing 
+    /// the binding function.</typeparam>
+    /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
     /// <param name="result">The previous result to bind.</param>
     /// <param name="binder">The function to perform when the 
-    /// previous result is a SuccessResult.</param>
+    /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public static Result<TSuccess, TError> Bind<TInput, TSuccess, TError>(
-        this Result<TInput, TError> result,
-        Func<TInput, Result<TSuccess, TError>> binder) =>
+    public static Result<Output, Error> Bind<Ok, Output, Error>(
+        this Result<Ok, Error> result,
+        Func<Ok, Result<Output, Error>> binder) =>
             result
-                .Map(success => binder(success))
-                .Reduce(Result.Failure<TSuccess, TError>);
+                .Map(ok => binder(ok))
+                .Reduce(Result.Error<Output, Error>);
 
     /// <summary>
-    /// Perform work on a previous result. When the result is successful, 
-    /// perform work on the result by providing an onSuccess function.
-    /// On failure, the previous failure will be returned as the new result type.
+    /// Perform work on a previous result. When the result is Ok, 
+    /// perform work on the result by providing a binding function.
+    /// On Error, the previous result will be returned as the new result type.
     /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <typeparam name="TSuccess">The type of the result after performing 
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Output">The type of the result after performing 
     /// the onSuccess function.</typeparam>
-    /// <typeparam name="TError">The type of the error that may result from the binding operation.</typeparam>
+    /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
     /// <param name="result">The previous result to bind.</param>
     /// <param name="binder">The function to perform when the 
-    /// previous result is a SuccessResult.</param>
+    /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public static async Task<Result<TSuccess, TError>> BindAsync<TInput, TSuccess, TError>(
-        this Task<Result<TInput, TError>> result,
-        Func<TInput, Result<TSuccess, TError>> binder) =>
+    public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Result<Output, Error>> binder) =>
             await result
                 .MapAsync(binder)
-                .ReduceAsync(Result.Failure<TSuccess, TError>);
+                .ReduceAsync(Result.Error<Output, Error>);
 
     /// <summary>
-    /// Perform work on a previous result. When the result is successful, 
-    /// perform work on the result by providing an onSuccess function.
-    /// On failure, the previous failure will be returned as the new result type.
+    /// Perform work on a previous result. When the result is Ok, 
+    /// perform work on the result by providing a binding function.
+    /// On Error, the previous result will be returned as the new result type.
     /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <typeparam name="TSuccess">The type of the result after performing 
-    /// the onSuccess function.</typeparam>
-    /// <typeparam name="TError">The type of the error that may result from the binding operation.</typeparam>
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Output">The type of the result after performing 
+    /// the binding function.</typeparam>
+    /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
     /// <param name="result">The previous result to bind.</param>
     /// <param name="binder">The function to perform when the 
-    /// previous result is a SuccessResult.</param>
+    /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public static async Task<Result<TSuccess, TError>> BindAsync<TInput, TSuccess, TError>(
-        this Task<Result<TInput, TError>> result,
-        Func<TInput, Task<Result<TSuccess, TError>>> binder) =>
+    public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task<Result<Output, Error>>> binder) =>
             await result
                 .MapAsync(binder)
-                .ReduceAsync(Result.Failure<TSuccess, TError>);
+                .ReduceAsync(Result.Error<Output, Error>);
+
+    /// <summary>
+    /// Map an Ok result from a previous operation to a new result.
+    /// </summary>
+    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="Output">The type of the converted input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static Result<Output, Error> Map<Ok, Output, Error>(
+        this Result<Ok, Error> result,
+        Func<Ok, Output> mapper) =>
+            result
+                .Match(
+                    ok => Result.Ok<Output, Error>(mapper(ok)),
+                    error => Result.Error<Output, Error>(error));
 
     /// <summary>
     /// Map a successful result from a previous operation to a new result.
     /// </summary>
-    /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>
-    /// <typeparam name="TSuccess">The type of the converted input.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="Output">The type of the converted input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
     /// <param name="result">The previous result.</param>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static Result<TSuccess, TError> Map<TInput, TSuccess, TError>(
-        this Result<TInput, TError> result,
-        Func<TInput, TSuccess> mapper) =>
-            result
-                .Match(
-                    success => Result.Success<TSuccess, TError>(mapper(success)),
-                    failure => Result.Failure<TSuccess, TError>(failure));
-
-    /// <summary>
-    /// Map a successful result from a previous operation to a new result.
-    /// </summary>
-    /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>
-    /// <typeparam name="TSuccess">The type of the converted input.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
-    /// <param name="result">The previous result.</param>
-    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
-    /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static async Task<Result<TSuccess, TError>> MapAsync<TInput, TSuccess, TError>(
-        this Task<Result<TInput, TError>> result,
-        Func<TInput, TSuccess> mapper) =>
+    public static async Task<Result<Output, Error>> MapAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Output> mapper) =>
             (await result)
                 .Map(mapper);
 
     /// <summary>
-    /// Map a successful result from a previous operation to a new result.
+    /// Map an Ok result from a previous operation to a new result.
     /// </summary>
-    /// <typeparam name="TInput">The type of the contents from the previous result.</typeparam>
-    /// <typeparam name="TSuccess">The type of the converted input.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="Output">The type of the converted input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
     /// <param name="result">The previous result.</param>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static async Task<Result<TSuccess, TError>> MapAsync<TInput, TSuccess, TError>(
-        this Task<Result<TInput, TError>> result,
-        Func<TInput, Task<TSuccess>> mapper) =>
+    public static async Task<Result<Output, Error>> MapAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task<Output>> mapper) =>
             await (await result)
                 .Match(
-                    success => mapper(success).PipeAsync(Result.Success<TSuccess, TError>),
-                    failure => failure.Pipe(Result.Failure<TSuccess, TError>).AsAsync());
+                    ok => mapper(ok).PipeAsync(Result.Ok<Output, Error>),
+                    error => error.Pipe(Result.Error<Output, Error>).AsAsync());
 
     /// <summary>
     /// Bind a List of Results to a Result of List of the inner object.
     /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
     /// <param name="inputs"></param>
     /// <returns>A success result when all inner results are a success. A failure result when one or more failures occurred.</returns>
-    public static Result<List<TInput>, List<TError>> BindAll<TInput, TError>(this List<Result<TInput, TError>> inputs) =>
+    public static Result<List<Ok>, List<Error>> BindAll<Ok, Error>(this List<Result<Ok, Error>> inputs) =>
         new
         {
-            OutputSuccesses = new List<TInput>(),
-            OutputFailures = new List<TError>()
+            OutputSuccesses = new List<Ok>(),
+            OutputFailures = new List<Error>()
         }
             .Pipe(mutableData =>
                 inputs
                     .Select(input =>
                         input
                             .Match(
-                                success =>
+                                ok =>
                                 {
-                                    mutableData.OutputSuccesses.Add(success);
+                                    mutableData.OutputSuccesses.Add(ok);
                                     return true;
                                 },
-                                failure =>
+                                error =>
                                 {
-                                    mutableData.OutputFailures.Add(failure);
+                                    mutableData.OutputFailures.Add(error);
                                     return false;
                                 }))
                     .ToList()
@@ -302,7 +298,18 @@ public static class ResultExtensions
                     .Pipe(wasSuccessful =>
                         wasSuccessful switch
                         {
-                            true => Result.Success<List<TInput>, List<TError>>(mutableData.OutputSuccesses),
-                            false => Result.Failure<List<TInput>, List<TError>>(mutableData.OutputFailures)
+                            true => Result.Ok<List<Ok>, List<Error>>(mutableData.OutputSuccesses),
+                            false => Result.Error<List<Ok>, List<Error>>(mutableData.OutputFailures)
                         }));
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenOk">Perform this action when the value is Ok.</param>
+    /// <param name="whenError">Perform this action when the value is Error.</param>
+    public static async Task EffectAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk, Action<Error> whenError) =>
+        (await result)
+            .Effect(whenOk, whenError);
+
 }

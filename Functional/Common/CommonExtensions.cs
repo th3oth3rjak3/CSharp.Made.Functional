@@ -1,10 +1,10 @@
-﻿namespace Functional.Monadic;
+﻿namespace Functional.Common;
 
 /// <summary>
 /// Extensions to improve the pipelining capability of regular
 /// C# code.
 /// </summary>
-public static class MonadicExtensions
+public static class CommonExtensions
 {
     /// <summary>
     /// Creates an immutable list of elements from inputs of the same type.
@@ -41,7 +41,7 @@ public static class MonadicExtensions
         Task.CompletedTask;
 
     /// <summary>
-    /// Tap into a value to peform a series of actions which could return void.
+    /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
     /// </summary>
     /// <typeparam name="T">The type of the input object.</typeparam>

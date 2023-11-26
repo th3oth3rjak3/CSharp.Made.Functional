@@ -1,5 +1,4 @@
-# CSharp.Made.Functional
-[![codecov](https://codecov.io/gh/th3oth3rjak3/CSharp.Made.Functional/graph/badge.svg?token=5UF3R55ET6)](https://codecov.io/gh/th3oth3rjak3/CSharp.Made.Functional)
+# Getting Started
 
 ## Add CSharp.Made.Functional
 
@@ -37,5 +36,3 @@ global using static Functional.Common.CommonExtensions;
 global using static Functional.Options.OptionExtensions;
 global using static Functional.Results.ResultExtensions;
 ```
-
-For examples and more discussion about this library, <a href="https://th3oth3rjak3.github.io/CSharp.Made.Functional" target="_blank" rel="noopener">Read the Docs</a>.

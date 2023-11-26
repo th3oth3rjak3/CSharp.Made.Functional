@@ -1,13 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
-using static Functional.Monadic.MonadicExtensions;
+using static Functional.Common.CommonExtensions;
 
-namespace Functional.Test.Monadic;
+namespace Functional.Test.Common;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
-public class MonadicExtensionTests
+public class CommonExtensionTests
 {
     /// <summary>
     /// Test what happens when when converting an int to a string.
@@ -76,7 +76,7 @@ public class MonadicExtensionTests
     private static async Task AddAsync<T>(List<T> list, T item)
     {
         await Task.Delay(5000);
-        await list.AsAsync().TapAsync(lst => lst.Add(item));
+        _ = await list.AsAsync().TapAsync(lst => lst.Add(item));
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ public class MonadicExtensionTests
     /// </summary>
     /// <returns>An awaitable task.</returns>
     [TestMethod]
-    public async Task ItShouldFmapAsyncInputWithNonTaskMapping() =>
+    public async Task ItShouldPipeAsyncInputWithNonTaskMapping() =>
         await 1.AsAsync()
             .PipeAsync(num => num.ToString())
             .TapAsync(str => str.ShouldBeEquivalentTo("1"));
@@ -96,7 +96,7 @@ public class MonadicExtensionTests
     /// </summary>
     /// <returns>An awaitable task.</returns>
     [TestMethod]
-    public async Task ItShouldFmapAsyncInputWithTaskMapping() =>
+    public async Task ItShouldPipeAsyncInputWithTaskMapping() =>
         await 1.AsAsync()
             .PipeAsync(num => Task.FromResult(num.ToString()))
             .TapAsync(str => str.ShouldBe("1"));

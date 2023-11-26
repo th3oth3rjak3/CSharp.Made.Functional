@@ -1,8 +1,11 @@
-﻿using Functional.Unions;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Functional.Unions;
 
 namespace Functional.Test.Unions;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class Union4Tests
 {
     [TestMethod]
@@ -113,5 +116,4 @@ public class Union4Tests
         typeThreeEffect.ShouldBeFalse();
         typeFourEffect.ShouldBeTrue();
     }
-
 }

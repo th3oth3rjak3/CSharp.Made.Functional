@@ -1,8 +1,11 @@
-﻿using Functional.Unions;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Functional.Unions;
 
 namespace Functional.Test.Unions;
 
 [TestClass]
+[ExcludeFromCodeCoverage]
 public class Union5Tests
 {
     [TestMethod]
@@ -158,5 +161,4 @@ public class Union5Tests
         typeFiveEffect.ShouldBeTrue();
 
     }
-
 }

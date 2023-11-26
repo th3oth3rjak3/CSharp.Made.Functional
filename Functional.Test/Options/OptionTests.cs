@@ -1,7 +1,7 @@
 ﻿
 using System.Diagnostics.CodeAnalysis;
 
-using Functional.Monadic;
+using Functional.Common;
 using Functional.Options;
 
 namespace Functional.Test.Options;
@@ -23,24 +23,50 @@ public class OptionTests
 
     [TestMethod]
     public void FilterShouldFindSomeWhenTrue() =>
-        "findme".Some()
-            .Filter(value => value == "findme")
+        "find me".Some()
+            .Filter(value => value == "find me")
             .Match(some => some, () => "not found")
-            .ShouldBe("findme");
+            .ShouldBe("find me");
 
     [TestMethod]
     public void FilterShouldNotFindSomeWhenFalse() =>
-        "cantfindme".Some()
-            .Filter(value => value == "findme")
+        "cant find me".Some()
+            .Filter(value => value == "find me")
             .Match(some => some, () => "not found")
             .ShouldBe("not found");
 
     [TestMethod]
     public void FilterShouldNotFindNone() =>
         Option.None<string>()
-            .Filter(value => value == "findme")
+            .Filter(value => value == "find me")
             .Match(value => value, () => "not found")
             .ShouldBe("not found");
+
+    [TestMethod]
+    public async Task FilterShouldFindSomeWhenTrueAsync() =>
+        await "find  me"
+            .Some()
+            .AsAsync()
+            .FilterAsync(value => value == "find  me")
+            .MatchAsync(some => some, () => "not found")
+            .TapAsync(value => value.ShouldBe("find  me"));
+
+    [TestMethod]
+    public async Task FilterShouldNotFindSomeWhenFalseAsync() =>
+        await "cant find me"
+            .Some()
+            .AsAsync()
+            .FilterAsync(value => value == "find me")
+            .MatchAsync(some => some, () => "not found")
+            .TapAsync(value => value.ShouldBe("not found"));
+
+    [TestMethod]
+    public async Task FilterShouldNotFindNoneAsync() =>
+        await Option.None<string>()
+            .AsAsync()
+            .FilterAsync(value => value == "find me")
+            .MatchAsync(value => value, () => "not found")
+            .TapAsync(value => value.ShouldBe("not found"));
 
     [TestMethod]
     public void ReduceShouldUseContentWhenSome() =>
@@ -61,7 +87,7 @@ public class OptionTests
             .ShouldBe("other");
 
     [TestMethod]
-    public void ReduceShouldUseDelagateValueWhenNone() =>
+    public void ReduceShouldUseDelegateValueWhenNone() =>
         Option.None<string>()
             .Reduce(() => "other delegate")
             .ShouldBe("other delegate");
@@ -84,7 +110,7 @@ public class OptionTests
             .TapAsync(str => str.ShouldBe("something else"));
 
     [TestMethod]
-    public async Task ItShouldReduceSomeAsyncWithFuncs() =>
+    public async Task ItShouldReduceSomeAsyncWithFunctions() =>
         await 1
             .Optional()
             .AsAsync()
@@ -93,7 +119,7 @@ public class OptionTests
             .TapAsync(str => str.ShouldBe("1"));
 
     [TestMethod]
-    public async Task ItShouldReduceNoneAsyncWithFuncs() =>
+    public async Task ItShouldReduceNoneAsyncWithFunctions() =>
         await Option.None<int>()
             .AsAsync()
             .MapAsync(val => val.ToString())
@@ -320,7 +346,7 @@ public class OptionTests
             .ShouldBeTrue();
 
     [TestMethod]
-    public void ItShouldntBeNone() =>
+    public void ItShouldNotBeNone() =>
         "some value"
             .Some()
             .IsNone
@@ -333,9 +359,97 @@ public class OptionTests
             .ShouldBeTrue();
 
     [TestMethod]
-    public void ItShouldntBeSome() =>
+    public void ItShouldNotBeSome() =>
         Option.None<string>()
             .IsSome
             .ShouldBeFalse();
 
+    [TestMethod]
+    public void ItShouldDoEffectsWhenSome()
+    {
+        var wasCalled = false;
+        void whenSome(string _) => wasCalled = true;
+        void whenNone() => wasCalled = false;
+
+        _ = "value"
+            .Some()
+            .Tap(someValue => someValue.Effect(whenSome, whenNone));
+
+        wasCalled.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ItShouldDoEffectsWhenNone()
+    {
+        var wasCalled = false;
+        void whenSome(string _) => wasCalled = false;
+        void whenNone() => wasCalled = true;
+
+        Option.None<string>()
+            .Effect(whenSome, whenNone);
+
+        wasCalled.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ItShouldUnwrapSomeValue() =>
+    "some value"
+        .Some()
+        .Unwrap()
+        .ShouldBe("some value");
+
+    [TestMethod]
+    public void ItShouldBeNullWhenUnwrappingNone() =>
+        Option.None<string>()
+            .Unwrap()
+            .ShouldBeNull();
+
+    [TestMethod]
+    public void ItShouldBeDefaultWhenUnwrappingIntegers() =>
+        Option.None<int>()
+            .Unwrap()
+            .ShouldBe(0);
+
+    [TestMethod]
+    public async Task ItShouldBeNullWhenUnwrappingNoneAsync() =>
+        await Option.None<string>()
+            .AsAsync()
+            .UnwrapAsync()
+            .TapAsync(value => value.ShouldBeNull());
+
+    [TestMethod]
+    public async Task ItShouldBeDefaultWhenUnwrappingIntegersAsync() =>
+        await Option.None<int>()
+            .AsAsync()
+            .UnwrapAsync()
+            .TapAsync(value => value.ShouldBe(0));
+
+    [TestMethod]
+    public async Task ItShouldDoEffectsAsyncWhenSome()
+    {
+        var msg = "";
+
+        await "123"
+            .Some()
+            .AsAsync()
+            .EffectAsync(
+                some => msg = some,
+                () => msg = "None");
+
+        msg.ShouldBe("123");
+    }
+
+    [TestMethod]
+    public async Task ItShouldDoEffectsAsyncWhenNone()
+    {
+        var msg = "";
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectAsync(
+                some => msg = some,
+                () => msg = "None");
+
+        msg.ShouldBe("None");
+    }
 }

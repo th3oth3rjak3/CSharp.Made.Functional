@@ -37,7 +37,7 @@ public static class OptionExtensions
     /// <typeparam name="TInput">The input type of the entity.</typeparam>
     /// <typeparam name="TResult">The output type.</typeparam>
     /// <param name="optional">The option to be matched.</param>
-    /// <param name="whenSome">The fucntion to execute when some.</param>
+    /// <param name="whenSome">The function to execute when some.</param>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
     /// <exception cref="InvalidOperationException">Thrown when any other type pretends to be an 
@@ -133,7 +133,18 @@ public static class OptionExtensions
                         true => option,
                         false => Option.None<T>()
                     },
-                () => Option.None<T>());
+                () => option);
+
+    /// <summary>
+    /// Convert a Some into a None when it doesn't match the provided predicate.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="option">The option to filter.</param>
+    /// <param name="predicate">A predicate function to check if the contents of a Some match another value.</param>
+    /// <returns>A new option.</returns>
+    public static async Task<Option<T>> FilterAsync<T>(this Task<Option<T>> option, Func<T, bool> predicate) =>
+        (await option)
+            .Filter(predicate);
 
     /// <summary>
     /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
@@ -325,10 +336,25 @@ public static class OptionExtensions
                 .ReduceAsync(Option.None<TResult>());
 
     /// <summary>
-    /// WARNING: Unwrap will throw an exception if the inner value is None.
-    /// <br /><br />
     /// Unwrap is used to get the inner value of an Option when the Option type
-    /// contains some value. 
+    /// contains some value. If an option is None, it will return the default value.
+    /// <br /><br />
+    /// This means that the value will be null for reference types or the standard default value for 
+    /// primitive types. For example Option.None&lt;int&gt;.Unwrap() will return 0.
+    /// <br /><br />
+    /// In order to use this safely, it is recommended to first
+    /// check to see if the Option contains some value using 
+    /// <see cref="Option&lt;T&gt;.IsSome"/> or <see cref="Option&lt;T&gt;.IsNone"/>.
+    /// </summary>
+    /// <typeparam name="T">The inner type of the option.</typeparam>
+    /// <param name="optional">The option to unwrap.</param>
+    /// <returns>The inner value of the Option.</returns>
+    public static T? Unwrap<T>(this Option<T> optional) =>
+        optional.Reduce(() => default!);
+
+    /// <summary>
+    /// Unwrap is used to get the inner value of an Option when the Option type
+    /// contains some value. If an option is None, it will return null.
     /// <br />
     /// In order to use this safely, it is recommended to first
     /// check to see if the Option contains some value using 
@@ -337,9 +363,17 @@ public static class OptionExtensions
     /// <typeparam name="T">The inner type of the option.</typeparam>
     /// <param name="optional">The option to unwrap.</param>
     /// <returns>The inner value of the Option.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when an unwrapping an Option that is None.</exception>
-    public static T Unwrap<T>(this Option<T> optional) =>
-        optional
-            .Reduce(() =>
-                throw new ArgumentNullException(nameof(optional)));
+    public static async Task<T?> UnwrapAsync<T>(this Task<Option<T>> optional) =>
+        (await optional).Unwrap();
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    public static async Task EffectAsync<T>(this Task<Option<T>> optional, Action<T> doWhenSome, Action doWhenNone) =>
+        (await optional)
+            .Effect(doWhenSome, doWhenNone);
+
 }
