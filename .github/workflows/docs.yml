@@ -2,7 +2,7 @@ name: docs
 on:
   push:
     branches:
-      - Version2 
+      - main
 permissions:
   contents: write
 jobs:
