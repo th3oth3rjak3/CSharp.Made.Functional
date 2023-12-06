@@ -36,9 +36,9 @@ public static class CommonExtensions
     /// intentionally ignored.
     /// </summary>
     /// <typeparam name="T">Any input type.</typeparam>
-    /// <param name="_">This parameter is ignored.</param>
-    public static Task IgnoreAsync<T>(this Task<T> _) =>
-        Task.CompletedTask;
+    /// <param name="toIgnore">This parameter is ignored.</param>
+    public static async Task IgnoreAsync<T>(this Task<T> toIgnore) =>
+        await toIgnore;
 
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
