@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>CSharp.Made.Functional</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <Authors>Jacob Hathaway</Authors>
     <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
     <PackageTags>Functional;Option;Result;Union;Discriminated Union;</PackageTags>
