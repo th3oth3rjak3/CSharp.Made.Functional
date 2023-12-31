@@ -1,4 +1,6 @@
-﻿namespace Functional.Options;
+﻿using System.Net.Mime;
+
+namespace Functional.Options;
 
 /// <summary>
 /// A wrapper class which contains either Some value or no value (None).
@@ -7,19 +9,24 @@
 [ExcludeFromCodeCoverage]
 public sealed record Option<T>
 {
-    private Union<Some<T>, None<T>> Contents { get; init; }
+    private T? Contents { get; }
+    private Union<Some<T>, None<T>> Union { get; }
 
     /// <summary>
     /// Construct a new Option from a Some.
     /// </summary>
     /// <param name="some">A Some object which contains value.</param>
-    public Option(Some<T> some) => Contents = new Union<Some<T>, None<T>>(some);
+    public Option(Some<T> some)
+    {
+        Contents = some.Contents;
+        Union = new Union<Some<T>, None<T>>(some);   
+    }
 
     /// <summary>
     /// Construct a new Option from a None.
     /// </summary>
     /// <param name="none">A None object with no value.</param>
-    public Option(None<T> none) => Contents = new Union<Some<T>, None<T>>(none);
+    public Option(None<T> none) => Union = new Union<Some<T>, None<T>>(none);
 
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
@@ -29,7 +36,7 @@ public sealed record Option<T>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
     public TResult Match<TResult>(Func<T, TResult> whenSome, Func<TResult> whenNone) =>
-        Contents
+        Union
             .Match(
                 some => whenSome(some.Contents),
                 _ => whenNone());
@@ -40,20 +47,35 @@ public sealed record Option<T>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     public void Effect(Action<T> doWhenSome, Action doWhenNone) =>
-        Contents
+        Union
             .Effect(some => doWhenSome(some.Contents), _ => doWhenNone());
 
     /// <summary>
     /// Determine if the option contains some value. True when Some, otherwise false.
     /// </summary>
     public bool IsSome =>
-        Contents.Match(_ => true, _ => false);
+        Union.Match(_ => true, _ => false);
 
     /// <summary>
     /// Determine if the option contains no value. True when None, otherwise false.
     /// </summary>
     public bool IsNone =>
-        Contents.Match(_ => false, _ => true);
+        Union.Match(_ => false, _ => true);
+ 
+    /// <summary>
+    /// Unwrap is used to get the inner value of an Option when the Option type
+    /// contains some value. If an option is None, it will return the default value.
+    /// <br /><br />
+    /// This means that the value will be null for reference types or the standard default value for 
+    /// primitive types. For example Option.None&lt;int&gt;.Unwrap() will return 0.
+    /// <br /><br />
+    /// In order to use this safely, it is recommended to first
+    /// check to see if the Option contains some value using 
+    /// <see cref="Option&lt;T&gt;.IsSome"/> or <see cref="Option&lt;T&gt;.IsNone"/>.
+    /// </summary>
+    /// <returns>The inner value of the Option.</returns>
+    public T? Unwrap() =>
+        Contents;
 }
 
 /// <summary>

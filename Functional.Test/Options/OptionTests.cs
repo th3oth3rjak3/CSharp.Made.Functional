@@ -182,11 +182,11 @@ public class OptionTests
     public async Task ItShouldHandleAsyncSomeOptions() =>
         await AlwaysReturnsNullableString("input")
             .Optional()
-            .TapAsync(result => result.ShouldBeEquivalentTo(Option.Some("input")));
+            .TapAsync(result => result.ShouldBeEquivalentTo("input".Some()));
 
     [TestMethod]
     public async Task ItShouldMapOptionOfTaskOfString() =>
-        await Option.Some("input")
+        await "input".Some()
             .Map(input => input.AsAsync())
             .MapAsync(value => value + "!")
             .ReduceAsync("Oops.")
@@ -451,5 +451,125 @@ public class OptionTests
                 () => msg = "None");
 
         msg.ShouldBe("None");
+    }
+
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenSome()
+    {
+        var taskOfTask =
+            "something"
+                .Optional()
+                .AsAsync()
+                .MatchAsync(
+                    some => some.AsAsync(),
+                    () => "none".AsAsync());
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenNone()
+    {
+        var taskOfTask =
+            Option.None<string>()
+                .AsAsync()
+                .MatchAsync(
+                    some => some.AsAsync(),
+                    () => "none".AsAsync());
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenSome1()
+    {
+        var taskOfTask =
+            "something"
+                .Optional()
+                .AsAsync()
+                .MatchAsync(
+                    some => some.AsAsync(),
+                    () => "none");
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenNone1()
+    {
+        var taskOfTask =
+            Option.None<string>()
+                .AsAsync()
+                .MatchAsync(
+                    some => some.AsAsync(),
+                    () => "none");
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenSome2()
+    {
+        var taskOfTask =
+            "something"
+                .Optional()
+                .AsAsync()
+                .MatchAsync(
+                    some => some,
+                    () => "none".AsAsync());
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenNone2()
+    {
+        var taskOfTask =
+            Option.None<string>()
+                .AsAsync()
+                .MatchAsync(
+                    some => some,
+                    () => "none".AsAsync());
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenSome3()
+    {
+        var taskOfTask =
+            "something"
+                .Optional()
+                .AsAsync()
+                .MatchAsync(
+                    some => some,
+                    () => "none");
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+    
+    [TestMethod]
+    public async Task ItShouldNotReturnTaskOfTaskWhenNone3()
+    {
+        var taskOfTask =
+            Option.None<string>()
+                .AsAsync()
+                .MatchAsync(
+                    some => some,
+                    () => "none");
+
+        (await taskOfTask).ShouldBeOfType<string>();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleValueTasks()
+    {
+        var option = 
+            ValueTask
+                .FromResult(1)
+                .Optional();
+        
+        (await option)
+                .ShouldBeOfType<Option<int>>();
     }
 }

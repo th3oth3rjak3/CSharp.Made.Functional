@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-
 using static Functional.Common.CommonExtensions;
 
 namespace Functional.Test.Common;
@@ -24,7 +23,7 @@ public class CommonExtensionTests
     /// </summary>
     [TestMethod]
     public void ItShouldTapResults() =>
-        new TestObject() { Value = 1 }
+        new TestObject { Value = 1 }
             .Tap(objToChange => objToChange.Value = 2)
             .ShouldBeEquivalentTo(new TestObject() { Value = 2 });
 
@@ -108,14 +107,14 @@ public class CommonExtensionTests
             "1",
             "2",
         }
-        .Pipe(strs => ImmutableList<string>.Empty.AddRange(strs))
-        .Tap(strs => Cons("1", "2").ShouldBeEquivalentTo(strs))
+        .Pipe(strings => ImmutableList<string>.Empty.AddRange(strings))
+        .Tap(strings => Cons("1", "2").ShouldBeEquivalentTo(strings))
         .Ignore();
 
     /// <summary>
     /// A test object to mock data mutation behavior.
     /// </summary>
-    internal class TestObject
+    private class TestObject
     {
         internal int Value { get; set; }
 
@@ -132,21 +131,20 @@ public class CommonExtensionTests
     /// A test record to verify behavior mapping with records.
     /// </summary>
     /// <param name="Value">The value to store.</param>
-    internal record TestRecord(int Value);
+    private record TestRecord(int Value);
 
     [TestMethod]
     public async Task ItShouldAllowActionsPassedToTapAsync() =>
-        await new TestObject() { Value = 1 }
+        await new TestObject { Value = 1 }
             .AsAsync()
             .TapAsync(obj => obj.AddOne())
             .TapAsync(obj => obj.Value.ShouldBe(2));
 
     [TestMethod]
     public async Task ItShouldAllowTaskMappersToBePassedToTapAsync() =>
-        await new TestObject() { Value = 1 }
+        await new TestObject { Value = 1 }
             .AsAsync()
             .PipeAsync(obj => obj.AddOneAsync())
-            .TapAsync(obj => Task.FromResult(obj))
+            .TapAsync(Task.FromResult)
             .TapAsync(number => number.ShouldBe(2));
-
 }

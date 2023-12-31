@@ -18,9 +18,13 @@ public static class ResultExtensions
     public static async Task<Output> MatchAsync<Ok, Output, Error>(
         this Task<Result<Ok, Error>> result,
         Func<Ok, Output> whenOk,
-        Func<Error, Output> whenError) =>
-            (await result)
-                .Match(whenOk, whenError);
+        Func<Error, Output> whenError)
+    {
+        var outcome = await result;
+
+        return outcome
+            .Match(whenOk, whenError);
+    }
 
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
@@ -35,12 +39,179 @@ public static class ResultExtensions
     public static async Task<Output> MatchAsync<Ok, Output, Error>(
         this Task<Result<Ok, Error>> result,
         Func<Ok, Task<Output>> whenOk,
-        Func<Error, Task<Output>> whenError) =>
-            await (await result)
-                .Match(
-                    whenOk,
-                    whenError);
+        Func<Error, Task<Output>> whenError)
+    {
+        var outcome = await result;
 
+        if (outcome.IsOk) return await whenOk(outcome.Unwrap()!);
+
+        return await whenError(outcome.UnwrapError()!);
+    }
+    
+    /// <summary>
+    /// Match the result to an Ok or an Error and perform some function on either case.
+    /// </summary>
+    /// <typeparam name="Ok">The result input type.</typeparam>
+    /// <typeparam name="Output">The output type.</typeparam>
+    /// <typeparam name="Error">The error type of the initial result.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="whenOk">Perform some function on the Ok result.</param>
+    /// <param name="whenError">Perform some function on the Error result.</param>
+    /// <returns>The result of executing the whenOk or whenError function.</returns>
+    public static async Task<Output> MatchAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Output> whenOk,
+        Func<Error, Task<Output>> whenError)
+    {
+        var outcome = await result;
+
+        if (outcome.IsOk) return whenOk(outcome.Unwrap()!);
+
+        return await whenError(outcome.UnwrapError()!);
+    }
+    
+    /// <summary>
+    /// Match the result to an Ok or an Error and perform some function on either case.
+    /// </summary>
+    /// <typeparam name="Ok">The result input type.</typeparam>
+    /// <typeparam name="Output">The output type.</typeparam>
+    /// <typeparam name="Error">The error type of the initial result.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="whenOk">Perform some function on the Ok result.</param>
+    /// <param name="whenError">Perform some function on the Error result.</param>
+    /// <returns>The result of executing the whenOk or whenError function.</returns>
+    public static async Task<Output> MatchAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task<Output>> whenOk,
+        Func<Error, Output> whenError)
+    {
+        var outcome = await result;
+
+        if (outcome.IsOk) return await whenOk(outcome.Unwrap()!);
+
+        return whenError(outcome.UnwrapError()!);
+    }
+
+    /// <summary>
+    /// Map an Ok result from a previous operation to a new result.
+    /// </summary>
+    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="Output">The type of the converted input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static Result<Output, Error> Map<Ok, Output, Error>(
+        this Result<Ok, Error> result,
+        Func<Ok, Output> mapper) =>
+            result
+                .Match(
+                    ok => Result.Ok<Output, Error>(mapper(ok)),
+                    Result.Error<Output, Error>);
+
+    /// <summary>
+    /// Map a result with one error type to another.
+    /// </summary>
+    /// <param name="result">The result to map the error of.</param>
+    /// <param name="errorMapper">A function to transform one error to another.</param>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <typeparam name="Error">The type of the old error.</typeparam>
+    /// <typeparam name="NewError">The type for the new error.</typeparam>
+    /// <returns>A result with a mapped error.</returns>
+    public static Result<Ok, NewError> MapError<Ok, Error, NewError>(
+        this Result<Ok, Error> result,
+        Func<Error, NewError> errorMapper) =>
+        result
+            .Match(
+                Result.Ok<Ok, NewError>,
+                error => 
+                    errorMapper(error)
+                        .Pipe(Result.Error<Ok, NewError>));
+
+    /// <summary>
+    /// Map a successful result from a previous operation to a new result.
+    /// </summary>
+    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="Output">The type of the converted input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static async Task<Result<Output, Error>> MapAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Output> mapper)
+    {
+        var outcome = await result;
+
+        return outcome.Map(mapper);
+    }
+
+    /// <summary>
+    /// Map an Ok result from a previous operation to a new result.
+    /// </summary>
+    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
+    /// <typeparam name="Output">The type of the converted input.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
+    /// <param name="result">The previous result.</param>
+    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
+    /// <returns>A new result after the mapping operation has taken place.</returns>
+    public static async Task<Result<Output, Error>> MapAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task<Output>> mapper)
+    {
+        var outcome = await result;
+
+        if (outcome.IsOk)
+        {
+            var mapped = await mapper(outcome.Unwrap()!);
+            return mapped.Ok<Output, Error>();
+        }
+
+        var err = outcome.UnwrapError()!;
+        return err.Error<Output, Error>();
+    }
+
+
+    /// <summary>
+    /// Map a result with one error type to another.
+    /// </summary>
+    /// <param name="result">The result to map the error of.</param>
+    /// <param name="errorMapper">A function to transform one error to another.</param>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <typeparam name="Error">The type of the old error.</typeparam>
+    /// <typeparam name="NewError">The type for the new error.</typeparam>
+    /// <returns>A result with a mapped error.</returns>
+    public static async Task<Result<Ok, NewError>> MapErrorAsync<Ok, Error, NewError>(
+        this Task<Result<Ok, Error>> result,
+        Func<Error, NewError> errorMapper)
+    {
+        var outcome = await result;
+        return outcome.MapError(errorMapper);
+    }
+    
+    
+    /// <summary>
+    /// Map a result with one error type to another.
+    /// </summary>
+    /// <param name="result">The result to map the error of.</param>
+    /// <param name="errorMapper">A function to transform one error to another.</param>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <typeparam name="Error">The type of the old error.</typeparam>
+    /// <typeparam name="NewError">The type for the new error.</typeparam>
+    /// <returns>A result with a mapped error.</returns>
+    public static async Task<Result<Ok, NewError>> MapErrorAsync<Ok, Error, NewError>(
+        this Task<Result<Ok, Error>> result,
+        Func<Error, Task<NewError>> errorMapper)
+    {
+        var outcome = await result;
+        
+        if (outcome.IsOk) return outcome.Unwrap()!.Ok<Ok, NewError>();
+
+        var err = outcome.UnwrapError()!;
+        var mapped = await errorMapper(err);
+        return mapped.Error<Ok, NewError>();
+    }
+    
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// </summary>
@@ -95,7 +266,7 @@ public static class ResultExtensions
         inputResult
             .Match(
                 ok => ok,
-                error => alternate(error));
+                alternate);
 
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
@@ -131,7 +302,7 @@ public static class ResultExtensions
             await (await input)
                 .Match(
                     ok => ok,
-                    error => alternate(error))
+                    alternate)
                 .AsAsync();
 
     /// <summary>
@@ -171,10 +342,14 @@ public static class ResultExtensions
     /// <returns>The result of the bind operation.</returns>
     public static Result<Output, Error> Bind<Ok, Output, Error>(
         this Result<Ok, Error> result,
-        Func<Ok, Result<Output, Error>> binder) =>
-            result
-                .Map(ok => binder(ok))
-                .Reduce(Result.Error<Output, Error>);
+        Func<Ok, Result<Output, Error>> binder)
+    {
+        if (result.IsError) return result.UnwrapError()!.Error<Output, Error>();
+
+        var contents = result.Unwrap()!;
+
+        return binder(contents);
+    }
 
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
@@ -191,10 +366,16 @@ public static class ResultExtensions
     /// <returns>The result of the bind operation.</returns>
     public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
         this Task<Result<Ok, Error>> result,
-        Func<Ok, Result<Output, Error>> binder) =>
-            await result
-                .MapAsync(binder)
-                .ReduceAsync(Result.Error<Output, Error>);
+        Func<Ok, Result<Output, Error>> binder)
+    {
+        var awaited = await result;
+        
+        if (awaited.IsError) return awaited.UnwrapError()!.Error<Output, Error>();
+
+        var contents = awaited.Unwrap()!;
+
+        return binder(contents);
+    }
 
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
@@ -211,60 +392,17 @@ public static class ResultExtensions
     /// <returns>The result of the bind operation.</returns>
     public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
         this Task<Result<Ok, Error>> result,
-        Func<Ok, Task<Result<Output, Error>>> binder) =>
-            await result
-                .MapAsync(binder)
-                .ReduceAsync(Result.Error<Output, Error>);
+        Func<Ok, Task<Result<Output, Error>>> binder)     
+    {
+        var awaited = await result;
+        
+        if (awaited.IsError) return awaited.UnwrapError()!.Error<Output, Error>();
 
-    /// <summary>
-    /// Map an Ok result from a previous operation to a new result.
-    /// </summary>
-    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
-    /// <typeparam name="Output">The type of the converted input.</typeparam>
-    /// <typeparam name="Error">The type of the error.</typeparam>
-    /// <param name="result">The previous result.</param>
-    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
-    /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static Result<Output, Error> Map<Ok, Output, Error>(
-        this Result<Ok, Error> result,
-        Func<Ok, Output> mapper) =>
-            result
-                .Match(
-                    ok => Result.Ok<Output, Error>(mapper(ok)),
-                    error => Result.Error<Output, Error>(error));
+        var contents = awaited.Unwrap()!;
 
-    /// <summary>
-    /// Map a successful result from a previous operation to a new result.
-    /// </summary>
-    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
-    /// <typeparam name="Output">The type of the converted input.</typeparam>
-    /// <typeparam name="Error">The type of the error.</typeparam>
-    /// <param name="result">The previous result.</param>
-    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
-    /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static async Task<Result<Output, Error>> MapAsync<Ok, Output, Error>(
-        this Task<Result<Ok, Error>> result,
-        Func<Ok, Output> mapper) =>
-            (await result)
-                .Map(mapper);
-
-    /// <summary>
-    /// Map an Ok result from a previous operation to a new result.
-    /// </summary>
-    /// <typeparam name="Ok">The type of the contents from the previous result.</typeparam>
-    /// <typeparam name="Output">The type of the converted input.</typeparam>
-    /// <typeparam name="Error">The type of the error.</typeparam>
-    /// <param name="result">The previous result.</param>
-    /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
-    /// <returns>A new result after the mapping operation has taken place.</returns>
-    public static async Task<Result<Output, Error>> MapAsync<Ok, Output, Error>(
-        this Task<Result<Ok, Error>> result,
-        Func<Ok, Task<Output>> mapper) =>
-            await (await result)
-                .Match(
-                    ok => mapper(ok).PipeAsync(Result.Ok<Output, Error>),
-                    error => error.Pipe(Result.Error<Output, Error>).AsAsync());
-
+        return await binder(contents);
+    }
+    
     /// <summary>
     /// Bind a List of Results to a Result of List of the inner object.
     /// </summary>
@@ -298,8 +436,8 @@ public static class ResultExtensions
                     .Pipe(wasSuccessful =>
                         wasSuccessful switch
                         {
-                            true => Result.Ok<List<Ok>, List<Error>>(mutableData.OutputSuccesses),
-                            false => Result.Error<List<Ok>, List<Error>>(mutableData.OutputFailures)
+                            true => mutableData.OutputSuccesses.Ok<List<Ok>, List<Error>>(),
+                            false => mutableData.OutputFailures.Error<List<Ok>, List<Error>>()
                         }));
 
     /// <summary>
