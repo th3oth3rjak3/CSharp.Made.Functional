@@ -1,12 +1,8 @@
-﻿
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using Functional.Common;
-using Functional.Options;
 using Functional.Results;
-
-using static Functional.Results.ResultExtensions;
 
 namespace Functional.Test.Results;
 
@@ -20,12 +16,12 @@ public class ResultTests
             .Empty
             .Add("zero")
             .Add("one")
-            .Pipe(strs =>
-                Result
-                    .Error<string, ImmutableList<string>>(strs)
+            .Pipe(strings =>
+                strings
+                    .Error<string, ImmutableList<string>>()
                     .Tap(
                         res => res.Match(
-                            success => throw new ShouldAssertException("It should fail."),
+                            _ => throw new ShouldAssertException("It should fail."),
                             failure => failure.Tap(
                                 f => f.Count.ShouldBe(2),
                                 f => f.ElementAt(0).ShouldBe("zero"),
@@ -51,22 +47,22 @@ public class ResultTests
 
     [TestMethod]
     public void ItShouldReduceFailures() =>
-        Result
-            .Error<string, string>("failure message")
+        "failure message"
+            .Error<string, string>()
             .Reduce("another message")
             .ShouldBe("another message");
 
     [TestMethod]
     public void ItShouldReduceFailuresWithFunctions() =>
-        Result
-            .Error<string, string>("failure message")
+        "failure message"
+            .Error<string, string>()
             .Reduce(() => "something else")
             .ShouldBe("something else");
 
     [TestMethod]
     public void ItShouldReduceFailuresWithFunctionsAndFailureResults() =>
-        Result
-            .Error<string, string>("failure message")
+        "failure message"
+            .Error<string, string>()
             .Reduce(failure => failure)
             .ShouldBe("failure message");
 
@@ -84,7 +80,7 @@ public class ResultTests
             .PipeAsync(res => res.Ok<string, string>())
             .ReduceAsync(() => "alternate")
             .TapAsync(
-                Result => Result.ShouldBe("success"));
+                result => result.ShouldBe("success"));
 
     [TestMethod]
     public Task ItShouldReduceSuccessWithFunctionsAsyncFailure() =>
@@ -92,12 +88,12 @@ public class ResultTests
         .PipeAsync(res => res.Ok<string, string>())
         .ReduceAsync(_ => "alternate")
         .TapAsync(
-            Result => Result.ShouldBe("success"));
+            result => result.ShouldBe("success"));
 
     [TestMethod]
     public Task ItShouldReduceFailuresAsync() =>
     Task.FromResult("success")
-        .PipeAsync(res => Result.Error<string, string>("failure message"))
+        .PipeAsync(_ => "failure message".Error<string, string>())
         .ReduceAsync("alternate")
         .TapAsync(
             result => result.ShouldBe("alternate"));
@@ -105,18 +101,18 @@ public class ResultTests
     [TestMethod]
     public Task ItShouldReduceFailuresWithFunctionsAsync() =>
         Task.FromResult("success")
-            .PipeAsync(res => Result.Error<string, string>("failure message"))
+            .PipeAsync(_ => "failure message".Error<string, string>())
             .ReduceAsync(() => "alternate")
             .TapAsync(
-                Result => Result.ShouldBe("alternate"));
+                result => result.ShouldBe("alternate"));
 
     [TestMethod]
     public Task ItShouldReduceFailuresWithFunctionsAsyncFailure() =>
     Task.FromResult("success")
-        .PipeAsync(res => Result.Error<string, string>("failure message"))
+        .PipeAsync(_ => "failure message".Error<string, string>())
         .ReduceAsync(failure => failure)
         .TapAsync(
-            Result => Result.ShouldBe("failure message"));
+            result => result.ShouldBe("failure message"));
 
     [TestMethod]
     public void ItShouldBindSuccessesToSuccesses() =>
@@ -127,106 +123,138 @@ public class ResultTests
     [TestMethod]
     public void ItShouldBindSuccessesToFailures() =>
         1.Ok<int, string>()
-            .Bind(_ => Result.Error<string, string>("oh no"))
+            .Bind(_ => "oh no".Error<string, string>())
             .ShouldBeOfType(typeof(Result<string, string>));
 
     [TestMethod]
     public void ItShouldBindFailuresWithSuccessesToFailures() =>
-        Result
-            .Error<string, string>("oh no")
+        "oh no"
+            .Error<string, string>()
             .Bind(never => never.Ok<string, string>())
             .Match(
-                success => throw new ShouldAssertException("Shouldn't succeed"),
+                _ => throw new ShouldAssertException("Shouldn't succeed"),
                 failure => failure.Tap(f => f.ShouldBe("oh no")));
 
     [TestMethod]
     public void ItShouldBindFailuresWithFailuresToFailures() =>
-        Result
-            .Error<string, string>("oh no")
-            .Bind(_ => Result.Error<int, string>("Some other failure."))
+        "oh no"
+            .Error<string, string>()
+            .Bind(_ => "Some other failure.".Error<int, string>())
             .Match(
-                success => throw new ShouldAssertException("Shouldn't succeed"),
+                _ => throw new ShouldAssertException("Shouldn't succeed"),
                 failure => failure.Tap(f => f.ShouldBe("oh no")));
 
     [TestMethod]
     public async Task ItShouldBindAsync() =>
-        await Result
-            .Ok<string, string>("yay")
+        await "yay"
+            .Ok<string, string>()
             .AsAsync()
             .BindAsync(res => res.Ok<string, string>())
             .TapAsync(res =>
                 res.Match(
                     success => success.Tap(s => s.ShouldBe("yay")),
-                    failure => throw new ShouldAssertException("Shouldn't have failed")));
+                    _ => throw new ShouldAssertException("Shouldn't have failed")));
 
     [TestMethod]
     public async Task ItShouldBindAsyncWithFailure() =>
-    await Result
-        .Error<string, string>("failure message")
+    await "failure message"
+        .Error<string, string>()
         .AsAsync()
         .BindAsync(res => res.Ok<string, string>())
         .TapAsync(res =>
             res.Match(
-                success => throw new ShouldAssertException("Shouldn't have passed"),
+                _ => throw new ShouldAssertException("Shouldn't have passed"),
                 failure => res.Tap(_ => failure.ShouldBe("failure message"))));
 
     [TestMethod]
     public async Task ItShouldBind() =>
-        await Result
-            .Ok<string, string>("yay")
+        await "yay"
+            .Ok<string, string>()
             .AsAsync()
             .BindAsync(res => res.Ok<string, string>().AsAsync())
             .TapAsync(res =>
                 res.Match(
                     success => success.Tap(s => s.ShouldBe("yay")),
-                    failure => throw new ShouldAssertException("Shouldn't have failed")));
+                    _ => throw new ShouldAssertException("Shouldn't have failed")));
 
     [TestMethod]
     public async Task ItShouldBindFailures() =>
-        await Result
-            .Error<string, string>("failure message")
+        await "failure message"
+            .Error<string, string>()
             .AsAsync()
             .BindAsync(res => res.Ok<string, string>().AsAsync())
             .TapAsync(res =>
                 res.Match(
-                    success => throw new ShouldAssertException("Shouldn't have passed"),
+                    _ => throw new ShouldAssertException("Shouldn't have passed"),
                     failure => res.Tap(_ => failure.ShouldBe("failure message"))));
 
     [TestMethod]
     public void ItShouldMapSuccessResults() =>
-        Result.Ok<int, string>(1)
+        1.Ok<int, string>()
             .Map(one => one.ToString())
-            .ShouldBeEquivalentTo(Result.Ok<string, string>("1"));
+            .ShouldBeEquivalentTo("1".Ok<string, string>());
 
     [TestMethod]
     public void ItShouldNotMapFailureResults() =>
-        Result.Error<int, string>("error")
+        "error".Error<int, string>()
             .Map(one => one.ToString())
             .Match(
-                success => throw new ShouldAssertException("It should have been a failure."),
+                _ => throw new ShouldAssertException("It should have been a failure."),
                 failure => failure.Tap(f => f.ShouldBe("error")))
             .Ignore();
 
     [TestMethod]
     public async Task ItShouldMapSuccessResultsAsync() =>
-        await Result.Ok<int, string>(1)
+        await 1.Ok<int, string>()
             .AsAsync()
             .MapAsync(one => one.ToString())
-            .TapAsync(res => res.ShouldBeEquivalentTo(Result.Ok<string, string>("1")));
+            .TapAsync(res => res.ShouldBeEquivalentTo("1".Ok<string, string>()));
 
     [TestMethod]
     public async Task ItShouldNotMapFailureResultsAsync() =>
-        await Result.Error<int, string>("error")
+        await "error".Error<int, string>()
             .AsAsync()
             .MapAsync(one => one.ToString())
             .TapAsync(res =>
                 res.Match(
-                    success => throw new ShouldAssertException("Shouldn't have passed"),
+                    _ => throw new ShouldAssertException("Shouldn't have passed"),
                     failure => res.Tap(_ => failure.ShouldBe("error"))));
 
     [TestMethod]
+    public async Task ItShouldMapSuccessResultsWithAsyncMapperWhenOk()
+    {
+        var result =
+            100
+                .Ok<int, int>()
+                .AsAsync()
+                .MapAsync(intValue => intValue.ToString().AsAsync());
+
+        var awaited = await result;
+        awaited.ShouldBeOfType<Result<string, int>>();
+        
+        awaited.IsOk.ShouldBeTrue();
+        awaited.Unwrap().ShouldBe("100");
+    }
+
+    [TestMethod]
+    public async Task ItShouldMapSuccessResultsWithAsyncMapperWhenError()
+    {
+        var result =
+            404
+                .Error<int, int>()
+                .AsAsync()
+                .MapAsync(intValue => intValue.ToString().AsAsync());
+
+        var awaited = await result;
+        awaited.ShouldBeOfType<Result<string, int>>();
+        
+        awaited.IsError.ShouldBeTrue();
+        awaited.UnwrapError().ShouldBe(404);
+    }
+    
+    [TestMethod]
     public async Task ItShouldBindSuccessAsyncResults() =>
-        await Result.Ok<int, string>(1)
+        await 1.Ok<int, string>()
             .AsAsync()
             .BindAsync(one => one.ToString().Ok<string, string>().AsAsync())
             .ReduceAsync("error")
@@ -234,7 +262,7 @@ public class ResultTests
 
     [TestMethod]
     public async Task ItShouldBindFailureAsyncResults() =>
-    await Result.Error<int, string>("error")
+    await "error".Error<int, string>()
         .AsAsync()
         .BindAsync(one => one.ToString().Ok<string, string>().AsAsync())
         .ReduceAsync("error")
@@ -242,8 +270,8 @@ public class ResultTests
 
     [TestMethod]
     public async Task ItShouldMatchSuccessesAsync() =>
-        await Result
-            .Ok<int, string>(1)
+        await 1
+            .Ok<int, string>()
             .AsAsync()
             .MatchAsync(
                 success => success.ToString(),
@@ -252,8 +280,8 @@ public class ResultTests
 
     [TestMethod]
     public async Task ItShouldMatchFailuresAsync() =>
-        await Result
-            .Error<int, string>("error")
+        await "error"
+            .Error<int, string>()
             .AsAsync()
             .MatchAsync(
                 success => success.ToString(),
@@ -262,8 +290,8 @@ public class ResultTests
 
     [TestMethod]
     public async Task ItShouldMatchSuccessesAsyncWithAsyncMapping() =>
-    await Result
-        .Ok<int, string>(1)
+    await 1
+        .Ok<int, string>()
         .AsAsync()
         .MatchAsync(
             success => success.ToString().AsAsync(),
@@ -272,8 +300,8 @@ public class ResultTests
 
     [TestMethod]
     public async Task ItShouldMatchFailuresAsyncWithAsyncMapping() =>
-        await Result
-            .Error<int, string>("error")
+        await "error"
+            .Error<int, string>()
             .AsAsync()
             .MatchAsync(
                 success => success.ToString().AsAsync(),
@@ -284,54 +312,55 @@ public class ResultTests
     public void ItShouldBindAllSuccesses() =>
         new List<Result<int, string>>()
         {
-            Result.Ok<int, string>(1),
-            Result.Ok<int, string>(2),
-            Result.Ok<int, string>(3),
+            1.Ok<int, string>(),
+            2.Ok<int, string>(),
+            3.Ok<int, string>(),
         }
             .BindAll()
-            .ShouldBeEquivalentTo(Result.Ok<List<int>, List<string>>(new List<int>() { 1, 2, 3 }));
+            .ShouldBeEquivalentTo(new List<int> { 1, 2, 3 }.Ok<List<int>, List<string>>());
 
     [TestMethod]
     public void ItShouldBindAllFailures() =>
         new List<Result<int, string>>()
         {
-            Result.Error<int, string>("one"),
-            Result.Error<int, string>("two"),
-            Result.Error<int, string>("three")
+            "one".Error<int, string>(),
+            "two".Error<int, string>(),
+            "three".Error<int, string>()
         }
             .BindAll()
             .ShouldBeEquivalentTo(
-                Result
-                    .Error<List<int>, List<string>>(
-                        new List<string>()
-                        { "one", "two", "three" }));
+                new List<string> { "one", "two", "three" }
+                    .Error<List<int>, List<string>>());
 
     [TestMethod]
     public void ItShouldBindSuccessAndFailuresToFailure() =>
-        new List<Result<int, string>>()
-        {
-            Result.Ok<int, string>(1),
-            Result.Ok<int, string>(2),
-            Result.Error<int, string>("three")
+        new List<Result<int, string>>
+            {
+            1.Ok<int, string>(),
+            2.Ok<int, string>(),
+            "three".Error<int, string>()
         }
             .BindAll()
             .ShouldBeEquivalentTo(
-                Result
-                    .Error<List<int>, List<string>>(new List<string>() { "three" }));
+                new List<string> { "three" }
+                    .Error<List<int>, List<string>>());
 
     [TestMethod]
     public void ItShouldPerformSuccessEffect()
     {
         var successEffect = false;
         var failureEffect = false;
-        void successAction(string _) => successEffect = true;
-        void failureAction(string _) => failureEffect = true;
 
-        Result.Ok<string, string>("success")
-            .Effect(successAction, failureAction);
+        "success".Ok<string, string>()
+            .Effect(SuccessAction, FailureAction);
 
         successEffect.ShouldBeTrue();
         failureEffect.ShouldBeFalse();
+        return;
+
+        void FailureAction(string _) => failureEffect = true;
+
+        void SuccessAction(string _) => successEffect = true;
     }
 
     [TestMethod]
@@ -339,14 +368,17 @@ public class ResultTests
     {
         var successEffect = false;
         var failureEffect = false;
-        void successAction(string _) => successEffect = true;
-        void failureAction(string _) => failureEffect = true;
 
-        Result.Error<string, string>("failure")
-            .Effect(successAction, failureAction);
+        "failure".Error<string, string>()
+            .Effect(SuccessAction, FailureAction);
 
         successEffect.ShouldBeFalse();
         failureEffect.ShouldBeTrue();
+        return;
+
+        void FailureAction(string _) => failureEffect = true;
+
+        void SuccessAction(string _) => successEffect = true;
     }
 
     [TestMethod]
@@ -359,7 +391,7 @@ public class ResultTests
             .AsAsync()
             .EffectAsync(
                 ok => msg = ok,
-                exn => msg = "Exception");
+                _ => msg = "Exception");
 
         msg.ShouldBe("123");
     }
@@ -377,6 +409,150 @@ public class ResultTests
                 exn => msg = exn.Message);
 
         msg.ShouldBe("Error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldMatchAsyncWhenOkSyncAndErrorAsyncWhenOk()
+    {
+        var result =
+            "ok"
+                .Ok<string, int>()
+                .AsAsync()
+                .MatchAsync(
+                    ok => ok,
+                    err => err.ToString().AsAsync());
+        
+        (await result).ShouldBe("ok");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldMatchAsyncWhenOkSyncAndErrorAsyncWhenError()
+    {
+        var result =
+            1
+                .Error<string, int>()
+                .AsAsync()
+                .MatchAsync(
+                    ok => ok,
+                    err => err.ToString().AsAsync());
+        
+        (await result).ShouldBe("1");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldMatchAsyncWhenOkAsyncAndErrorSyncWhenOk()
+    {
+        var result =
+            "ok"
+                .Ok<string, int>()
+                .AsAsync()
+                .MatchAsync(
+                    ok => ok.AsAsync(),
+                    err => err.ToString());
+        
+        (await result).ShouldBe("ok");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldMatchAsyncWhenOkAsyncAndErrorSyncWhenError()
+    {
+        var result =
+            1
+                .Error<string, int>()
+                .AsAsync()
+                .MatchAsync(
+                    ok => ok.AsAsync(),
+                    err => err.ToString());
+        
+        (await result).ShouldBe("1");
+    }
+
+    [TestMethod]
+    public void ItShouldMapErrorsWhenOk() =>
+        "ok value"
+            .Ok<string, int>()
+            .MapError(errInt => errInt.ToString())
+            .ShouldBeOfType<Result<string, string>>();
+
+    [TestMethod]
+    public void ItShouldMapErrorsWhenError()
+    {
+        var result = 
+            404
+                .Error<string, int>()
+                .MapError(errCode => errCode.ToString());
+
+        result.ShouldBeOfType<Result<string, string>>();
+        
+        result.UnwrapError().ShouldBe("404");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldMapErrorsAsyncWhenOkWithSyncMapper()
+    {
+        var result =
+            "ok value"
+                .Ok<string, int>()
+                .AsAsync()
+                .MapErrorAsync(errInt => errInt.ToString());
+
+        var contents = await result;
+        
+        contents.ShouldBeOfType<Result<string, string>>();
+        contents.IsOk.ShouldBeTrue();
+        contents.Unwrap().ShouldBe("ok value");
+
+    }
+        
+
+    [TestMethod]
+    public async Task ItShouldMapErrorsAsyncWhenErrorWithSyncMapper()
+    {
+        var result = 
+            404
+                .Error<string, int>()
+                .AsAsync()
+                .MapErrorAsync(errCode => errCode.ToString());
+
+        var contents = await result;
+        
+        contents.ShouldBeOfType<Result<string, string>>();
+        contents.IsError.ShouldBeTrue();
+        contents.UnwrapError().ShouldBe("404");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldMapErrorsAsyncWhenOkWithAsyncMapper()
+    {
+        var result =
+            "ok value"
+                .Ok<string, int>()
+                .AsAsync()
+                .MapErrorAsync(errInt => errInt.ToString().AsAsync());
+
+        var contents = await result;
+        
+        contents.ShouldBeOfType<Result<string, string>>();
+        contents.IsOk.ShouldBeTrue();
+        contents.Unwrap().ShouldBe("ok value");
+
+    }
+        
+
+    [TestMethod]
+    public async Task ItShouldMapErrorsAsyncWhenErrorWithAsyncMapper()
+    {
+        var result = 
+            404
+                .Error<string, int>()
+                .AsAsync()
+                .MapErrorAsync(errCode => errCode.ToString().AsAsync());
+
+        var contents = await result;
+        
+        contents.ShouldBeOfType<Result<string, string>>();
+        contents.IsError.ShouldBeTrue();
+        contents.UnwrapError().ShouldBe("404");
     }
 }
 
