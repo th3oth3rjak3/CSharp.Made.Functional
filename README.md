@@ -38,4 +38,4 @@ global using static Functional.Options.OptionExtensions;
 global using static Functional.Results.ResultExtensions;
 ```
 
-For examples and more discussion about this library, <a href="https://th3oth3rjak3.github.io/CSharp.Made.Functional" target="_blank" rel="noopener">Read the Docs</a>.
+For examples and more discussion about this library, [Read the Docs!](https://th3oth3rjak3.github.io/CSharp.Made.Functional)
