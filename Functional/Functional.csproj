@@ -4,14 +4,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>CSharp.Made.Functional</PackageId>
-    <Version>2.0.1</Version>
+    <Version>2.1.0</Version>
     <Authors>Jacob Hathaway</Authors>
     <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
     <PackageTags>Functional;Option;Result;Union;Discriminated Union;</PackageTags>
-    <ProjectUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</ProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageProjectUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</PackageProjectUrl>
+    <PackageReleaseNotes>Fix bugs related to Option.BindAsync not awaiting tasks.
+Added Result.MapError method.</PackageReleaseNotes>
+    <RepositoryUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../README.md">

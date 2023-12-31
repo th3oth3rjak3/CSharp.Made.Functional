@@ -31,7 +31,7 @@ public static class ExceptionExtensions
         }
         catch (Exception ex)
         {
-            return Result.Error<TResult, Exception>(ex);
+            return ex.Error<TResult, Exception>();
         }
     }
 

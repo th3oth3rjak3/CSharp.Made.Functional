@@ -26,9 +26,7 @@ public static class CommonExtensions
     /// <param name="_">This parameter is ignored.</param>
     [ExcludeFromCodeCoverage]
     public static void Ignore<T>(this T? _)
-    {
-        return;
-    }
+    { }
 
     /// <summary>
     /// Ignores the output of an async function. C# does this by default in functions
@@ -77,7 +75,7 @@ public static class CommonExtensions
     /// <param name="input">The input to be wrapped as a Task.</param>
     /// <returns>A Task of type <typeparamref name="T"/>.</returns>
     public static Task<T> AsAsync<T>(this T input) =>
-        new ValueTask<T>(input).AsTask();
+        Task.FromResult(input);
 
     /// <summary>
     /// Used to wrap an action function that is asynchronous.
@@ -153,5 +151,4 @@ public static class CommonExtensions
         this Task<TInput> input,
         Func<TInput, TResult> func) =>
             func(await input);
-
 }
