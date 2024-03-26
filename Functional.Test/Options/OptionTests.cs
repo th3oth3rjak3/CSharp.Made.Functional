@@ -465,7 +465,9 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none".AsAsync());
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -478,7 +480,9 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none".AsAsync());
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -492,7 +496,9 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none");
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -505,7 +511,9 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none");
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -519,7 +527,9 @@ public class OptionTests
                     some => some,
                     () => "none".AsAsync());
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -532,7 +542,9 @@ public class OptionTests
                     some => some,
                     () => "none".AsAsync());
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -546,7 +558,9 @@ public class OptionTests
                     some => some,
                     () => "none");
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -559,7 +573,9 @@ public class OptionTests
                     some => some,
                     () => "none");
 
-        _ = (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
@@ -570,8 +586,9 @@ public class OptionTests
                 .FromResult(1 as int?)
                 .Optional();
 
-        _ = (await option)
-                .ShouldBeOfType<Option<int>>();
+        (await option)
+                .ShouldBeOfType<Option<int>>()
+                .Ignore();
     }
 
     [TestMethod]
@@ -582,8 +599,9 @@ public class OptionTests
                 .FromResult(null as string)
                 .Optional();
 
-        _ = (await option)
-            .ShouldBeOfType<Option<string>>();
+        (await option)
+            .ShouldBeOfType<Option<string>>()
+            .Ignore();
     }
 
     [TestMethod]
