@@ -18,7 +18,8 @@ public class OptionTests
 
     [TestMethod]
     public void SomeShouldBeOfOptionType() =>
-        1.Optional()
+        1
+            .Optional()
             .ShouldBeOfType<Option<int>>();
 
     [TestMethod]
@@ -464,9 +465,11 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none".AsAsync());
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenNone()
     {
@@ -477,9 +480,11 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none".AsAsync());
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenSome1()
     {
@@ -491,9 +496,11 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none");
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenNone1()
     {
@@ -504,9 +511,11 @@ public class OptionTests
                     some => some.AsAsync(),
                     () => "none");
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenSome2()
     {
@@ -518,9 +527,11 @@ public class OptionTests
                     some => some,
                     () => "none".AsAsync());
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenNone2()
     {
@@ -531,9 +542,11 @@ public class OptionTests
                     some => some,
                     () => "none".AsAsync());
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenSome3()
     {
@@ -545,9 +558,11 @@ public class OptionTests
                     some => some,
                     () => "none");
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
-    
+
     [TestMethod]
     public async Task ItShouldNotReturnTaskOfTaskWhenNone3()
     {
@@ -558,18 +573,42 @@ public class OptionTests
                     some => some,
                     () => "none");
 
-        (await taskOfTask).ShouldBeOfType<string>();
+        (await taskOfTask)
+            .ShouldBeOfType<string>()
+            .Ignore();
     }
 
     [TestMethod]
     public async Task ItShouldHandleValueTasks()
     {
-        var option = 
+        var option =
             ValueTask
-                .FromResult(1)
+                .FromResult(1 as int?)
                 .Optional();
-        
+
         (await option)
-                .ShouldBeOfType<Option<int>>();
+                .ShouldBeOfType<Option<int>>()
+                .Ignore();
     }
+
+    [TestMethod]
+    public async Task ItShouldHandleClassValueTasks()
+    {
+        var option =
+            ValueTask
+                .FromResult(null as string)
+                .Optional();
+
+        (await option)
+            .ShouldBeOfType<Option<string>>()
+            .Ignore();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleStructsWhenNull() =>
+        (null as int?)
+        .Optional()
+        .Map(thing => thing.ToString())
+        .Reduce(() => "none")
+        .ShouldBe("none");
 }

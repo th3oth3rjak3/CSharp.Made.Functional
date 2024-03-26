@@ -61,7 +61,7 @@ public static class ExceptionExtensions
     /// </summary>
     /// <typeparam name="TResult">The return type when trying is Ok.</typeparam>
     /// <param name="toTry">The function to try.</param>
-    /// <returns>A result is is Ok or an Exception.</returns>
+    /// <returns>A result that is Ok or an Exception.</returns>
     public static async Task<Result<TResult, Exception>> TryAsync<TResult>(Func<Task<TResult>> toTry)
     {
         try
