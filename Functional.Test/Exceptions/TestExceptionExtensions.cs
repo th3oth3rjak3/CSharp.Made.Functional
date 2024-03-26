@@ -84,4 +84,10 @@ public class TestExceptionExtensions
             .MatchAsync(ok => ok, exn => exn.Message)
             .TapAsync(msg => msg.ShouldBe("never"));
 
+    [TestMethod]
+    public async Task ItShouldTryCatchWithoutThrowingAsync() =>
+        await TryAsync(() => "success".AsAsync())
+            .MatchAsync(ok => ok, exn => exn.Message)
+            .TapAsync(msg => msg.ShouldBe("success"));
+
 }

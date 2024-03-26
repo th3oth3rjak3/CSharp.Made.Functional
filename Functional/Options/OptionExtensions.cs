@@ -19,6 +19,19 @@ public static class OptionExtensions
         };
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public static Option<T> Optional<T>(this T? entity) where T : struct =>
+        entity.HasValue switch
+        {
+            true => entity.Value.Some(),
+            false => Option.None<T>(),
+        };
+
+    /// <summary>
     /// Convert any value to an Option type. When null, it will become None, otherwise Some.
     /// </summary>
     /// <typeparam name="T">The type of the original entity.</typeparam>
@@ -29,14 +42,26 @@ public static class OptionExtensions
         var result = await entity;
         return result.Optional();
     }
-    
+
     /// <summary>
     /// Convert any value to an Option type. When null, it will become None, otherwise Some.
     /// </summary>
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> Optional<T>(this ValueTask<T> entity)
+    public static async Task<Option<T>> Optional<T>(this ValueTask<T?> entity) where T : class
+    {
+        var result = await entity;
+        return result.Optional();
+    }
+
+    /// <summary>
+    /// Convert any value to an Option type. When null, it will become None, otherwise Some.
+    /// </summary>
+    /// <typeparam name="T">The type of the original entity.</typeparam>
+    /// <param name="entity">The entity to convert to an Option.</param>
+    /// <returns>A new option.</returns>
+    public static async Task<Option<T>> Optional<T>(this ValueTask<T?> entity) where T : struct
     {
         var result = await entity;
         return result.Optional();
@@ -59,13 +84,13 @@ public static class OptionExtensions
         Func<TResult> whenNone)
     {
         var option = await optional;
-        
-        return option.IsNone 
-            ? whenNone() 
+
+        return option.IsNone
+            ? whenNone()
             // value will be non-null because the union was some.
             : whenSome(option.Unwrap()!);
     }
-    
+
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
     /// </summary>
@@ -80,10 +105,10 @@ public static class OptionExtensions
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
-        Func<TResult> whenNone)
+        Func<TResult> whenNone) where TResult : class
     {
         var result = await optional;
-        
+
         if (result.IsNone) return whenNone();
 
         // value will be non-null because the union was some.
@@ -103,16 +128,16 @@ public static class OptionExtensions
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, TResult> whenSome,
-        Func<Task<TResult>> whenNone)
+        Func<Task<TResult>> whenNone) where TResult : class
     {
         var result = await optional;
-        
+
         if (result.IsNone) return await whenNone();
-    
+
         // value will be non-null because the union was some.
         return whenSome(result.Unwrap()!);
     }
-    
+
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
     /// </summary>
@@ -127,10 +152,10 @@ public static class OptionExtensions
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
-        Func<Task<TResult>> whenNone)
+        Func<Task<TResult>> whenNone) where TResult : class
     {
         var result = await optional;
-        
+
         if (result.IsNone) return await whenNone();
 
         // value will be non-null because the union was some.
@@ -148,12 +173,12 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static Option<TResult> Map<T, TResult>(
         this Option<T> option,
-        Func<T, TResult> mapper) =>
+        Func<T, TResult> mapper) where TResult : class =>
         option
             .Match(
                 some => mapper(some).Optional(),
                 Option.None<TResult>);
-    
+
     /// <summary>
     /// When an Option is Some, map the existing
     /// value to a new type with a provided function.
@@ -165,12 +190,12 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Task<Option<T>> option,
-        Func<T, TResult> mapper)
+        Func<T, TResult> mapper) where TResult : class
     {
         var result = await option;
         return result.Map(mapper);
     }
-    
+
     /// <summary>
     /// When an Option is Some, map the existing
     /// value to a new type with a provided function.
@@ -182,14 +207,14 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Task<Option<T>> option,
-        Func<T, Task<TResult>> mapper)
+        Func<T, Task<TResult>> mapper) where TResult : class
     {
         var result = await option;
 
         if (result.IsNone) return Option.None<TResult>();
 
         var contents = result.Unwrap()!;
-        
+
         // value will be non-null because the union was some.
         return (await mapper(contents))
             .Optional();
@@ -207,13 +232,13 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Option<Task<T>> option,
-        Func<T, TResult> mapper)
+        Func<T, TResult> mapper) where TResult : class
     {
         if (option.IsNone) return Option.None<TResult>();
-        
+
         // value will be non-null because the union was some.
         var contents = await option.Unwrap()!;
-        
+
         return mapper(contents).Optional();
     }
 
@@ -284,7 +309,7 @@ public static class OptionExtensions
         var result = await optional;
 
         return result.Match(
-            some => some, 
+            some => some,
             alternate);
     }
 
@@ -302,7 +327,7 @@ public static class OptionExtensions
         var result = await optional;
 
         return result.Match(
-            some => some, 
+            some => some,
             () => alternate);
     }
 
@@ -320,9 +345,7 @@ public static class OptionExtensions
         var result = await optional;
 
         // value will be non-null because the union was some.
-        if (result.IsSome) return result.Unwrap()!;
-
-        return await alternate;
+        return result.IsSome ? result.Unwrap()! : await alternate;
     }
 
     /// <summary>
@@ -339,9 +362,7 @@ public static class OptionExtensions
         var result = await optional;
 
         // value will be non-null because the union was some.
-        if (result.IsSome) return result.Unwrap()!;
-
-        return await alternate();
+        return result.IsSome ? result.Unwrap()! : await alternate();
     }
 
     /// <summary>
