@@ -105,7 +105,7 @@ public static class OptionExtensions
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
-        Func<TResult> whenNone) where TResult : class
+        Func<TResult> whenNone)
     {
         var result = await optional;
 
@@ -128,7 +128,7 @@ public static class OptionExtensions
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, TResult> whenSome,
-        Func<Task<TResult>> whenNone) where TResult : class
+        Func<Task<TResult>> whenNone)
     {
         var result = await optional;
 
@@ -152,7 +152,7 @@ public static class OptionExtensions
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
-        Func<Task<TResult>> whenNone) where TResult : class
+        Func<Task<TResult>> whenNone)
     {
         var result = await optional;
 
@@ -173,7 +173,7 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static Option<TResult> Map<T, TResult>(
         this Option<T> option,
-        Func<T, TResult> mapper) where TResult : class =>
+        Func<T, TResult> mapper) =>
         option
             .Match(
                 some => mapper(some).Optional(),
@@ -190,7 +190,7 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Task<Option<T>> option,
-        Func<T, TResult> mapper) where TResult : class
+        Func<T, TResult> mapper)
     {
         var result = await option;
         return result.Map(mapper);
@@ -207,7 +207,7 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Task<Option<T>> option,
-        Func<T, Task<TResult>> mapper) where TResult : class
+        Func<T, Task<TResult>> mapper)
     {
         var result = await option;
 
@@ -232,7 +232,7 @@ public static class OptionExtensions
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Option<Task<T>> option,
-        Func<T, TResult> mapper) where TResult : class
+        Func<T, TResult> mapper)
     {
         if (option.IsNone) return Option.None<TResult>();
 
