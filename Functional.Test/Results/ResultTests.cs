@@ -231,7 +231,7 @@ public class ResultTests
 
         var awaited = await result;
         awaited.ShouldBeOfType<Result<string, int>>();
-        
+
         awaited.IsOk.ShouldBeTrue();
         awaited.Unwrap().ShouldBe("100");
     }
@@ -247,11 +247,11 @@ public class ResultTests
 
         var awaited = await result;
         awaited.ShouldBeOfType<Result<string, int>>();
-        
+
         awaited.IsError.ShouldBeTrue();
         awaited.UnwrapError().ShouldBe(404);
     }
-    
+
     [TestMethod]
     public async Task ItShouldBindSuccessAsyncResults() =>
         await 1.Ok<int, string>()
@@ -351,16 +351,14 @@ public class ResultTests
         var successEffect = false;
         var failureEffect = false;
 
+        void SuccessAction(string _) => successEffect = true;
+        void FailureAction(string _) => failureEffect = true;
+
         "success".Ok<string, string>()
             .Effect(SuccessAction, FailureAction);
 
         successEffect.ShouldBeTrue();
         failureEffect.ShouldBeFalse();
-        return;
-
-        void FailureAction(string _) => failureEffect = true;
-
-        void SuccessAction(string _) => successEffect = true;
     }
 
     [TestMethod]
@@ -368,17 +366,14 @@ public class ResultTests
     {
         var successEffect = false;
         var failureEffect = false;
+        void FailureAction(string _) => failureEffect = true;
+        void SuccessAction(string _) => successEffect = true;
 
         "failure".Error<string, string>()
             .Effect(SuccessAction, FailureAction);
 
         successEffect.ShouldBeFalse();
         failureEffect.ShouldBeTrue();
-        return;
-
-        void FailureAction(string _) => failureEffect = true;
-
-        void SuccessAction(string _) => successEffect = true;
     }
 
     [TestMethod]
@@ -421,10 +416,10 @@ public class ResultTests
                 .MatchAsync(
                     ok => ok,
                     err => err.ToString().AsAsync());
-        
+
         (await result).ShouldBe("ok");
     }
-    
+
     [TestMethod]
     public async Task ItShouldMatchAsyncWhenOkSyncAndErrorAsyncWhenError()
     {
@@ -435,10 +430,10 @@ public class ResultTests
                 .MatchAsync(
                     ok => ok,
                     err => err.ToString().AsAsync());
-        
+
         (await result).ShouldBe("1");
     }
-    
+
     [TestMethod]
     public async Task ItShouldMatchAsyncWhenOkAsyncAndErrorSyncWhenOk()
     {
@@ -449,10 +444,10 @@ public class ResultTests
                 .MatchAsync(
                     ok => ok.AsAsync(),
                     err => err.ToString());
-        
+
         (await result).ShouldBe("ok");
     }
-    
+
     [TestMethod]
     public async Task ItShouldMatchAsyncWhenOkAsyncAndErrorSyncWhenError()
     {
@@ -463,7 +458,7 @@ public class ResultTests
                 .MatchAsync(
                     ok => ok.AsAsync(),
                     err => err.ToString());
-        
+
         (await result).ShouldBe("1");
     }
 
@@ -477,16 +472,16 @@ public class ResultTests
     [TestMethod]
     public void ItShouldMapErrorsWhenError()
     {
-        var result = 
+        var result =
             404
                 .Error<string, int>()
                 .MapError(errCode => errCode.ToString());
 
         result.ShouldBeOfType<Result<string, string>>();
-        
+
         result.UnwrapError().ShouldBe("404");
     }
-    
+
     [TestMethod]
     public async Task ItShouldMapErrorsAsyncWhenOkWithSyncMapper()
     {
@@ -497,30 +492,30 @@ public class ResultTests
                 .MapErrorAsync(errInt => errInt.ToString());
 
         var contents = await result;
-        
+
         contents.ShouldBeOfType<Result<string, string>>();
         contents.IsOk.ShouldBeTrue();
         contents.Unwrap().ShouldBe("ok value");
 
     }
-        
+
 
     [TestMethod]
     public async Task ItShouldMapErrorsAsyncWhenErrorWithSyncMapper()
     {
-        var result = 
+        var result =
             404
                 .Error<string, int>()
                 .AsAsync()
                 .MapErrorAsync(errCode => errCode.ToString());
 
         var contents = await result;
-        
+
         contents.ShouldBeOfType<Result<string, string>>();
         contents.IsError.ShouldBeTrue();
         contents.UnwrapError().ShouldBe("404");
     }
-    
+
     [TestMethod]
     public async Task ItShouldMapErrorsAsyncWhenOkWithAsyncMapper()
     {
@@ -531,28 +526,50 @@ public class ResultTests
                 .MapErrorAsync(errInt => errInt.ToString().AsAsync());
 
         var contents = await result;
-        
+
         contents.ShouldBeOfType<Result<string, string>>();
         contents.IsOk.ShouldBeTrue();
         contents.Unwrap().ShouldBe("ok value");
 
     }
-        
+
 
     [TestMethod]
     public async Task ItShouldMapErrorsAsyncWhenErrorWithAsyncMapper()
     {
-        var result = 
+        var result =
             404
                 .Error<string, int>()
                 .AsAsync()
                 .MapErrorAsync(errCode => errCode.ToString().AsAsync());
 
         var contents = await result;
-        
+
         contents.ShouldBeOfType<Result<string, string>>();
         contents.IsError.ShouldBeTrue();
         contents.UnwrapError().ShouldBe("404");
     }
+
+    [TestMethod]
+    public void ItShouldMapErrorsThatAreExceptions() =>
+        new Exception("Something bad happened")
+            .Pipe(Result.Error<string>)
+            .Tap(result => result.ShouldBeOfType<Result<string, Exception>>());
+
+    [TestMethod]
+    public void ItShouldMapOkResultsThatAreHaveExceptionErrorTypes() =>
+        "valid"
+            .Pipe(Result.Ok)
+            .Tap(result => result.ShouldBeOfType<Result<string, Exception>>());
+
+    [TestMethod]
+    public void ItShouldHandleEffectForOkOnly() =>
+        Result.Ok("It's ok")
+            .Effect(ok => ok.ShouldBe("It's ok"));
+
+    [TestMethod]
+    public void ItShouldHandleEffectForErrorOnly() =>
+        Result.Error<string>(new Exception("It's a problem"))
+            .EffectError(error => error.ShouldBeOfType<Exception>());
 }
 

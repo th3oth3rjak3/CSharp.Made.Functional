@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+
 using static Functional.Common.CommonExtensions;
 
 namespace Functional.Test.Common;
@@ -147,4 +148,18 @@ public class CommonExtensionTests
             .PipeAsync(obj => obj.AddOneAsync())
             .TapAsync(Task.FromResult)
             .TapAsync(number => number.ShouldBe(2));
+
+    [TestMethod]
+    public void ItShouldTapWithNonReturningActions()
+    {
+        var result1 = false;
+        var result2 = false;
+
+        "string"
+            .Tap(() => result1 = true, () => result2 = true)
+            .Tap(value => value.ShouldBe("string"));
+
+        result1.ShouldBeTrue();
+        result2.ShouldBeTrue();
+    }
 }

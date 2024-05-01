@@ -47,7 +47,7 @@ public static class ResultExtensions
 
         return await whenError(outcome.UnwrapError()!);
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
@@ -69,7 +69,7 @@ public static class ResultExtensions
 
         return await whenError(outcome.UnwrapError()!);
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
@@ -124,7 +124,7 @@ public static class ResultExtensions
         result
             .Match(
                 Result.Ok<Ok, NewError>,
-                error => 
+                error =>
                     errorMapper(error)
                         .Pipe(Result.Error<Ok, NewError>));
 
@@ -188,8 +188,8 @@ public static class ResultExtensions
         var outcome = await result;
         return outcome.MapError(errorMapper);
     }
-    
-    
+
+
     /// <summary>
     /// Map a result with one error type to another.
     /// </summary>
@@ -204,14 +204,14 @@ public static class ResultExtensions
         Func<Error, Task<NewError>> errorMapper)
     {
         var outcome = await result;
-        
+
         if (outcome.IsOk) return outcome.Unwrap()!.Ok<Ok, NewError>();
 
         var err = outcome.UnwrapError()!;
         var mapped = await errorMapper(err);
         return mapped.Error<Ok, NewError>();
     }
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// </summary>
@@ -369,7 +369,7 @@ public static class ResultExtensions
         Func<Ok, Result<Output, Error>> binder)
     {
         var awaited = await result;
-        
+
         if (awaited.IsError) return awaited.UnwrapError()!.Error<Output, Error>();
 
         var contents = awaited.Unwrap()!;
@@ -392,17 +392,17 @@ public static class ResultExtensions
     /// <returns>The result of the bind operation.</returns>
     public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
         this Task<Result<Ok, Error>> result,
-        Func<Ok, Task<Result<Output, Error>>> binder)     
+        Func<Ok, Task<Result<Output, Error>>> binder)
     {
         var awaited = await result;
-        
+
         if (awaited.IsError) return awaited.UnwrapError()!.Error<Output, Error>();
 
         var contents = awaited.Unwrap()!;
 
         return await binder(contents);
     }
-    
+
     /// <summary>
     /// Bind a List of Results to a Result of List of the inner object.
     /// </summary>
@@ -446,8 +446,74 @@ public static class ResultExtensions
     /// <param name="result">The result to perform the side-effect on.</param>
     /// <param name="whenOk">Perform this action when the value is Ok.</param>
     /// <param name="whenError">Perform this action when the value is Error.</param>
-    public static async Task EffectAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk, Action<Error> whenError) =>
+    public static async Task<Unit> EffectAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk, Action<Error> whenError) =>
         (await result)
             .Effect(whenOk, whenError);
 
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenOk">Perform this action when the value is Ok.</param>
+    /// <param name="whenError">Perform this action when the value is Error.</param>
+    public static async Task<Unit> EffectAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action whenOk, Action<Error> whenError) =>
+        (await result)
+            .Effect(_ => whenOk(), whenError);
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenOk">Perform this action when the value is Ok.</param>
+    /// <param name="whenError">Perform this action when the value is Error.</param>
+    public static async Task<Unit> EffectAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk, Action whenError) =>
+        (await result)
+            .Effect(whenOk, _ => whenError());
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenOk">Perform this action when the value is Ok.</param>
+    /// <param name="whenError">Perform this action when the value is Error.</param>
+    public static async Task<Unit> EffectAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action whenOk, Action whenError) =>
+        (await result)
+            .Effect(_ => whenOk(), _ => whenError());
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenOk">Perform this action when the value is Ok.</param>
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk) =>
+        (await result)
+            .Effect(whenOk, _ => { });
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenOk">Perform this action when the value is Ok.</param>
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action whenOk) =>
+        (await result)
+            .Effect(_ => whenOk(), _ => { });
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenError">Perform this action when the value is Error.</param>
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Error> whenError) =>
+        (await result)
+            .Effect(_ => { }, whenError);
+
+
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="result">The result to perform the side-effect on.</param>
+    /// <param name="whenError">Perform this action when the value is Error.</param>
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action whenError) =>
+        (await result)
+            .Effect(_ => { }, _ => whenError());
 }

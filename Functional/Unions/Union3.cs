@@ -56,19 +56,21 @@ public sealed class Union3<A, B, C>
     /// <param name="caseOne">The action to execute when the inner type is <typeparamref name="A"/></param>
     /// <param name="caseTwo">The action to execute when the inner type is <typeparamref name="B"/></param>
     /// <param name="caseThree">The action to execute when the inner type is <typeparamref name="C"/></param>
-    public void Effect(Action<A> caseOne, Action<B> caseTwo, Action<C> caseThree)
+    public Unit Effect(Action<A> caseOne, Action<B> caseTwo, Action<C> caseThree)
     {
         switch (tag)
         {
             case 1:
                 caseOne(Item1);
-                return;
+                break;
             case 2:
                 caseTwo(Item2);
-                return;
+                break;
             case 3:
                 caseThree(Item3);
-                return;
+                break;
         }
+
+        return Unit.Default;
     }
 }

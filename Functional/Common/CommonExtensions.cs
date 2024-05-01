@@ -57,6 +57,24 @@ public static class CommonExtensions
     }
 
     /// <summary>
+    /// Tap into a value to perform a series of actions which could return void.
+    /// This function is used to turn imperative code into functional, fluent syntax.
+    /// </summary>
+    /// <typeparam name="T">The type of the input object.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">An array of actions to perform on the input.</param>
+    /// <returns></returns>
+    public static T Tap<T>(this T input, params Action[] actions)
+    {
+        actions
+            .ToList()
+            .ForEach(action =>
+                action());
+
+        return input;
+    }
+
+    /// <summary>
     /// Map one object type to another using a mapping function.
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
@@ -67,6 +85,18 @@ public static class CommonExtensions
     /// <returns>The mapped result.</returns>
     public static TResult Pipe<T, TResult>(this T input, Func<T, TResult> mapper) =>
         mapper(input);
+
+    /// <summary>
+    /// Perform a series of actions on the input and return unit.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input value.</param>
+    /// <param name="actions">Actions to be performed.</param>
+    /// <returns>Unit.</returns>
+    public static Unit Pipe<T>(this T input, params Action<T>[] actions) =>
+        input
+            .Tap(actions)
+            .Pipe(_ => Unit.Default);
 
     /// <summary>
     /// Wraps an object with a ValueTask to be used with Async functions.
@@ -151,4 +181,31 @@ public static class CommonExtensions
         this Task<TInput> input,
         Func<TInput, TResult> func) =>
             func(await input);
+
+    /// <summary>
+    /// Used to wrap an async input that performs actions on the awaited input.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">A series of actions to perform on the input.</param>
+    /// <returns>An awaitable Unit.</returns>
+    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Action<TInput>[] actions) =>
+        await (await input)
+            .Tap(actions)
+            .Pipe(_ => Unit.Default)
+            .AsAsync();
+
+    /// <summary>
+    /// Used to wrap an async input that performs async actions on the awaited input.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">A series of actions to perform on the input.</param>
+    /// <returns>An awaitable Unit.</returns>
+    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Func<TInput, Task>[] actions) =>
+        await (await input)
+            .AsAsync()
+            .TapAsync(actions)
+            .PipeAsync(_ => Unit.Default);
+
 }
