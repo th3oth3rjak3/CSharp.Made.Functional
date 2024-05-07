@@ -180,6 +180,22 @@ public static class OptionExtensions
                 Option.None<TResult>);
 
     /// <summary>
+    /// When an Option is Some, map to a new value, ignoring the old value.
+    /// </summary>
+    /// <typeparam name="T">The original type.</typeparam>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="option">The option to be mapped.</param>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>A new option.</returns>
+    public static Option<TResult> Map<T, TResult>(
+        this Option<T> option,
+        Func<TResult> mapper) =>
+        option
+            .Match(
+                _ => mapper().Optional(),
+                Option.None<TResult>);
+
+    /// <summary>
     /// When an Option is Some, map the existing
     /// value to a new type with a provided function.
     /// </summary>
@@ -498,7 +514,44 @@ public static class OptionExtensions
     /// <param name="optional">The option to perform the side-effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
-    public static async Task EffectAsync<T>(this Task<Option<T>> optional, Action<T> doWhenSome, Action doWhenNone) =>
+    public static async Task<Unit> EffectAsync<T>(this Task<Option<T>> optional, Action<T> doWhenSome, Action doWhenNone) =>
         (await optional)
             .Effect(doWhenSome, doWhenNone);
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    public static async Task<Unit> EffectAsync<T>(this Task<Option<T>> optional, Action doWhenSome, Action doWhenNone) =>
+        (await optional)
+            .Effect(_ => doWhenSome(), doWhenNone);
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Action<T> doWhenSome) =>
+        (await optional)
+            .Effect(doWhenSome, () => { });
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Action doWhenSome) =>
+        (await optional)
+            .Effect(_ => doWhenSome(), () => { });
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, Action doWhenNone) =>
+        (await optional)
+            .Effect(_ => { }, doWhenNone);
 }

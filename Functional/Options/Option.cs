@@ -1,6 +1,4 @@
-﻿using System.Net.Mime;
-
-namespace Functional.Options;
+﻿namespace Functional.Options;
 
 /// <summary>
 /// A wrapper class which contains either Some value or no value (None).
@@ -19,7 +17,7 @@ public sealed record Option<T>
     public Option(Some<T> some)
     {
         Contents = some.Contents;
-        Union = new Union<Some<T>, None<T>>(some);   
+        Union = new Union<Some<T>, None<T>>(some);
     }
 
     /// <summary>
@@ -46,9 +44,38 @@ public sealed record Option<T>
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
-    public void Effect(Action<T> doWhenSome, Action doWhenNone) =>
+    public Unit Effect(Action<T> doWhenSome, Action doWhenNone) =>
         Union
             .Effect(some => doWhenSome(some.Contents), _ => doWhenNone());
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    public Unit Effect(Action doWhenSome, Action doWhenNone) =>
+        Union
+            .Effect(_ => doWhenSome(), _ => doWhenNone());
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    public Unit EffectSome(Action<T> doWhenSome) =>
+        Union
+            .Effect(
+                some => doWhenSome(some.Contents),
+                _ => { });
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    public Unit EffectNone(Action doWhenNone) =>
+        Union
+            .Effect(
+                _ => { },
+                _ => doWhenNone());
 
     /// <summary>
     /// Determine if the option contains some value. True when Some, otherwise false.
@@ -61,7 +88,7 @@ public sealed record Option<T>
     /// </summary>
     public bool IsNone =>
         Union.Match(_ => false, _ => true);
- 
+
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
     /// contains some value. If an option is None, it will return the default value.

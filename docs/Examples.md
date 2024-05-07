@@ -313,6 +313,41 @@ public static class Program
                 () => { /* We don't have to print anything actually... */ });
 }
 ```
+### Option EffectSome and EffectNone
+
+If we only want to perform an effect when an `Option` is `Some` or when it's `None`, we can use the `EffectSome` and `EffectNone` methods.
+
+
+```C# title="Program.cs" linenums="1" hl_lines="13 17 21 25"
+namespace ScratchPad;
+
+using Functional.Options;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // This will print "value" to the console.
+        Option.Some("value")
+            .EffectSome(value => Console.WriteLine(value));
+
+        // This will do nothing since the input value was a None.
+        Option.None<string>()
+            .EffectSome(value => Console.WriteLine(value));
+
+        // This will do nothing since the input is a Some.
+        Option.Some("value")
+            .EffectNone(() => Console.WriteLine("won't print"));
+
+        // This will print "no value" since the input was None.
+        Option.None<string>()
+            .EffectNone(() => Console.WriteLine("no value"));
+    }
+}
+
+```
 
 ### Async Options
 
@@ -910,6 +945,41 @@ public static class Program
 }
 ```
 
+### Result EffectOk and EffectError
+
+Perform an `Effect` when a `Result` is `Ok` or when it is an `Error`.
+
+```C#  title="Program.cs" linenums="1" hl_lines="13 17 21 25"
+namespace ScratchPad;
+
+using Functional.Results;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // This will print "value" to the console.
+        Result.Ok("value")
+            .EffectOk(value => Console.WriteLine(value));
+
+        // This will do nothing since the input value was an Error.
+        Result.Error<string>(new Exception("Something bad happened"))
+            .EffectOk(value => Console.WriteLine(value));
+
+        // This will do nothing since the input value is Ok
+        Result.Ok("value")
+            .EffectError(exception => Console.WriteLine(exception.Message));
+
+        // This will print "Something bad happened" since it was an error.
+        Result.Error<string>(new Exception("Something bad happened"))
+            .EffectError(exception => Console.WriteLine(exception.Message));
+    }
+}
+```
+
+
 ### Async Results
 
 Asynchronous support is also provided in this library for `Result`.
@@ -1035,6 +1105,27 @@ public static class Program
 
         // Prints "1000001" because the class value was mutated.
         Console.WriteLine($"Printed at the end: {classValue}");
+    }
+}
+```
+
+### Effect
+
+`Effect` is like a `Pipe` that consumes the input, performs some series of actions, and returns `Unit`.
+
+```C# title="Program.cs" linenums="1" hl_lines="12"
+namespace ScratchPad;
+
+using Functional.Common;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        "Some Random Value"
+            .Effect(input => Console.WriteLine(input));
     }
 }
 ```
@@ -1239,4 +1330,29 @@ public static class Program
                 () => { /* There was no inner exception */ });
     }
 }
+```
+
+### Unit
+
+When performing an action, instead of returning void, we can return the type called `Unit` which represents no return value. This can be used to continue piping more functions after performing an action that would return void. Calling the second `Effect` would not have been possible without the `Unit` type.
+
+```C# title="Program.cs" linenums="1" hl_lines="14 15"
+namespace ScratchPad;
+
+using Functional.Common;
+using Functional.Options;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // This should print "value" and then "()" on the following line.
+        Option.Some("value")
+            .Effect(value => Console.WriteLine(value), () => Console.WriteLine("No value"))
+            .Effect(unit => Console.WriteLine(unit.ToString()));
+    }
+}
+
 ```

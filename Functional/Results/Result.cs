@@ -52,13 +52,32 @@ public sealed record Result<Ok, Error>
     /// </summary>
     /// <param name="doWhenOk">Perform this action when the value is Ok.</param>
     /// <param name="doWhenError">Perform this action when the value is Error.</param>
-    public void Effect(Action<Ok> doWhenOk, Action<Error> doWhenError) =>
+    public Unit Effect(Action<Ok> doWhenOk, Action<Error> doWhenError) =>
         Union
             .Effect(
                 ok => doWhenOk(ok.Contents),
                 error => doWhenError(error.Contents));
 
-    
+    /// <summary>
+    /// Perform a side effect on a result type when the type is Ok.
+    /// </summary>
+    /// <param name="doWhenOk">An action to perform on an Ok result.</param>
+    public Unit EffectOk(Action<Ok> doWhenOk) =>
+        Union
+            .Effect(
+                ok => doWhenOk(ok.Contents),
+                _ => { });
+
+    /// <summary>
+    /// Perform a side effect on a result type when the type is an error.
+    /// </summary>
+    /// <param name="doWhenError">An action to perform on an Error result.</param>
+    public Unit EffectError(Action<Error> doWhenError) =>
+        Union
+            .Effect(
+                _ => { },
+                error => doWhenError(error.Contents));
+
     /// <summary>
     /// Determine if the result is ok or an error. True when Ok, otherwise false.
     /// </summary>
@@ -122,11 +141,31 @@ public static class Result
         new(new OkResult<Ok>(input));
 
     /// <summary>
+    /// A result that indicates that the value is Ok.
+    /// </summary>
+    /// <typeparam name="Ok">The type of the contents.</typeparam>
+    /// <param name="input">The contents to store.</param>
+    /// <returns>A result which indicates that the contents are Ok.</returns>
+    public static Result<Ok, Exception> Ok<Ok>(this Ok input) =>
+        new(new OkResult<Ok>(input));
+
+    /// <summary>
     /// A result that indicates failure.
     /// </summary>
+    /// <typeparam name="Ok">The type of the contents when ok.</typeparam>
+    /// <typeparam name="Error">The type of the error.</typeparam>
     /// <returns>A result which indicates a failure which contains messages about the failure.</returns>
     public static Result<Ok, Error> Error<Ok, Error>(this Error error) =>
         new(new ErrorResult<Error>(error));
+
+    /// <summary>
+    /// A result that indicates failure.
+    /// </summary>
+    /// <typeparam name="Ok">The type of the contents when ok.</typeparam>
+    /// <param name="error">The error.</param>
+    /// <returns>A result that indicates a failure.</returns>
+    public static Result<Ok, Exception> Error<Ok>(this Exception error) =>
+        new(new ErrorResult<Exception>(error));
 
 }
 

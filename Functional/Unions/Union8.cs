@@ -118,7 +118,8 @@ public sealed class Union8<A, B, C, D, E, F, G, H>
     /// <param name="caseSix">The action to execute when the inner type is <typeparamref name="F"/></param>
     /// <param name="caseSeven">The action to execute when the inner type is <typeparamref name="G"/></param>
     /// <param name="caseEight">The action to execute when the inner type is <typeparamref name="H"/></param>
-    public void Effect(
+    /// <returns>Unit.</returns>
+    public Unit Effect(
         Action<A> caseOne,
         Action<B> caseTwo,
         Action<C> caseThree,
@@ -132,29 +133,30 @@ public sealed class Union8<A, B, C, D, E, F, G, H>
         {
             case 1:
                 caseOne(Item1);
-                return;
+                break;
             case 2:
                 caseTwo(Item2);
-                return;
+                break;
             case 3:
                 caseThree(Item3);
-                return;
+                break;
             case 4:
                 caseFour(Item4);
-                return;
+                break;
             case 5:
                 caseFive(Item5);
-                return;
+                break;
             case 6:
                 caseSix(Item6);
-                return;
+                break;
             case 7:
                 caseSeven(Item7);
-                return;
+                break;
             case 8:
                 caseEight(Item8);
-                return;
+                break;
         }
-    }
 
+        return Unit.Default;
+    }
 }
