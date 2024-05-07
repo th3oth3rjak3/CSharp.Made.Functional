@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
+using Functional.Common;
+
 using static Functional.Common.CommonExtensions;
 
 namespace Functional.Test.Common;
@@ -162,4 +164,84 @@ public class CommonExtensionTests
         result1.ShouldBeTrue();
         result2.ShouldBeTrue();
     }
+
+    [TestMethod]
+    public void ItShouldPipeAndReturnUnit()
+    {
+        var list = new List<int>();
+        var input = 1;
+
+        input
+            .Pipe(input => list.Add(input), input => list.Add(input + 1))
+            .Pipe(unit => unit.ShouldBeOfType<Unit>());
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public void ItShouldPipeIgnoringTheInput() =>
+        "something to ignore"
+            .Pipe(() => Unit.Default)
+            .ShouldBe(Unit.Default);
+
+    [TestMethod]
+    public async Task ItShouldPipeAndReturnUnitAsync()
+    {
+        var list = new List<int>();
+        var input = 1;
+
+        await input
+            .AsAsync()
+            .PipeAsync(input => list.Add(input), input => list.Add(input + 1))
+            .PipeAsync(unit => unit.ShouldBeOfType<Unit>());
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public async Task ItShouldPipeAndReturnUnitAsyncWithTaskReturns()
+    {
+        var list = new List<int>();
+        var input = 1;
+
+        Task addToList(int input) => Task.Run(() => list.Add(input));
+
+        await input
+            .AsAsync()
+            .PipeAsync(input => addToList(input), input => addToList(input + 1))
+            .PipeAsync(unit => unit.ShouldBeOfType<Unit>());
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public async Task ItShouldPipeAndReturnUnitAsyncWithActions()
+    {
+        var list = new List<int>();
+        var input = 1;
+
+        await input
+            .AsAsync()
+            .PipeAsync(() => list.Add(42), () => list.Add(43))
+            .PipeAsync(unit => unit.ShouldBeOfType<Unit>());
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(42);
+        list[1].ShouldBe(43);
+    }
+
+    [TestMethod]
+    public async Task ItShouldPipeAndIgnoreInput() =>
+        await "ignored input"
+            .AsAsync()
+            .PipeAsync(() => Unit.Default)
+            .TapAsync(value => value.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
 }

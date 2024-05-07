@@ -611,4 +611,137 @@ public class OptionTests
         .Map(thing => thing.ToString())
         .Reduce(() => "none")
         .ShouldBe("none");
+
+    [TestMethod]
+    public void ItShouldMapOptionsAndIgnoreInputs() =>
+        Option.Some("arbitrary value")
+            .Map(() => "new value")
+            .EffectSome(value => value.ShouldBe("new value"))
+            .ShouldBeOfType<Unit>();
+
+    [TestMethod]
+    public void ItShouldHandleEffectsForOptionsWhenSome()
+    {
+        var someResult = false;
+        var noneResult = false;
+
+        Option.Some("value")
+            .Effect(() => someResult = true, () => noneResult = true);
+
+        someResult.ShouldBeTrue();
+        noneResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleEffectsForOptionsWhenNone()
+    {
+        var someResult = false;
+        var noneResult = false;
+
+        Option.None<string>()
+            .Effect(() => someResult = true, () => noneResult = true);
+
+        someResult.ShouldBeFalse();
+        noneResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithActionsWhenSome()
+    {
+        var someResult = false;
+        var noneResult = false;
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectAsync(() => someResult = true, () => noneResult = true);
+
+        someResult.ShouldBeTrue();
+        noneResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithActionsWhenNone()
+    {
+        var someResult = false;
+        var noneResult = false;
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectAsync(() => someResult = true, () => noneResult = true);
+
+        someResult.ShouldBeFalse();
+        noneResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectSomeWhenSomeWithInput()
+    {
+        var someResult = string.Empty;
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectSomeAsync(value => someResult = value);
+
+        someResult.ShouldBe("value");
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectSomeWhenNoneWithInput()
+    {
+        var someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectSomeAsync(value => someResult = value);
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectSomeWhenSomeNoInput()
+    {
+        var someResult = string.Empty;
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectSomeAsync(() => someResult = "something");
+
+        someResult.ShouldBe("something");
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectSomeWhenNoneNoInput()
+    {
+        var someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectSomeAsync(() => someResult = "something");
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectNoneWhenSome()
+    {
+        var noneResult = string.Empty;
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectNoneAsync(() => noneResult = "none");
+
+        noneResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectNoneWhenNone()
+    {
+        var noneResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectNoneAsync(() => noneResult = "none");
+
+        noneResult.ShouldBe("none");
+    }
 }

@@ -25,8 +25,7 @@ public static class CommonExtensions
     /// <typeparam name="T">Any input type.</typeparam>
     /// <param name="_">This parameter is ignored.</param>
     [ExcludeFromCodeCoverage]
-    public static void Ignore<T>(this T? _)
-    { }
+    public static void Ignore<T>(this T? _) { }
 
     /// <summary>
     /// Ignores the output of an async function. C# does this by default in functions
@@ -97,6 +96,18 @@ public static class CommonExtensions
         input
             .Tap(actions)
             .Pipe(_ => Unit.Default);
+
+    /// <summary>
+    /// Perform a series of actions on the input and return unit.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <typeparam name="TOutput">The output type.</typeparam>
+    /// <param name="input">The input value.</param>
+    /// <param name="mapper">A mapping function with no inputs.</param>
+    /// <returns>Unit.</returns>
+    public static TOutput Pipe<T, TOutput>(this T input, Func<TOutput> mapper) =>
+        input.Pipe(_ => mapper());
+
 
     /// <summary>
     /// Wraps an object with a ValueTask to be used with Async functions.
@@ -207,5 +218,31 @@ public static class CommonExtensions
             .AsAsync()
             .TapAsync(actions)
             .PipeAsync(_ => Unit.Default);
+
+    /// <summary>
+    /// Used to wrap an async input that performs actions.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">A series of actions to perform on the input.</param>
+    /// <returns>An awaitable Unit.</returns>
+    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Action[] actions) =>
+        await (await input)
+            .Tap(actions)
+            .AsAsync()
+            .PipeAsync(_ => Unit.Default);
+
+    /// <summary>
+    /// Used to wrap an async input that performs actions.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <typeparam name="TOutput">The type of the output.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="mapper">A mapping function that ignores the input from the pipeline.</param>
+    /// <returns>An awaitable Unit.</returns>
+    public static async Task<TOutput> PipeAsync<TInput, TOutput>(this Task<TInput> input, Func<TOutput> mapper) =>
+        await (await input)
+            .Pipe(_ => mapper())
+            .AsAsync();
 
 }

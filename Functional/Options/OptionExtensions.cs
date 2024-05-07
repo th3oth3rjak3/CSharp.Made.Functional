@@ -180,21 +180,20 @@ public static class OptionExtensions
                 Option.None<TResult>);
 
     /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
+    /// When an Option is Some, map to a new value, ignoring the old value.
     /// </summary>
     /// <typeparam name="T">The original type.</typeparam>
+    /// <typeparam name="TResult">The new type.</typeparam>
     /// <param name="option">The option to be mapped.</param>
-    /// <param name="action">An action to be performed when some.</param>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
-    public static Option<Unit> Map<T>(
+    public static Option<TResult> Map<T, TResult>(
         this Option<T> option,
-        Action<T> action) =>
+        Func<TResult> mapper) =>
         option
             .Match(
-                some => Option.Some(Unit.Default)
-                    .Tap(() => action(some)),
-                Option.None<Unit>);
+                _ => mapper().Optional(),
+                Option.None<TResult>);
 
     /// <summary>
     /// When an Option is Some, map the existing
@@ -211,22 +210,6 @@ public static class OptionExtensions
     {
         var result = await option;
         return result.Map(mapper);
-    }
-
-    /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
-    /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
-    /// <param name="action">A mapping function to convert the contents of a Some.</param>
-    /// <returns>A new option.</returns>
-    public static async Task<Option<Unit>> MapAsync<T>(
-        this Task<Option<T>> option,
-        Action<T> action)
-    {
-        var result = await option;
-        return result.Map(action);
     }
 
     /// <summary>
@@ -259,30 +242,6 @@ public static class OptionExtensions
     /// value to a new type with a provided function.
     /// </summary>
     /// <typeparam name="T">The original type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
-    /// <param name="action">A mapping function to convert the contents of a Some.</param>
-    /// <returns>A new option.</returns>
-    public static async Task<Option<Unit>> MapAsync<T>(
-        this Task<Option<T>> option,
-        Func<T, Task> action)
-    {
-        var result = await option;
-
-        if (result.IsNone) return Option.None<Unit>();
-
-        var contents = result.Unwrap()!;
-
-        // value will be non-null because the union was some.
-        await action(contents);
-        return Unit.Default.Pipe(Option.Some);
-
-    }
-
-    /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
-    /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
     /// <typeparam name="TResult">The new type.</typeparam>
     /// <param name="option">The option to be mapped.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
@@ -297,27 +256,6 @@ public static class OptionExtensions
         var contents = await option.Unwrap()!;
 
         return mapper(contents).Optional();
-    }
-
-    /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
-    /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
-    /// <param name="action">A mapping function to convert the contents of a Some.</param>
-    /// <returns>A new option.</returns>
-    public static async Task<Option<Unit>> MapAsync<T>(
-        this Option<Task<T>> option,
-        Action<T> action)
-    {
-        if (option.IsNone) return Option.None<Unit>();
-
-        // value will be non-null because the union was some.
-        var contents = await option.Unwrap()!;
-
-        action(contents);
-        return Unit.Default.Pipe(Option.Some);
     }
 
     /// <summary>

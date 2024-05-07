@@ -571,5 +571,193 @@ public class ResultTests
     public void ItShouldHandleEffectForErrorOnly() =>
         Result.Error<string>(new Exception("It's a problem"))
             .EffectError(error => error.ShouldBeOfType<Exception>());
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithOkPlainAction()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Ok<string, string>("It's ok")
+            .AsAsync()
+            .EffectAsync(() => okResult = true, error => throw new ShouldAssertException("It shouldn't have executed this branch."));
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithErrorPlainAction()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Error<string>(new Exception("It's an error!"))
+            .AsAsync()
+            .EffectAsync(ok => throw new ShouldAssertException("It shouldn't have been ok."), () => errorResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithPlainActions()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Error<string>(new Exception("It's an error!"))
+            .AsAsync()
+            .EffectAsync(() => okResult = true, () => errorResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+
+        okResult = false;
+        errorResult = false;
+
+        await Result.Ok<string, Exception>("It's ok")
+            .AsAsync()
+            .EffectAsync(() => okResult = true, () => errorResult = true);
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectOkAsyncWhenOk()
+    {
+        var okResult = false;
+        var okContents = string.Empty;
+        var errorResult = false;
+
+        await Result.Ok<string, Exception>("it's okay")
+            .AsAsync()
+            .EffectOkAsync(ok =>
+            {
+                okContents = ok;
+                okResult = true;
+            });
+
+        okResult.ShouldBeTrue();
+        okContents.ShouldBe("it's okay");
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectOkAsyncWhenOkNoInput()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Ok<string, Exception>("it's okay")
+            .AsAsync()
+            .EffectOkAsync(() => okResult = true);
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectOkAsyncWhenError()
+    {
+        var okResult = false;
+        var okContents = string.Empty;
+        var errorResult = false;
+
+        await Result.Error<string>(new Exception("It's an error"))
+            .AsAsync()
+            .EffectOkAsync(ok =>
+            {
+                okContents = ok;
+                okResult = true;
+            });
+
+        okResult.ShouldBeFalse();
+        okContents.ShouldBe(string.Empty);
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectOkAsyncWhenErrorNoInput()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Error<string>(new Exception("It's an error"))
+            .AsAsync()
+            .EffectOkAsync(() => okResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectErrorAsyncWhenError()
+    {
+        var okResult = false;
+        var errorContents = string.Empty;
+        var errorResult = false;
+
+        await Result.Error<string>(new Exception("It's an error"))
+            .AsAsync()
+            .EffectErrorAsync(err =>
+            {
+                errorContents = err.Message;
+                errorResult = true;
+            });
+
+        okResult.ShouldBeFalse();
+        errorContents.ShouldBe("It's an error");
+        errorResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectErrorAsyncWhenErrorNoInput()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Error<string>(new Exception("It's an error"))
+            .AsAsync()
+            .EffectErrorAsync(() => errorResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectErrorAsyncWhenOk()
+    {
+        var okResult = false;
+        var errorContents = string.Empty;
+        var errorResult = false;
+
+        await Result.Ok<string, Exception>("it's okay")
+            .AsAsync()
+            .EffectErrorAsync(err =>
+            {
+                errorContents = err.Message;
+                errorResult = true;
+            });
+
+        okResult.ShouldBeFalse();
+        errorContents.ShouldBe(string.Empty);
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectErrorAsyncWhenOkNoInput()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        await Result.Ok<string, Exception>("it's okay")
+            .AsAsync()
+            .EffectErrorAsync(() => errorResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeFalse();
+    }
 }
 

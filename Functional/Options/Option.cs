@@ -52,7 +52,16 @@ public sealed record Option<T>
     /// Perform a side-effect on an option type.
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
-    public Unit Effect(Action<T> doWhenSome) =>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    public Unit Effect(Action doWhenSome, Action doWhenNone) =>
+        Union
+            .Effect(_ => doWhenSome(), _ => doWhenNone());
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// </summary>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    public Unit EffectSome(Action<T> doWhenSome) =>
         Union
             .Effect(
                 some => doWhenSome(some.Contents),
