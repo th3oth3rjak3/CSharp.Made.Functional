@@ -565,7 +565,7 @@ public class ResultTests
     [TestMethod]
     public void ItShouldHandleEffectForOkOnly() =>
         Result.Ok("It's ok")
-            .Effect(ok => ok.ShouldBe("It's ok"));
+            .EffectOk(ok => ok.ShouldBe("It's ok"));
 
     [TestMethod]
     public void ItShouldHandleEffectForErrorOnly() =>

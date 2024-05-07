@@ -98,6 +98,16 @@ public static class CommonExtensions
             .Pipe(_ => Unit.Default);
 
     /// <summary>
+    /// Perform a series of actions while ignoring the input.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The ignored input.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
+    public static Unit Pipe<T>(this T input, params Action[] actions) =>
+        input.Tap(actions).Pipe(_ => Unit.Default);
+
+    /// <summary>
     /// Perform a series of actions on the input and return unit.
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
@@ -108,6 +118,65 @@ public static class CommonExtensions
     public static TOutput Pipe<T, TOutput>(this T input, Func<TOutput> mapper) =>
         input.Pipe(_ => mapper());
 
+    /// <summary>
+    /// Perform effects on any input type that returns unit.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input value.</param>
+    /// <param name="actions">Actions to perform on the input value.</param>
+    /// <returns>Unit.</returns>
+    public static Unit Effect<T>(this T input, params Action<T>[] actions) =>
+        input.Pipe(actions);
+
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The ignored input.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
+    public static Unit Effect<T>(this T input, params Action[] actions) =>
+        input.Pipe(actions);
+
+    /// <summary>
+    /// Perform effects on the input value.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Action<T>[] actions) =>
+        await input.PipeAsync(actions);
+
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input value to ignore.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Action[] actions) =>
+        await input.PipeAsync(actions);
+
+    /// <summary>
+    /// Perform effects on the input value.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Func<T, Task>[] actions) =>
+        await input.PipeAsync(actions);
+
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The ignored input value.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Func<Task>[] actions) =>
+        await input.PipeAsync(actions);
 
     /// <summary>
     /// Wraps an object with a ValueTask to be used with Async functions.
@@ -231,6 +300,20 @@ public static class CommonExtensions
             .Tap(actions)
             .AsAsync()
             .PipeAsync(_ => Unit.Default);
+
+    /// <summary>
+    /// Used to perform actions that return only a task.
+    /// </summary>
+    /// <typeparam name="TInput">The type of input that is ignored.</typeparam>
+    /// <param name="input">The ignored input.</param>
+    /// <param name="actions">Actions to be performed which result in a task.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Func<Task>[] actions)
+    {
+        await input;
+        actions.ToList().ForEach(async action => await action());
+        return Unit.Default;
+    }
 
     /// <summary>
     /// Used to wrap an async input that performs actions.

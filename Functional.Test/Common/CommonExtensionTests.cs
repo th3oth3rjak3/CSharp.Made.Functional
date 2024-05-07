@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 using Functional.Common;
+using Functional.Options;
 
 using static Functional.Common.CommonExtensions;
 
@@ -243,5 +244,115 @@ public class CommonExtensionTests
             .PipeAsync(() => Unit.Default)
             .TapAsync(value => value.ShouldBeOfType<Unit>())
             .IgnoreAsync();
+
+    [TestMethod]
+    public void PipeShouldHandleActionsWithNoInput()
+    {
+        var list = new List<int>();
+
+        "ignored"
+            .Pipe(
+                () => list.Add(1),
+                () => list.Add(2))
+            .ShouldBeOfType<Unit>();
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public void EffectShouldHandleActionsWithInput()
+    {
+        var effectResult = string.Empty;
+
+        "input"
+            .Effect(input => effectResult = input)
+            .ShouldBeOfType<Unit>();
+
+        effectResult.ShouldBe("input");
+    }
+
+    [TestMethod]
+    public void EffectShouldHandleActionsWithNoInput()
+    {
+        var effectResult = string.Empty;
+
+        "ignored"
+            .Effect(() => effectResult = "input")
+            .ShouldBeOfType<Unit>();
+
+        effectResult.ShouldBe("input");
+    }
+
+    [TestMethod]
+    public async Task EffectAsyncShouldHandleActionsWithInput()
+    {
+        var effectResult = string.Empty;
+
+        await "input"
+            .AsAsync()
+            .EffectAsync(input => effectResult = input)
+            .EffectAsync(unit => unit.ShouldBeOfType<Unit>());
+
+        effectResult.ShouldBe("input");
+    }
+
+    [TestMethod]
+    public async Task EffectAsyncShouldHandleActionsWithNoInput()
+    {
+        var list = new List<int>();
+
+        await "ignored"
+            .AsAsync()
+            .EffectAsync(
+                () => list.Add(1),
+                () => list.Add(2))
+            .EffectAsync(unit => unit.ShouldBeOfType<Unit>());
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public async Task EffectShouldHandleActionsWithNoInputAndTaskOutput()
+    {
+        var list = new List<int>();
+
+        async Task addListItem(int input) => await input.AsAsync().EffectAsync(input => list.Add(input));
+
+        await "ignored input"
+            .AsAsync()
+            .EffectAsync(() => addListItem(1), () => addListItem(2));
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public async Task EffectShouldHandleActionsWithInputAndTaskOutput()
+    {
+        var list = new List<int>();
+
+        async Task addListItem(int input) => await input.AsAsync().EffectAsync(input => list.Add(input));
+
+        await 1
+            .AsAsync()
+            .EffectAsync(value => addListItem(value), value => addListItem(value + 1));
+
+        list.Count.ShouldBe(2);
+        list[0].ShouldBe(1);
+        list[1].ShouldBe(2);
+    }
+
+    [TestMethod]
+    public void ItShouldHandleWeirdness()
+    {
+        Option.Some("value")
+            .Effect(value => Console.WriteLine(value), () => Console.WriteLine("None"))
+            .Effect(unit => Console.WriteLine(unit.ToString()));
+    }
 
 }

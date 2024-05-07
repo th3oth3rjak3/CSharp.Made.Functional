@@ -62,7 +62,7 @@ public sealed record Result<Ok, Error>
     /// Perform a side effect on a result type when the type is Ok.
     /// </summary>
     /// <param name="doWhenOk">An action to perform on an Ok result.</param>
-    public Unit Effect(Action<Ok> doWhenOk) =>
+    public Unit EffectOk(Action<Ok> doWhenOk) =>
         Union
             .Effect(
                 ok => doWhenOk(ok.Contents),
