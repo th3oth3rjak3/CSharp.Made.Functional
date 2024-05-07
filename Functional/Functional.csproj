@@ -12,7 +12,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</PackageProjectUrl>
-    <PackageReleaseNotes>Remove class constraints from Option.Map.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add Unit type.</PackageReleaseNotes>
     <RepositoryUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
