@@ -563,14 +563,49 @@ public class ResultTests
             .Tap(result => result.ShouldBeOfType<Result<string, Exception>>());
 
     [TestMethod]
-    public void ItShouldHandleEffectForOkOnly() =>
-        Result.Ok("It's ok")
-            .EffectOk(ok => ok.ShouldBe("It's ok"));
+    public void ItShouldHandleEffectForOkOnly()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        Result.Error<string>(new Exception("It's a problem"))
+            .EffectOk(ok => okResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeFalse();
+
+        okResult = false;
+        errorResult = false;
+
+        Result.Ok("ok")
+            .EffectOk(ok => okResult = true);
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+
+    }
 
     [TestMethod]
-    public void ItShouldHandleEffectForErrorOnly() =>
+    public void ItShouldHandleEffectForErrorOnly()
+    {
+        var okResult = false;
+        var errorResult = false;
+
         Result.Error<string>(new Exception("It's a problem"))
-            .EffectError(error => error.ShouldBeOfType<Exception>());
+            .EffectError(error => errorResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+
+        okResult = false;
+        errorResult = false;
+
+        Result.Ok("ok")
+            .EffectError(error => errorResult = true);
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeFalse();
+    }
 
     [TestMethod]
     public async Task ItShouldHandleEffectAsyncWithOkPlainAction()
@@ -758,6 +793,269 @@ public class ResultTests
 
         okResult.ShouldBeFalse();
         errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleEffectWithPlainOkAction()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        Result.Ok("value")
+            .Effect(() => okResult = true, error => errorResult = true)
+            .ShouldBeOfType<Unit>();
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleErrorEffectWithPlainOkAction()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        Result.Exception<string>("value")
+            .Effect(() => okResult = true, error => errorResult = true)
+            .ShouldBeOfType<Unit>();
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleEffectWithPlainErrorAction()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        Result.Error<string>(new Exception("error"))
+            .Effect(ok => okResult = true, () => errorResult = true)
+            .ShouldBeOfType<Unit>();
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleOkEffectWithPlainErrorAction()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        Result.Ok("value")
+            .Effect(ok => okResult = true, () => errorResult = true)
+            .ShouldBeOfType<Unit>();
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public void ItShouldHandleEffectWithPlainActions()
+    {
+        var okResult = false;
+        var errorResult = false;
+
+        Result.Ok("value")
+            .Effect(() => okResult = true, () => errorResult = true)
+            .ShouldBeOfType<Unit>();
+
+        okResult.ShouldBeTrue();
+        errorResult.ShouldBeFalse();
+
+        okResult = false;
+        errorResult = false;
+
+        Result.Error<string>(new Exception("error"))
+            .Effect(() => okResult = true, () => errorResult = true)
+            .ShouldBeOfType<Unit>();
+
+        okResult.ShouldBeFalse();
+        errorResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ItShouldCreateExceptionsWithMessages() =>
+        Result.Exception<int>("an error occurred")
+            .UnwrapError()
+            .ShouldBeOfType<Exception>();
+
+    [TestMethod]
+    public void ItShouldTapOffOfResult()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Result.Ok("value")
+            .Tap(ok => okResult = ok, err => errorResult = err.Message)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe("value");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("error")
+            .Tap(ok => okResult = ok, exn => errorResult = exn.Message)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public void ItShouldTapWithVariousActions()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Result.Ok("value")
+            .Tap(() => okResult = "new", err => errorResult = err.Message)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe("new");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("error")
+            .Tap(ok => okResult = ok, () => errorResult = "new error")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("new error");
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Ok("value")
+            .Tap(ok => okResult = ok, () => errorResult = "new error")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe("value");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("error")
+            .Tap(() => okResult = "new", exn => errorResult = exn.Message)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Ok("value")
+            .Tap(() => okResult = "new", () => errorResult = "new error")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe("new");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("error")
+            .Tap(() => okResult = "new", () => errorResult = "new error")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("new error");
+    }
+
+    [TestMethod]
+    public void ItShouldTapOk()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Result.Ok("something")
+            .TapOk(value => okResult = value)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe("something");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Ok("something")
+            .TapOk(() => okResult = "something new")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe("something new");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("something")
+            .TapOk(value => okResult = value)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("something")
+            .TapOk(() => okResult = "something new")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe(string.Empty);
+    }
+
+
+    [TestMethod]
+    public void ItShouldTapError()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Result.Exception<string>("something")
+            .TapError(value => errorResult = value.Message)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("something");
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Exception<string>("something")
+            .TapError(() => errorResult = "something new")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("something new");
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Ok("something")
+            .TapError(value => errorResult = value.Message)
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        Result.Ok("something")
+            .TapError(() => errorResult = "something new")
+            .ShouldBeOfType<Result<string, Exception>>();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe(string.Empty);
     }
 }
 
