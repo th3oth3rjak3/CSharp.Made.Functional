@@ -347,12 +347,12 @@ public class CommonExtensionTests
         list[1].ShouldBe(2);
     }
 
-    [TestMethod]
-    public void ItShouldHandleWeirdness()
-    {
-        Option.Some("value")
-            .Effect(value => Console.WriteLine(value), () => Console.WriteLine("None"))
-            .Effect(unit => Console.WriteLine(unit.ToString()));
-    }
 
+    [TestMethod]
+    public void EffectShouldWorkWithoutExtensionMethod()
+    {
+        var effectResult = false;
+        Effect(() => effectResult = true).ShouldBeOfType<Unit>();
+        effectResult.ShouldBeTrue();
+    }
 }
