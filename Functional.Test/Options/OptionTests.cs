@@ -402,30 +402,26 @@ public class OptionTests
         .ShouldBe("some value");
 
     [TestMethod]
-    public void ItShouldBeNullWhenUnwrappingNone() =>
-        Option.None<string>()
-            .Unwrap()
-            .ShouldBeNull();
+    public void ItShouldThrowWhenUnwrappingNone()
+    {
+        void callback() => Option.None<int>().Unwrap();
+        Assert.ThrowsException<InvalidOperationException>(callback);
+    }
 
     [TestMethod]
-    public void ItShouldBeDefaultWhenUnwrappingIntegers() =>
-        Option.None<int>()
-            .Unwrap()
-            .ShouldBe(0);
+    public async Task ItShouldThrowWhenUnwrappingNoneAsync()
+    {
+        Task callback() => Option.None<int>().AsAsync().UnwrapAsync();
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(callback);
+    }
 
     [TestMethod]
-    public async Task ItShouldBeNullWhenUnwrappingNoneAsync() =>
-        await Option.None<string>()
+    public async Task ItShouldSuccessfullyUnwrapSomeAsync() =>
+        await Option.Some(1)
             .AsAsync()
             .UnwrapAsync()
-            .TapAsync(value => value.ShouldBeNull());
-
-    [TestMethod]
-    public async Task ItShouldBeDefaultWhenUnwrappingIntegersAsync() =>
-        await Option.None<int>()
-            .AsAsync()
-            .UnwrapAsync()
-            .TapAsync(value => value.ShouldBe(0));
+            .TapAsync(value => value.ShouldBe(1))
+            .IgnoreAsync();
 
     [TestMethod]
     public async Task ItShouldDoEffectsAsyncWhenSome()
@@ -1008,6 +1004,408 @@ public class OptionTests
             .ShouldBeOfType<Option<string>>();
 
         someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeActionTNoneAction()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void doSomeWork(string input) => someResult = input;
+        void doNoneWork() => noneResult = "none";
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("value");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeActionTNoneFuncTask()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void doSomeWork(string input) => someResult = input;
+        Task doNoneWork() => EffectAsync(() => noneResult = "none");
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("value");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeActionNoneAction()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void doSomeWork() => someResult = "some";
+        void doNoneWork() => noneResult = "none";
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeActionNoneFuncTask()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void doSomeWork() => someResult = "some";
+        Task doNoneWork() => EffectAsync(() => noneResult = "none");
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeFuncTTaskNoneAction()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        Task doSomeWork(string input) => EffectAsync(() => someResult = input);
+        void doNoneWork() => noneResult = "none";
+
+        await Option.Some("some")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeFuncTTaskNoneFuncTask()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        Task doSomeWork(string input) => EffectAsync(() => someResult = input);
+        Task doNoneWork() => EffectAsync(() => noneResult = "none");
+
+        await Option.Some("some")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeFuncTaskNoneAction()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        Task doSomeWork() => EffectAsync(() => someResult = "some");
+        void doNoneWork() => noneResult = "none";
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncSomeFuncTaskNoneFuncTask()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        Task doSomeWork() => EffectAsync(() => someResult = "some");
+        Task doNoneWork() => EffectAsync(() => noneResult = "none");
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapAsync(doSomeWork, doNoneWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapSomeAsyncActionT()
+    {
+        var someResult = string.Empty;
+
+        void doSomeWork(string input) => someResult = input;
+
+
+        await Option.Some("some")
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapSomeAsyncAction()
+    {
+        var someResult = string.Empty;
+
+        void doSomeWork() => someResult = "some";
+
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapSomeAsyncFuncTTask()
+    {
+        var someResult = string.Empty;
+
+        Task doSomeWork(string input) => EffectAsync(() => someResult = input);
+
+
+        await Option.Some("some")
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapSomeAsyncFuncTask()
+    {
+        var someResult = string.Empty;
+
+        Task doSomeWork() => EffectAsync(() => someResult = "some");
+
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("some");
+
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapSomeAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapNoneAsyncAction()
+    {
+        var noneResult = string.Empty;
+
+        void doSomeWork() => noneResult = "none";
+
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapNoneAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        noneResult.ShouldBe(string.Empty);
+
+        noneResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapNoneAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapNoneAsyncFuncTask()
+    {
+        var noneResult = string.Empty;
+
+        Task doSomeWork() => EffectAsync(() => noneResult = "none");
+
+
+        await Option.Some("value")
+            .AsAsync()
+            .TapNoneAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
+        noneResult.ShouldBe(string.Empty);
+
+        noneResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .TapNoneAsync(doSomeWork)
+            .TapAsync(output => output.ShouldBeOfType<Option<string>>())
+            .IgnoreAsync();
+
         noneResult.ShouldBe("none");
     }
 }

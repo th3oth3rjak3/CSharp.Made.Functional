@@ -91,18 +91,21 @@ public sealed record Option<T>
 
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
-    /// contains some value. If an option is None, it will return the default value.
+    /// contains some value. If an option is None, it will throw an InvalidOperationException.
     /// <br /><br />
-    /// This means that the value will be null for reference types or the standard default value for 
-    /// primitive types. For example Option.None&lt;int&gt;.Unwrap() will return 0.
+    /// For example Option.None&lt;int&gt;.Unwrap() will throw an exception.
     /// <br /><br />
     /// In order to use this safely, it is recommended to first
     /// check to see if the Option contains some value using 
     /// <see cref="Option&lt;T&gt;.IsSome"/> or <see cref="Option&lt;T&gt;.IsNone"/>.
     /// </summary>
     /// <returns>The inner value of the Option.</returns>
-    public T? Unwrap() =>
-        Contents;
+    /// <exception cref="InvalidOperationException">Thrown when unwrapping a None.</exception>
+    public T Unwrap()
+    {
+        if (Contents is null || this.IsNone) throw new InvalidOperationException("Failed to unwrap a value because it was None. Be sure to use the IsSome method to check the option before using Unwrap.");
+        return Contents;
+    }
 
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
@@ -114,7 +117,7 @@ public sealed record Option<T>
     {
         if (IsSome)
         {
-            whenSome(Contents!);
+            whenSome(Unwrap());
         }
         else
         {
@@ -139,24 +142,46 @@ public sealed record Option<T>
     /// </summary>
     /// <param name="whenSome">Perform this action when the value is Some.</param>
     /// <returns>The input value.</returns>
-    public Option<T> TapSome(Action<T> whenSome) =>
-        Tap(whenSome, () => { });
+    public Option<T> TapSome(params Action<T>[] whenSome)
+    {
+        if (IsSome)
+        {
+            var contents = this.Unwrap();
+            whenSome.ToList().ForEach(action => action(contents));
+        }
+
+        return this;
+    }
 
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
     /// </summary>
     /// <param name="whenSome">Perform this action when the value is Some.</param>
     /// <returns>The input value.</returns>
-    public Option<T> TapSome(Action whenSome) =>
-        TapSome(_ => whenSome());
+    public Option<T> TapSome(params Action[] whenSome)
+    {
+        if (this.IsSome)
+        {
+            whenSome.ToList().ForEach(action => action());
+        }
+
+        return this;
+    }
 
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is None.
     /// </summary>
     /// <param name="whenNone">Perform this action when the value is None.</param>
     /// <returns>The input value.</returns>
-    public Option<T> TapNone(Action whenNone) =>
-        Tap(_ => { }, whenNone);
+    public Option<T> TapNone(params Action[] whenNone)
+    {
+        if (this.IsNone)
+        {
+            whenNone.ToList().ForEach(action => action());
+        }
+
+        return this;
+    }
 }
 
 /// <summary>

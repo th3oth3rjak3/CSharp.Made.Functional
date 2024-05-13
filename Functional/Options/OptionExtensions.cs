@@ -76,8 +76,6 @@ public static class OptionExtensions
     /// <param name="whenSome">The function to execute when some.</param>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any other type pretends to be an 
-    /// Option type other than Some or None.</exception>
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, TResult> whenSome,
@@ -87,8 +85,7 @@ public static class OptionExtensions
 
         return option.IsNone
             ? whenNone()
-            // value will be non-null because the union was some.
-            : whenSome(option.Unwrap()!);
+            : whenSome(option.Unwrap());
     }
 
     /// <summary>
@@ -100,8 +97,6 @@ public static class OptionExtensions
     /// <param name="whenSome">The function to execute when some.</param>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any other type pretends to be an 
-    /// Option type other than Some or None.</exception>
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
@@ -111,8 +106,7 @@ public static class OptionExtensions
 
         if (result.IsNone) return whenNone();
 
-        // value will be non-null because the union was some.
-        return await whenSome(result.Unwrap()!);
+        return await whenSome(result.Unwrap());
     }
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
@@ -123,8 +117,6 @@ public static class OptionExtensions
     /// <param name="whenSome">The function to execute when some.</param>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any other type pretends to be an 
-    /// Option type other than Some or None.</exception>
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, TResult> whenSome,
@@ -134,8 +126,7 @@ public static class OptionExtensions
 
         if (result.IsNone) return await whenNone();
 
-        // value will be non-null because the union was some.
-        return whenSome(result.Unwrap()!);
+        return whenSome(result.Unwrap());
     }
 
     /// <summary>
@@ -147,8 +138,6 @@ public static class OptionExtensions
     /// <param name="whenSome">The function to execute when some.</param>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any other type pretends to be an 
-    /// Option type other than Some or None.</exception>
     public static async Task<TResult> MatchAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
@@ -158,8 +147,7 @@ public static class OptionExtensions
 
         if (result.IsNone) return await whenNone();
 
-        // value will be non-null because the union was some.
-        return await whenSome(result.Unwrap()!);
+        return await whenSome(result.Unwrap());
     }
 
     /// <summary>
@@ -229,10 +217,7 @@ public static class OptionExtensions
 
         if (result.IsNone) return Option.None<TResult>();
 
-        var contents = result.Unwrap()!;
-
-        // value will be non-null because the union was some.
-        return (await mapper(contents))
+        return (await mapper(result.Unwrap()))
             .Optional();
 
     }
@@ -252,8 +237,7 @@ public static class OptionExtensions
     {
         if (option.IsNone) return Option.None<TResult>();
 
-        // value will be non-null because the union was some.
-        var contents = await option.Unwrap()!;
+        var contents = await option.Unwrap();
 
         return mapper(contents).Optional();
     }
@@ -360,8 +344,7 @@ public static class OptionExtensions
     {
         var result = await optional;
 
-        // value will be non-null because the union was some.
-        return result.IsSome ? result.Unwrap()! : await alternate;
+        return result.IsSome ? result.Unwrap() : await alternate;
     }
 
     /// <summary>
@@ -376,9 +359,7 @@ public static class OptionExtensions
         Func<Task<T>> alternate)
     {
         var result = await optional;
-
-        // value will be non-null because the union was some.
-        return result.IsSome ? result.Unwrap()! : await alternate();
+        return result.IsSome ? result.Unwrap() : await alternate();
     }
 
     /// <summary>
@@ -394,8 +375,7 @@ public static class OptionExtensions
     {
         if (optional.IsNone) return alternate;
 
-        // value will be non-null because the union was some.
-        return await optional.Unwrap()!;
+        return await optional.Unwrap();
     }
 
     /// <summary>
@@ -411,8 +391,7 @@ public static class OptionExtensions
     {
         if (optional.IsNone) return alternate();
 
-        // value will be non-null because the union was some.
-        return await optional.Unwrap()!;
+        return await optional.Unwrap();
     }
 
     /// <summary>
@@ -428,8 +407,7 @@ public static class OptionExtensions
     {
         if (optional.IsNone) return await alternate;
 
-        // value will be non-null because the union was some.
-        return await optional.Unwrap()!;
+        return await optional.Unwrap();
     }
 
     /// <summary>
@@ -445,8 +423,7 @@ public static class OptionExtensions
     {
         if (optional.IsNone) return await alternate();
 
-        // value will be non-null because the union was some.
-        return await optional.Unwrap()!;
+        return await optional.Unwrap();
     }
 
     /// <summary>
@@ -496,7 +473,7 @@ public static class OptionExtensions
 
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
-    /// contains some value. If an option is None, it will return null.
+    /// contains some value. If an option is None, it will throw an <see cref="InvalidOperationException"/>
     /// <br />
     /// In order to use this safely, it is recommended to first
     /// check to see if the Option contains some value using 
@@ -505,8 +482,15 @@ public static class OptionExtensions
     /// <typeparam name="T">The inner type of the option.</typeparam>
     /// <param name="optional">The option to unwrap.</param>
     /// <returns>The inner value of the Option.</returns>
-    public static async Task<T?> UnwrapAsync<T>(this Task<Option<T>> optional) =>
-        (await optional).Unwrap();
+    /// <exception cref="InvalidOperationException">Thrown when unwrapping a None.</exception>
+    public static async Task<T> UnwrapAsync<T>(this Task<Option<T>> optional)
+    {
+        var theOption = await optional;
+
+        if (theOption.IsNone) throw new InvalidOperationException("Failed to unwrap the option because it was None. Be sure to check the Option by using the IsSome method before unwrapping.");
+
+        return theOption.Unwrap();
+    }
 
     /// <summary>
     /// Perform a side-effect on an option type.
@@ -601,5 +585,220 @@ public static class OptionExtensions
         if (option.IsNone) await doWhenNone();
 
         return Unit.Default;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action<T> whenSome, Action whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) whenSome(theOption.Unwrap());
+        if (theOption.IsNone) whenNone();
+
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action<T> whenSome, Func<Task> whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) whenSome(theOption.Unwrap());
+        if (theOption.IsNone) await whenNone();
+
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action whenSome, Action whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) whenSome();
+        if (theOption.IsNone) whenNone();
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action whenSome, Func<Task> whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) whenSome();
+        if (theOption.IsNone) await whenNone();
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<T, Task> whenSome, Action whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) await whenSome(theOption.Unwrap());
+        if (theOption.IsNone) whenNone();
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<T, Task> whenSome, Func<Task> whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) await whenSome(theOption.Unwrap());
+        if (theOption.IsNone) await whenNone();
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<Task> whenSome, Action whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) await whenSome();
+        if (theOption.IsNone) whenNone();
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<Task> whenSome, Func<Task> whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) await whenSome();
+        if (theOption.IsNone) await whenNone();
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option when the option is Some.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Action<T>[] whenSome) =>
+        (await optional)
+            .TapSome(whenSome);
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option when the option is Some.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Action[] whenSome) =>
+        (await optional)
+            .TapSome(whenSome);
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option when the option is Some.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Func<T, Task>[] whenSome)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome)
+        {
+            var contents = theOption.Unwrap();
+            whenSome.ToList().ForEach(async action => await action(contents));
+        }
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option when the option is Some.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenSome">The action to perform when Some.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Func<Task>[] whenSome)
+    {
+        var theOption = await optional;
+        if (theOption.IsSome)
+        {
+            whenSome.ToList().ForEach(async action => await action());
+        }
+        return theOption;
+    }
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option when the option is None.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapNoneAsync<T>(this Task<Option<T>> optional, params Action[] whenNone) =>
+        (await optional)
+            .TapNone(whenNone);
+
+    /// <summary>
+    /// Tap into an option and perform a side-effect without consuming the option when the option is None.
+    /// </summary>
+    /// <typeparam name="T">The type of the option when Some.</typeparam>
+    /// <param name="optional">The option to tap.</param>
+    /// <param name="whenNone">The action to perform when None.</param>
+    /// <returns>The input option.</returns>
+    public static async Task<Option<T>> TapNoneAsync<T>(this Task<Option<T>> optional, params Func<Task>[] whenNone)
+    {
+        var theOption = await optional;
+        if (theOption.IsNone)
+        {
+            whenNone.ToList().ForEach(async action => await action());
+        }
+        return theOption;
     }
 }
