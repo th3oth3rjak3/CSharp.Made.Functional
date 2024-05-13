@@ -315,7 +315,7 @@ public static class Program
 ```
 ### Option EffectSome and EffectNone
 
-If we only want to perform an effect when an `Option` is `Some` or when it's `None`, we can use the `EffectSome` and `EffectNone` methods.
+If we only want to perform an effect when an `Option` is `Some` or when it's `None`, we can use the `EffectSome` and `EffectNone` methods which will consume the `Option`.
 
 
 ```C# title="Program.cs" linenums="1" hl_lines="13 17 21 25"
@@ -349,6 +349,78 @@ public static class Program
 
 ```
 
+### Option Tap, TapSome and TapNone
+
+If we want to `Tap` into the `Option` and perform some effect without consuming the value, we can use `Tap`, `TapSome`, and `TapNone`. With `Tap`, some kind of action must be provided for both the `Some` and `None` cases.
+
+For `TapSome` and `TapNone`, one or more actions can be provided to occur when the `Option` meets that criteria. This will allow us to only perform actions when the value is `Some` or `None` for instance.
+
+
+```C# title="Program.cs" linenums="1" hl_lines="13 20-22 26"
+namespace ScratchPad;
+
+using Functional.Options;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // Actions can be performed when some and none.
+        Option.Some("value")
+            .Tap(some => Console.WriteLine(some), () => Console.WriteLine("none"))
+            // The Option is not consumed so we can still use it afterwards.
+            .Map(some => some + "!");
+
+        // We can do multiple things when the value is Some with a TapSome.
+        string? temp = null;
+        Option.Some("value")
+            .TapSome(
+                value => Console.WriteLine(value),
+                value => temp = value);
+
+        // Nothing happens here since the value is a None.
+        Option.None<string>()
+            .TapSome(value => Console.WriteLine(value));
+    }
+}
+
+```
+
+### Option Unwrap
+
+If we need to get the value out of an `Option` for some reason and it's impractical to use `Match`, `Map`, `Tap`, or `Effect`, we can `Unwrap` the value to get its inner contents.
+It's vital to check to see if the `Option` is `Some` before doing this, otherwise it will throw an exception!
+
+```C# title="Program.cs" linenums="1" hl_lines="12 15 19-22"
+namespace ScratchPad;
+
+using Functional.Options;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // This will unwrap fine because the value is some.
+        string value = Option.Some("value").Unwrap();
+
+        // This will throw an exception because the value is none.
+        string never = Option.None<string>().Unwrap();
+
+        // To do this safely, we need to always check the Option first!
+        var option = Option.None<string>();
+        if (option.IsSome)
+        {
+            value = option.Unwrap();
+        }
+    }
+}
+
+```
+
 ### Async Options
 
 Asynchronous support is also provided in this library. The `Optional` extension also works on `Task<T>` where `T` is some type. This means that `Task<T>` or `Task<T?>` becomes `Task<Option<T>>`.
@@ -361,6 +433,13 @@ Async Option Methods:
 - `MatchAsync`
 - `BindAsync`
 - `EffectAsync`
+- `EffectSomeAsync`
+- `EffectNoneAsync`
+- `TapAsync`
+- `TapSomeAsync`
+- `TapNoneAsync`
+- `UnwrapAsync`
+- `UnwrapErrorAsync`
 
 ```C# title="Program.cs" linenums="1" hl_lines="26-27 33-34 38-40"
 using System;
@@ -979,6 +1058,81 @@ public static class Program
 }
 ```
 
+### Result Tap, TapOk, and TapError
+
+If we want to `Tap` into the `Result` and perform some effect without consuming the value, we can use `Tap`, `TapOk`, and `TapError`. With `Tap`, some kind of action must be provided for both the `Ok` and `Error` cases.
+
+For `TapOk` and `TapError`, one or more actions can be provided to occur when the `Result` meets that criteria. This will allow us to only perform actions when the value is `Ok` or `Error` for instance.
+
+
+
+```C# title="Program.cs" linenums="1" hl_lines="13 20-22 28"
+namespace ScratchPad;
+
+using Functional.Results;
+
+using System;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // Actions can be performed when ok and error.
+        Result.Ok("value")
+            .Tap(ok => Console.WriteLine(ok), exception => Console.WriteLine(exception.Message))
+            // The Result is not consumed so we can still use it afterwards.
+            .Map(ok => ok + "!");
+
+        // We can do multiple things when the value is Ok with a TapOk.
+        string? temp = null;
+        Result.Ok("value")
+            .TapOk(
+                value => Console.WriteLine(value),
+                value => temp = value);
+
+        // Nothing happens here since the value is an error.
+        // Result.Exception<T> creates a Result<T, Exception>.
+        // The value "Error!" is used as the exception message.
+        Result.Exception<string>("Error!")
+            .TapOk(value => Console.WriteLine(value));
+    }
+}
+
+```
+
+### Result Unwrap and UnwrapError
+
+If we need to get the value out of a `Result` for some reason and it's impractical to use `Match`, `Map`, `Tap`, or `Effect`, we can `Unwrap` or `UnwrapError` in order to get its inner contents.
+It's vital to check to see if the `Result` is `Ok` before using `Unwrap` and see if it's `Error` before using `UnwrapError`, otherwise it will throw an exception!
+
+```C# title="Program.cs" linenums="1" hl_lines="10 13 17-24"
+namespace ScratchPad;
+
+using Functional.Results;
+
+public static class Program
+{
+    public static void Main()
+    {
+        // This will unwrap fine because the value is Ok.
+        string value = Result.Ok("value").Unwrap();
+
+        // This will throw an exception because the value is an error.
+        string never = Result.Exception<string>("Error!").Unwrap();
+
+        // To do this safely, we need to always check the Option first!
+        var result = Result.Exception<string>("Error!");
+        if (result.IsOk)
+        {
+            value = result.Unwrap();
+        }
+        if (result.IsError)
+        {
+            value = result.UnwrapError().Message;
+        }
+    }
+}
+```
 
 ### Async Results
 
@@ -991,6 +1145,13 @@ Included async methods:
 - `MatchAsync`
 - `BindAsync`
 - `EffectAsync`
+- `EffectOkAsync`
+- `EffectErrorAsync`
+- `TapAsync`
+- `TapOkAsync`
+- `TapErrorAsync`
+- `UnwrapAsync`
+- `UnwrapErrorAsync`
 
 ```C# title="Program.cs" linenums="1"
 using System;
@@ -1113,12 +1274,14 @@ public static class Program
 
 `Effect` is like a `Pipe` that consumes the input, performs some series of actions, and returns `Unit`.
 
-```C# title="Program.cs" linenums="1" hl_lines="12"
+```C# title="Program.cs" linenums="1" hl_lines="14 16-17 19-20"
 namespace ScratchPad;
 
 using Functional.Common;
 
 using System;
+
+using static Functional.Common.CommonExtensions;
 
 public static class Program
 {
@@ -1126,6 +1289,12 @@ public static class Program
     {
         "Some Random Value"
             .Effect(input => Console.WriteLine(input));
+
+        Effect(() => Console.WriteLine("another way."))
+            .Pipe(unit => "It's a unit type!");
+
+        EffectAsync(() => Console.WriteLine("This one returns a Task<Unit>!"))
+            .PipeAsync(unit => "It's another unit!");
     }
 }
 ```
