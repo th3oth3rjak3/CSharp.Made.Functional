@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using Functional.Common;
 using Functional.Options;
 
+using static Functional.Common.CommonExtensions;
+
 namespace Functional.Test.Options;
 
 [TestClass]
@@ -769,6 +771,56 @@ public class OptionTests
     }
 
     [TestMethod]
+    public async Task ItShouldHandleEffectSomeAsyncWhenUsingFuncT()
+    {
+        var someResult = string.Empty;
+
+        Task doWork(string input) => Effect(() => someResult = input).Pipe(Task.CompletedTask);
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectSomeAsync(value => doWork(value))
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("value");
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectSomeAsync(value => doWork(value))
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectSomeAsyncWhenUsingFuncTask()
+    {
+        var someResult = string.Empty;
+
+        Task doWork() => Effect(() => someResult = "doWork called").Pipe(Task.CompletedTask);
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectSomeAsync(() => doWork())
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe("doWork called");
+        someResult = string.Empty;
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectSomeAsync(() => doWork())
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        someResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
     public async Task ItShouldHandleEffectNoneWhenSome()
     {
         var noneResult = string.Empty;
@@ -790,6 +842,32 @@ public class OptionTests
             .EffectNoneAsync(() => noneResult = "none");
 
         noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectNoneAsyncForFuncTask()
+    {
+        var noneResult = string.Empty;
+
+        Task doWork() => Effect(() => noneResult = "none").Pipe(Task.CompletedTask);
+
+        await Option.None<string>()
+            .AsAsync()
+            .EffectNoneAsync(() => doWork())
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        noneResult.ShouldBe("none");
+
+        noneResult = string.Empty;
+
+        await Option.Some("value")
+            .AsAsync()
+            .EffectNoneAsync(() => doWork())
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        noneResult.ShouldBe(string.Empty);
     }
 
     [TestMethod]
