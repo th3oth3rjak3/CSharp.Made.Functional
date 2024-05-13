@@ -139,6 +139,17 @@ public static class CommonExtensions
         input.Pipe(actions);
 
     /// <summary>
+    /// Perform an effect that returns unit.
+    /// </summary>
+    /// <param name="action">An action to perform.</param>
+    /// <returns>Unit.</returns>
+    public static Unit Effect(Action action)
+    {
+        action();
+        return Unit.Default;
+    }
+
+    /// <summary>
     /// Perform effects on the input value.
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>

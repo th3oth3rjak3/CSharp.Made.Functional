@@ -57,6 +57,36 @@ public sealed record Result<Ok, Error>
             .Effect(
                 ok => doWhenOk(ok.Contents),
                 error => doWhenError(error.Contents));
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="doWhenOk">Perform this action when the value is Ok.</param>
+    /// <param name="doWhenError">Perform this action when the value is Error.</param>
+    public Unit Effect(Action doWhenOk, Action<Error> doWhenError) =>
+        Union
+            .Effect(
+                _ => doWhenOk(),
+                error => doWhenError(error.Contents));
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="doWhenOk">Perform this action when the value is Ok.</param>
+    /// <param name="doWhenError">Perform this action when the value is Error.</param>
+    public Unit Effect(Action<Ok> doWhenOk, Action doWhenError) =>
+        Union
+            .Effect(
+                ok => doWhenOk(ok.Contents),
+                _ => doWhenError());
+    /// <summary>
+    /// Perform a side-effect on a result type.
+    /// </summary>
+    /// <param name="doWhenOk">Perform this action when the value is Ok.</param>
+    /// <param name="doWhenError">Perform this action when the value is Error.</param>
+    public Unit Effect(Action doWhenOk, Action doWhenError) =>
+        Union
+            .Effect(
+                _ => doWhenOk(),
+                _ => doWhenError());
 
     /// <summary>
     /// Perform a side effect on a result type when the type is Ok.
@@ -121,6 +151,85 @@ public sealed record Result<Ok, Error>
     /// <returns>The inner value of the result.</returns>
     public Error? UnwrapError() =>
         ErrorContents;
+
+    /// <summary>
+    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// </summary>
+    /// <param name="whenOk">An action to perform when the value is ok.</param>
+    /// <param name="whenError">An action to perform when the value is an error.</param>
+    /// <returns>The input.</returns>
+    public Result<Ok, Error> Tap(Action<Ok> whenOk, Action<Error> whenError)
+    {
+        if (IsOk)
+        {
+            whenOk(OkContents!);
+        }
+        else
+        {
+            whenError(ErrorContents!);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// </summary>
+    /// <param name="whenOk">An action to perform when the value is ok.</param>
+    /// <param name="whenError">An action to perform when the value is an error.</param>
+    /// <returns>The input.</returns>
+    public Result<Ok, Error> Tap(Action whenOk, Action<Error> whenError) =>
+        Tap(_ => whenOk(), whenError);
+
+    /// <summary>
+    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// </summary>
+    /// <param name="whenOk">An action to perform when the value is ok.</param>
+    /// <param name="whenError">An action to perform when the value is an error.</param>
+    /// <returns>The input.</returns>
+    public Result<Ok, Error> Tap(Action<Ok> whenOk, Action whenError) =>
+        Tap(whenOk, _ => whenError());
+
+    /// <summary>
+    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// </summary>
+    /// <param name="whenOk">An action to perform when the value is ok.</param>
+    /// <param name="whenError">An action to perform when the value is an error.</param>
+    /// <returns>The input.</returns>
+    public Result<Ok, Error> Tap(Action whenOk, Action whenError) =>
+        Tap(_ => whenOk(), _ => whenError());
+
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// </summary>
+    /// <param name="whenOk">The action to perform when the value is ok.</param>
+    /// <returns>The input value.</returns>
+    public Result<Ok, Error> TapOk(Action<Ok> whenOk) =>
+        Tap(whenOk, _ => { });
+
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// </summary>
+    /// <param name="whenOk">The action to perform when the value is ok.</param>
+    /// <returns>The input value.</returns>
+    public Result<Ok, Error> TapOk(Action whenOk) =>
+        TapOk(_ => whenOk());
+
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// </summary>
+    /// <param name="whenError">The action to perform when the value is an error.</param>
+    /// <returns>The input value.</returns>
+    public Result<Ok, Error> TapError(Action<Error> whenError) =>
+        Tap(_ => { }, whenError);
+
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// </summary>
+    /// <param name="whenError">The action to perform when the value is an error.</param>
+    /// <returns>The input value.</returns>
+    public Result<Ok, Error> TapError(Action whenError) =>
+        TapError(_ => whenError());
 }
 
 /// <summary>
@@ -166,6 +275,18 @@ public static class Result
     /// <returns>A result that indicates a failure.</returns>
     public static Result<Ok, Exception> Error<Ok>(this Exception error) =>
         new(new ErrorResult<Exception>(error));
+
+    /// <summary>
+    /// A result that constructs an exception on your behalf.
+    /// </summary>
+    /// <typeparam name="Ok">The type of result if it had been ok.</typeparam>
+    /// <param name="errorMessage">A message to use in construction of the exception.</param>
+    /// <returns>A result that is an error.</returns>
+    public static Result<Ok, Exception> Exception<Ok>(this string errorMessage) =>
+        errorMessage
+            .Pipe(err => new Exception(err))
+            .Pipe(Result.Error<Ok>);
+
 
 }
 

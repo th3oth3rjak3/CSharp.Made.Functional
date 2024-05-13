@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
 using Functional.Common;
+using Functional.Options;
 
 using static Functional.Common.CommonExtensions;
 
@@ -83,4 +84,10 @@ public class UnitTypeTests
     [TestMethod]
     public void UnitShouldPipeNewFunctions() =>
         Assert.AreEqual(new Unit().Pipe(() => 1), 1);
+
+    [TestMethod]
+    public void UnitShouldWorkWithOptionalExtension() =>
+        (null as Unit?)
+            .Optional()
+            .ShouldBeOfType<Option<Unit>>();
 }

@@ -103,6 +103,60 @@ public sealed record Option<T>
     /// <returns>The inner value of the Option.</returns>
     public T? Unwrap() =>
         Contents;
+
+    /// <summary>
+    /// Tap into the contents of the Option and perform different actions when the value is some or none.
+    /// </summary>
+    /// <param name="whenSome">Perform this action when the value is Some.</param>
+    /// <param name="whenNone">Perform this action when the value is None.</param>
+    /// <returns>The input value.</returns>
+    public Option<T> Tap(Action<T> whenSome, Action whenNone)
+    {
+        if (IsSome)
+        {
+            whenSome(Contents!);
+        }
+        else
+        {
+            whenNone();
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Tap into the contents of the Option and perform different actions when the value is some or none.
+    /// </summary>
+    /// <param name="whenSome">Perform this action when the value is Some.</param>
+    /// <param name="whenNone">Perform this action when the value is None.</param>
+    /// <returns>The input value.</returns>
+    public Option<T> Tap(Action whenSome, Action whenNone) =>
+        Tap(_ => whenSome(), whenNone);
+
+
+    /// <summary>
+    /// Tap into the contents of the Option and perform an action when the value is Some.
+    /// </summary>
+    /// <param name="whenSome">Perform this action when the value is Some.</param>
+    /// <returns>The input value.</returns>
+    public Option<T> TapSome(Action<T> whenSome) =>
+        Tap(whenSome, () => { });
+
+    /// <summary>
+    /// Tap into the contents of the Option and perform an action when the value is Some.
+    /// </summary>
+    /// <param name="whenSome">Perform this action when the value is Some.</param>
+    /// <returns>The input value.</returns>
+    public Option<T> TapSome(Action whenSome) =>
+        TapSome(_ => whenSome());
+
+    /// <summary>
+    /// Tap into the contents of the Option and perform an action when the value is None.
+    /// </summary>
+    /// <param name="whenNone">Perform this action when the value is None.</param>
+    /// <returns>The input value.</returns>
+    public Option<T> TapNone(Action whenNone) =>
+        Tap(_ => { }, whenNone);
 }
 
 /// <summary>
