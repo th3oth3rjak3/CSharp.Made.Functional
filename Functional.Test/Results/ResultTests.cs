@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using Functional.Common;
 using Functional.Results;
 
+using static Functional.Common.CommonExtensions;
+
 namespace Functional.Test.Results;
 
 [TestClass]
@@ -714,6 +716,32 @@ public class ResultTests
     }
 
     [TestMethod]
+    public async Task ItShouldHandleEffectOkAsyncWithFuncTask()
+    {
+        var okResult = false;
+
+        Task doWork() => Effect(() => okResult = true).Pipe(Task.CompletedTask);
+
+        await Result.Ok(true)
+            .AsAsync()
+            .EffectOkAsync(() => doWork())
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        okResult.ShouldBeTrue();
+
+        okResult = false;
+
+        await Result.Exception<bool>("error")
+            .AsAsync()
+            .EffectOkAsync(() => doWork())
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        okResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
     public async Task ItShouldHandleEffectOkAsyncWhenErrorNoInput()
     {
         var okResult = false;
@@ -792,6 +820,32 @@ public class ResultTests
             .EffectErrorAsync(() => errorResult = true);
 
         okResult.ShouldBeFalse();
+        errorResult.ShouldBeFalse();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectErrorAsyncWhenFuncTask()
+    {
+        var errorResult = false;
+
+        Task doWork() => Effect(() => errorResult = true).Pipe(Task.CompletedTask);
+
+        await Result.Exception<bool>("error")
+            .AsAsync()
+            .EffectErrorAsync(() => doWork())
+            .TapAsync(output => output.ShouldBe(Unit.Default))
+            .IgnoreAsync();
+
+        errorResult.ShouldBeTrue();
+
+        errorResult = false;
+
+        await Result.Ok(true)
+            .AsAsync()
+            .EffectErrorAsync(() => doWork())
+            .TapAsync(output => output.ShouldBe(Unit.Default))
+            .IgnoreAsync();
+
         errorResult.ShouldBeFalse();
     }
 
