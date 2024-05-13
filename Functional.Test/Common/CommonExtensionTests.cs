@@ -355,4 +355,30 @@ public class CommonExtensionTests
         Effect(() => effectResult = true).ShouldBeOfType<Unit>();
         effectResult.ShouldBeTrue();
     }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithActionInput()
+    {
+        var effectResult = false;
+
+        await EffectAsync(() => effectResult = true)
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        effectResult.ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public async Task ItShouldHandleEffectAsyncWithFuncTaskInput()
+    {
+        var effectResult = false;
+
+        Task doWork() => Effect(() => effectResult = true).AsAsync();
+
+        await EffectAsync(doWork)
+            .TapAsync(output => output.ShouldBeOfType<Unit>())
+            .IgnoreAsync();
+
+        effectResult.ShouldBeTrue();
+    }
 }

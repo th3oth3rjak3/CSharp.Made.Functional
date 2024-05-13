@@ -122,10 +122,9 @@ public sealed record Result<Ok, Error>
 
     /// <summary>
     /// Unwrap is used to get the inner value of a Result when the Result type
-    /// is ok. If the result is an error, it will return the default value for the ok type.
+    /// is ok. If the result is an error, it will throw an InvalidOperationException.
     /// <br /><br />
-    /// This means that the value will be null for reference types or the standard default value for 
-    /// primitive types. For example Result.Error&lt;string, int&gt;(1).Unwrap() will return null since
+    /// For example Result.Error&lt;string, Exception&gt;(new Exception("error")).Unwrap() will throw since
     /// there was no ok value.
     /// <br /><br />
     /// In order to use this safely, it is recommended to first
@@ -133,15 +132,18 @@ public sealed record Result<Ok, Error>
     /// <see cref="Result{Ok,Error}.IsOk"/> or <see cref="Result{Ok,Error}.IsError"/>.
     /// </summary>
     /// <returns>The inner value of the result.</returns>
-    public Ok? Unwrap() =>
-        OkContents;
+    /// <exception cref="InvalidOperationException">Thrown when the result was an error and was unwrapped as ok.</exception>
+    public Ok Unwrap()
+    {
+        if (OkContents is null) throw new InvalidOperationException("Failed to unwrap the result because it was an error.");
+        return OkContents;
+    }
 
     /// <summary>
     /// UnwrapError is used to get the inner value of a Result when the Result type
-    /// is an error. If the result is ok, it will return the default value for the error type.
+    /// is an error. If the result is ok, it will throw an InvalidOperationException.
     /// <br /><br />
-    /// This means that the value will be null for reference types or the standard default value for 
-    /// primitive types. For example Result.Ok&lt;string, int&gt;("hello").Unwrap() will return 0 since
+    /// For example Result.Ok&lt;string, int&gt;("hello").UnwrapError() will throw since
     /// there was no error value.
     /// <br /><br />
     /// In order to use this safely, it is recommended to first
@@ -149,8 +151,12 @@ public sealed record Result<Ok, Error>
     /// <see cref="Result{Ok,Error}.IsOk"/> or <see cref="Result{Ok,Error}.IsError"/>.
     /// </summary>
     /// <returns>The inner value of the result.</returns>
-    public Error? UnwrapError() =>
-        ErrorContents;
+    /// <exception cref="InvalidOperationException">Thrown when the result was an ok value and unwrapped as an error.</exception>
+    public Error UnwrapError()
+    {
+        if (ErrorContents is null) throw new InvalidOperationException("Failed to unwrap the result as an error type because it was ok.");
+        return ErrorContents;
+    }
 
     /// <summary>
     /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
@@ -204,32 +210,62 @@ public sealed record Result<Ok, Error>
     /// </summary>
     /// <param name="whenOk">The action to perform when the value is ok.</param>
     /// <returns>The input value.</returns>
-    public Result<Ok, Error> TapOk(Action<Ok> whenOk) =>
-        Tap(whenOk, _ => { });
+    public Result<Ok, Error> TapOk(params Action<Ok>[] whenOk)
+    {
+        if (this.IsOk)
+        {
+            var contents = this.Unwrap();
+            whenOk.ToList().ForEach(action => action(contents));
+        }
+
+        return this;
+    }
 
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
     /// <param name="whenOk">The action to perform when the value is ok.</param>
     /// <returns>The input value.</returns>
-    public Result<Ok, Error> TapOk(Action whenOk) =>
-        TapOk(_ => whenOk());
+    public Result<Ok, Error> TapOk(params Action[] whenOk)
+    {
+        if (this.IsOk)
+        {
+            whenOk.ToList().ForEach(action => action());
+        }
+
+        return this;
+    }
 
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
     /// <param name="whenError">The action to perform when the value is an error.</param>
     /// <returns>The input value.</returns>
-    public Result<Ok, Error> TapError(Action<Error> whenError) =>
-        Tap(_ => { }, whenError);
+    public Result<Ok, Error> TapError(params Action<Error>[] whenError)
+    {
+        if (this.IsError)
+        {
+            var contents = this.UnwrapError();
+            whenError.ToList().ForEach(action => action(contents));
+        }
+
+        return this;
+    }
 
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
     /// <param name="whenError">The action to perform when the value is an error.</param>
     /// <returns>The input value.</returns>
-    public Result<Ok, Error> TapError(Action whenError) =>
-        TapError(_ => whenError());
+    public Result<Ok, Error> TapError(params Action[] whenError)
+    {
+        if (this.IsError)
+        {
+            whenError.ToList().ForEach(action => action());
+        }
+
+        return this;
+    }
 }
 
 /// <summary>

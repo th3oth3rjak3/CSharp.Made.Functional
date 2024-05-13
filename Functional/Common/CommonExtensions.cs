@@ -190,6 +190,25 @@ public static class CommonExtensions
         await input.PipeAsync(actions);
 
     /// <summary>
+    /// Perform an effect which returns unit.
+    /// </summary>
+    /// <param name="action">An action to perform.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> EffectAsync(Action action) =>
+        await Effect(action).AsAsync();
+
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// </summary>
+    /// <param name="action">An action to perform.</param>
+    /// <returns>Unit.</returns>
+    public static async Task<Unit> EffectAsync(Func<Task> action)
+    {
+        await action();
+        return Unit.Default;
+    }
+
+    /// <summary>
     /// Wraps an object with a ValueTask to be used with Async functions.
     /// </summary>
     /// <typeparam name="T">The type of the input value.</typeparam>

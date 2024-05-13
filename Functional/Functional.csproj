@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>CSharp.Made.Functional</PackageId>
-    <Version>2.2.0</Version>
+    <Version>2.3.0</Version>
     <Authors>Jacob Hathaway</Authors>
     <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
     <PackageTags>Functional;Option;Result;Union;Discriminated Union;</PackageTags>
@@ -12,7 +12,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</PackageProjectUrl>
-    <PackageReleaseNotes>Add Unit type.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add tap and effect improvements.</PackageReleaseNotes>
     <RepositoryUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>

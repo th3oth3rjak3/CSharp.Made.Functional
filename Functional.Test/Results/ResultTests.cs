@@ -1111,5 +1111,712 @@ public class ResultTests
         okResult.ShouldBe(string.Empty);
         errorResult.ShouldBe(string.Empty);
     }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithTwoActionsWithInput()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, exn => errorResult = exn.Message)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, exn => errorResult = exn.Message)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionTErrorAction()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, () => errorResult = "error")
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, () => errorResult = "error")
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionTErrorFuncTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doWork() => Effect(() => errorResult = "error").Pipe(Task.CompletedTask);
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionTErrorFuncErrorTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doWork(Exception input) => Effect(() => errorResult = input.Message).Pipe(Task.CompletedTask);
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(ok => okResult = ok, doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionErrorActionT()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", exn => errorResult = exn.Message)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", exn => errorResult = exn.Message)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionErrorAction()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", () => errorResult = "error")
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", () => errorResult = "error")
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionErrorFuncTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doWork() => Effect(() => errorResult = "error").Pipe(Task.CompletedTask);
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkActionErrorFuncTTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doWork(Exception exn) => Effect(() => errorResult = exn.Message).Pipe(Task.CompletedTask);
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(() => okResult = "ok", doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTaskErrorActionT()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(doWork, exn => errorResult = exn.Message)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(doWork, exn => errorResult = exn.Message)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTaskErrorAction()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(doWork, () => errorResult = "error")
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(doWork, () => errorResult = "error")
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTaskErrorFuncTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doOkWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
+        Task doErrorWork() => Effect(() => errorResult = "error").Pipe(Task.CompletedTask);
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTaskErrorFuncTTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doOkWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
+        Task doErrorWork(Exception input) => Effect(() => errorResult = input.Message).Pipe(Task.CompletedTask);
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorActionT()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doOkWork(string input) => Effect(() => okResult = input).Pipe(Task.CompletedTask);
+        void doErrorWork(Exception input) => errorResult = input.Message;
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorAction()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doOkWork(string input) => Effect(() => okResult = input).Pipe(Task.CompletedTask);
+        void doErrorWork() => errorResult = "error";
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorFuncTask()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doOkWork(string input) => EffectAsync(() => okResult = input);
+        Task doErrorWork() => EffectAsync(() => errorResult = "error");
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorFuncTaskT()
+    {
+        var okResult = string.Empty;
+        var errorResult = string.Empty;
+
+        Task doOkWork(string input) => EffectAsync(() => okResult = input);
+        Task doErrorWork(Exception input) => EffectAsync(() => errorResult = input.Message);
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+        errorResult.ShouldBe(string.Empty);
+
+        okResult = string.Empty;
+        errorResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapAsync(doOkWork, doErrorWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapOkAsyncWithActionT()
+    {
+        var okResult = string.Empty;
+
+        void doOkWork(string input) => okResult = input;
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+
+        okResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapOkAsyncWithAction()
+    {
+        var okResult = string.Empty;
+
+        void doOkWork() => okResult = "ok";
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+
+        okResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapOkAsyncWithFuncTask()
+    {
+        var okResult = string.Empty;
+
+        Task doOkWork() => EffectAsync(() => okResult = "ok");
+
+        await Result.Ok("value")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+
+        okResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapOkAsyncWithFuncTTask()
+    {
+        var okResult = string.Empty;
+
+        Task doOkWork(string input) => EffectAsync(() => okResult = input);
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe("ok");
+
+        okResult = string.Empty;
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapOkAsync(doOkWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        okResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapErrorAsyncWithActionT()
+    {
+        var errorResult = string.Empty;
+
+        void doWork(Exception exn) => errorResult = exn.Message;
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe(string.Empty);
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapErrorAsyncWithAction()
+    {
+        var errorResult = string.Empty;
+
+        void doWork() => errorResult = "error";
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe(string.Empty);
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapErrorAsyncWithFuncTask()
+    {
+        var errorResult = string.Empty;
+
+        Task doWork() => EffectAsync(() => errorResult = "error");
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe(string.Empty);
+
+        await Result.Exception<string>("original error")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldTapErrorAsyncWithFuncTTask()
+    {
+        var errorResult = string.Empty;
+
+        Task doWork(Exception exn) => EffectAsync(() => errorResult = exn.Message);
+
+        await Result.Ok("ok")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe(string.Empty);
+
+        await Result.Exception<string>("error")
+            .AsAsync()
+            .TapErrorAsync(doWork)
+            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
+            .IgnoreAsync();
+
+        errorResult.ShouldBe("error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldThrowWhenUnwrappingAsync()
+    {
+        Task callback() => Result.Exception<bool>("error").AsAsync().UnwrapAsync();
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(callback);
+    }
+
+    [TestMethod]
+    public async Task ItShouldNotThrowWhenUnwrappingAsync() =>
+        await Result.Ok(true)
+            .AsAsync()
+            .UnwrapAsync()
+            .EffectAsync(result => result.ShouldBeTrue());
+
+    [TestMethod]
+    public async Task ItShouldThrowWhenUnwrappingErrorAsync()
+    {
+        Task callback() => Result.Ok(true).AsAsync().UnwrapErrorAsync();
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(callback);
+    }
+
+    [TestMethod]
+    public async Task ItShouldNotThrowExceptionWhenUnwrappingErrorAsync() =>
+        await Result.Exception<bool>("error message")
+            .AsAsync()
+            .UnwrapErrorAsync()
+            .EffectAsync(output => output.Message.ShouldBe("error message"));
+
 }
 
