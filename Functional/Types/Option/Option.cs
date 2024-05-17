@@ -1,7 +1,5 @@
 ﻿namespace Functional;
 
-// TODO: Document this file with examples.
-
 /// <summary>
 /// A wrapper class which contains either Some value or no value (None).
 /// </summary>
@@ -129,6 +127,16 @@ public sealed record Option<T> where T : notnull
 
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string someValue = new Option&lt;string&gt;("some value").Match(value => value, () => "none");
+    /// Assert.AreEqual(someValue, "some value");
+    /// 
+    /// string noneValue = new Option&lt;string&gt;().Match(value => value, () => "none");
+    /// Assert.AreEqual(noneValue, "none");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
     /// <param name="whenSome">The function to execute when some.</param>
@@ -139,8 +147,32 @@ public sealed record Option<T> where T : notnull
             () => whenSome(Unwrap()),
             whenNone);
 
+    // TODO: examples
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side-effect on an option type and consume the option.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// // This will print "hello, world!"
+    /// Unit unit = 
+    ///     new Option&lt;string&gt;("hello, world!")
+    ///         .Effect(
+    ///             msg => Console.WriteLine(msg),
+    ///             () => Console.WriteLine("The value was None"));
+    ///         
+    /// Assert.IsInstanceOfType(unit, typeof(Unit));
+    /// 
+    /// // This will print "The value was None"
+    /// unit = 
+    ///     new Option&lt;string&gt;()
+    ///         .Effect(
+    ///             msg => Console.WriteLine(msg),
+    ///             () => Console.WriteLine("The value was None"));
+    ///             
+    /// Assert.IsInstanceOfType(unit, typeof(Unit));
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
@@ -152,6 +184,7 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on an option type.
     /// </summary>
@@ -164,6 +197,7 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on an option type.
     /// </summary>
@@ -174,7 +208,7 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
-
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on an option type.
     /// </summary>
@@ -185,6 +219,7 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
     /// </summary>
@@ -199,6 +234,7 @@ public sealed record Option<T> where T : notnull
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
     /// </summary>
@@ -213,6 +249,7 @@ public sealed record Option<T> where T : notnull
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
     /// </summary>
@@ -229,6 +266,7 @@ public sealed record Option<T> where T : notnull
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
     /// </summary>
@@ -244,6 +282,7 @@ public sealed record Option<T> where T : notnull
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is None.
     /// </summary>
@@ -265,6 +304,7 @@ public sealed record Option<T> where T : notnull
 /// </summary>
 public static class Option
 {
+    // TODO: Examples
     /// <summary>
     /// Create an Option that represents some value.
     /// </summary>
@@ -274,7 +314,7 @@ public static class Option
     public static Option<T> Some<T>(this T entity) where T : notnull =>
         new(entity);
 
-
+    // TODO: Examples
     /// <summary>
     /// Create an Option that represents no value.
     /// </summary>

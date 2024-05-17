@@ -10,7 +10,9 @@
     <Description>A C# functional library which includes Option, Result, Union, and other helpful abstractions.</Description>
     <PackageTags>Functional;Option;Result;Union;Discriminated Union;</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <Configuration Condition="'$(Configuration)' ==  'Release'">
+		  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  </Configuration>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://www.github.com/th3oth3rjak3/CSharp.Made.Functional</PackageProjectUrl>
     <PackageReleaseNotes>Upgrade to .NET8</PackageReleaseNotes>
