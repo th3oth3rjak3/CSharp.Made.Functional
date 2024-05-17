@@ -16,7 +16,7 @@ public static partial class Prelude
                     predicate(some) switch
                     {
                         true => option,
-                        false => Option.None<T>()
+                        false => None<T>()
                     },
                 () => option);
 

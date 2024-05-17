@@ -147,7 +147,6 @@ public sealed record Option<T> where T : notnull
             () => whenSome(Unwrap()),
             whenNone);
 
-    // TODO: examples
     /// <summary>
     /// Perform a side-effect on an option type and consume the option.
     /// <example>
@@ -184,9 +183,31 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
-    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on an option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// // This will print "The value was Some"
+    /// Unit unit = 
+    ///     new Option&lt;string&gt;("hello, world!")
+    ///         .Effect(
+    ///             () => Console.WriteLine("The value was Some"),
+    ///             () => Console.WriteLine("The value was None"));
+    ///         
+    /// Assert.IsInstanceOfType(unit, typeof(Unit));
+    /// 
+    /// // This will print "The value was None"
+    /// unit = 
+    ///     new Option&lt;string&gt;()
+    ///         .Effect(
+    ///             () => Console.WriteLine("The value was Some"),
+    ///             () => Console.WriteLine("The value was None"));
+    ///             
+    /// Assert.IsInstanceOfType(unit, typeof(Unit));
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
@@ -197,9 +218,20 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
-    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on an option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // This will print "hello, world!"
+    /// new Option&lt;string&gt;("hello, world!")
+    ///     .EffectSome(msg => Console.WriteLine(msg));
+    ///     
+    /// // This won't print anything since the value is None.
+    /// new Option&lt;string&gt;()
+    ///     .EffectSome(msg => Console.WriteLine(msg));
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     public Unit EffectSome(Action<T> doWhenSome)
@@ -208,9 +240,44 @@ public sealed record Option<T> where T : notnull
         return new();
     }
 
-    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on an option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // This will print "The value was Some"
+    /// new Option&lt;string&gt;("hello, world!")
+    ///     .EffectSome(() => Console.WriteLine("The value was Some"));
+    ///     
+    /// // This won't print anything since the value is None.
+    /// new Option&lt;string&gt;()
+    ///     .EffectSome(() => Console.WriteLine("The value was Some"));
+    ///     
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    public Unit EffectSome(Action doWhenSome)
+    {
+        if (IsSome) doWhenSome();
+        return new();
+    }
+
+    /// <summary>
+    /// Perform a side-effect on an option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // This will print "The value was None"
+    /// new Option&lt;string&gt;()
+    ///     .EffectNone(() => Console.WriteLine("The value was None"));
+    ///     
+    /// // This will not print since the value was Some
+    /// new Option&lt;string&gt;("hello, world!")
+    ///     .EffectNone(() => Console.WriteLine("The value was None"));
+    ///     
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     public Unit EffectNone(Action doWhenNone)
@@ -297,29 +364,4 @@ public sealed record Option<T> where T : notnull
 
         return this;
     }
-}
-
-/// <summary>
-/// A wrapper class which contains either Some value or no value (None).
-/// </summary>
-public static class Option
-{
-    // TODO: Examples
-    /// <summary>
-    /// Create an Option that represents some value.
-    /// </summary>
-    /// <typeparam name="T">The type of the inner content.</typeparam>
-    /// <param name="entity">The contents to store.</param>
-    /// <returns>A new Option with some data inside.</returns>
-    public static Option<T> Some<T>(this T entity) where T : notnull =>
-        new(entity);
-
-    // TODO: Examples
-    /// <summary>
-    /// Create an Option that represents no value.
-    /// </summary>
-    /// <typeparam name="T">The type of the contents if they had been present.</typeparam>
-    /// <returns>A new Option that represents a lack of contents.</returns>
-    public static Option<T> None<T>() where T : notnull =>
-        new();
 }

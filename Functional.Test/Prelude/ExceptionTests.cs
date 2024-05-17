@@ -19,7 +19,7 @@ public class ExceptionTests
     public void ItShouldNotGetInnerExceptionMessage() =>
         new Exception("outer message")
             .InnerExceptionMessage()
-            .ShouldBeEquivalentTo(Option.None<string>());
+            .ShouldBeEquivalentTo(None<string>());
 
     [TestMethod]
     public void TryShouldSucceed() =>

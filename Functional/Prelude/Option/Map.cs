@@ -19,7 +19,7 @@ public static partial class Prelude
         option
             .Match(
                 some => mapper(some).Optional(),
-                Option.None<TResult>);
+                None<TResult>);
 
     /// <summary>
     /// When an Option is Some, map to a new value, ignoring the old value.
@@ -37,7 +37,7 @@ public static partial class Prelude
         option
             .Match(
                 _ => mapper().Optional(),
-                Option.None<TResult>);
+                None<TResult>);
 
     /// <summary>
     /// When an Option is Some, map the existing
@@ -75,7 +75,7 @@ public static partial class Prelude
     {
         var result = await option;
 
-        if (result.IsNone) return Option.None<TResult>();
+        if (result.IsNone) return None<TResult>();
 
         return (await mapper(result.Unwrap()))
             .Optional();
@@ -97,7 +97,7 @@ public static partial class Prelude
         where T : notnull
         where TResult : notnull
     {
-        if (option.IsNone) return Option.None<TResult>();
+        if (option.IsNone) return None<TResult>();
 
         var contents = await option.Unwrap();
 

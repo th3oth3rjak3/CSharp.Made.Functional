@@ -58,7 +58,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task FilterShouldNotFindNoneAsync() =>
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .FilterAsync(value => value == "find me")
             .MatchAsync(value => value, () => "not found")
@@ -66,25 +66,25 @@ public class OptionTests
 
     [TestMethod]
     public void ReduceShouldUseContentWhenSome() =>
-        "contents".Some()
+        Some("contents")
             .Reduce("other")
             .ShouldBe("contents");
 
     [TestMethod]
     public void ReduceShouldUseContentWhenSomeWithDelegate() =>
-        "contents".Some()
+        Some("contents")
             .Reduce(() => "other")
             .ShouldBe("contents");
 
     [TestMethod]
     public void ReduceShouldUseAlternateValueWhenNone() =>
-        Option.None<string>()
+        None<string>()
             .Reduce("other")
             .ShouldBe("other");
 
     [TestMethod]
     public void ReduceShouldUseDelegateValueWhenNone() =>
-        Option.None<string>()
+        None<string>()
             .Reduce(() => "other delegate")
             .ShouldBe("other delegate");
 
@@ -99,7 +99,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldMapNoneAsync() =>
-        await Option.None<int>()
+        await None<int>()
             .Async()
             .MapAsync(val => val.ToString())
             .ReduceAsync("something else")
@@ -116,7 +116,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldReduceNoneAsyncWithFunctions() =>
-        await Option.None<int>()
+        await None<int>()
             .Async()
             .MapAsync(val => val.ToString())
             .ReduceAsync(() => "something else")
@@ -151,7 +151,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldReduceAsyncWithTaskOfTaskAndAsyncReducer() =>
-        await Option.None<int>()
+        await None<int>()
             .Async()
             .MapAsync(one => one.ToString().Async())
             .MapAsync(result => (result + "2").Async())
@@ -160,7 +160,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldReduceAsyncWithTaskOfTaskAndFuncAsyncReducer() =>
-        await Option.None<int>()
+        await None<int>()
             .Async()
             .MapAsync(one => one.ToString().Async())
             .MapAsync(result => (result + "2").Async())
@@ -172,17 +172,17 @@ public class OptionTests
         await (null as string)
             .Async()
             .Optional()
-            .TapAsync(result => result.ShouldBeEquivalentTo(Option.None<string>()));
+            .TapAsync(result => result.ShouldBeEquivalentTo(None<string>()));
 
     [TestMethod]
     public async Task ItShouldHandleAsyncSomeOptions() =>
         await AlwaysReturnsNullableString("input")
             .Optional()
-            .TapAsync(result => result.ShouldBeEquivalentTo("input".Some()));
+            .TapAsync(result => result.ShouldBeEquivalentTo(Some("input")));
 
     [TestMethod]
     public async Task ItShouldMapOptionOfTaskOfString() =>
-        await "input".Some()
+        await Some("input")
             .Map(input => input.Async())
             .MapAsync(value => value + "!")
             .ReduceAsync("Oops.")
@@ -190,65 +190,35 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldMayOptionOfTaskOfStringWhenNone() =>
-        await Option.None<string>()
+        await None<string>()
             .Map(input => input.Async())
             .MapAsync(value => value + "!")
             .ReduceAsync("Oops.")
             .TapAsync(result => result.ShouldBe("Oops."));
 
     [TestMethod]
-    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithValue() =>
-        await "input"
-            .Async()
-            .Pipe(Option.Some)
-            .ReduceAsync("Oops")
-            .TapAsync(result => result.ShouldBe("input"));
-
-    [TestMethod]
     public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithValue() =>
-    await Option.None<Task<string>>()
+    await None<Task<string>>()
         .ReduceAsync("Oops")
         .TapAsync(result => result.ShouldBe("Oops"));
 
-    [TestMethod]
-    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithAsyncValue() =>
-    await "input"
-        .Async()
-        .Pipe(Option.Some)
-        .ReduceAsync("Oops".Async())
-        .TapAsync(result => result.ShouldBe("input"));
 
     [TestMethod]
     public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithAsyncValue() =>
-    await Option.None<Task<string>>()
+    await None<Task<string>>()
         .ReduceAsync("Oops".Async())
         .TapAsync(result => result.ShouldBe("Oops"));
 
     [TestMethod]
-    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithRegularFunction() =>
-    await "input"
-        .Async()
-        .Pipe(Option.Some)
-        .ReduceAsync(() => "Oops")
-        .TapAsync(result => result.ShouldBe("input"));
-
-    [TestMethod]
     public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithRegularFunction() =>
-    await Option.None<Task<string>>()
+    await None<Task<string>>()
         .ReduceAsync(() => "Oops")
         .TapAsync(result => result.ShouldBe("Oops"));
 
-    [TestMethod]
-    public async Task ItShouldReduceOptionOfTaskOfStringWhenSomeWithAsyncFunction() =>
-    await "input"
-        .Async()
-        .Pipe(Option.Some)
-        .ReduceAsync(() => "Oops".Async())
-        .TapAsync(result => result.ShouldBe("input"));
 
     [TestMethod]
     public async Task ItShouldReduceOptionOfTaskOfStringWhenNoneWithAsyncFunction() =>
-    await Option.None<Task<string>>()
+    await None<Task<string>>()
         .ReduceAsync(() => "Oops".Async())
         .TapAsync(result => result.ShouldBe("Oops"));
 
@@ -257,7 +227,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldMatchSomeAsync() =>
-        await Option.Some(1)
+        await Some(1)
             .Async()
             .MatchAsync(
                 some => some.ToString(),
@@ -266,8 +236,7 @@ public class OptionTests
 
     [TestMethod]
     public async Task ItShouldMatchNoneAsync() =>
-        await Option
-            .None<int>()
+        await None<int>()
             .Async()
             .MatchAsync(
                 some => some.ToString(),
@@ -276,87 +245,85 @@ public class OptionTests
 
     [TestMethod]
     public void ItShouldBindOptionsWhenSome() =>
-        Option.Some(1)
+        Some(1)
             .Bind(one => one.ToString().Optional())
-            .ShouldBeEquivalentTo(Option.Some("1"));
+            .ShouldBeEquivalentTo(Some("1"));
 
     [TestMethod]
     public void ItShouldBindOptionsWhenBecomeNone() =>
-        Option.Some(1)
-            .Bind(one => Option.None<string>())
-            .ShouldBeEquivalentTo(Option.None<string>());
+        Some(1)
+            .Bind(one => None<string>())
+            .ShouldBeEquivalentTo(None<string>());
 
     [TestMethod]
     public void ItShouldBindOptionsWhenStartAsNone() =>
-        Option.None<int>()
+        None<int>()
             .Bind(one => one.ToString().Optional())
-            .ShouldBeEquivalentTo(Option.None<string>());
+            .ShouldBeEquivalentTo(None<string>());
 
     [TestMethod]
     public async Task ItShouldBindAsyncWhenSome() =>
-        await Option.Some(1)
+        await Some(1)
             .Async()
             .BindAsync(one => one.ToString().Optional())
-            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.Some("1")));
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(Some("1")));
 
     [TestMethod]
     public async Task ItShouldBindAsyncWhenStartAsNone() =>
-        await Option.None<int>()
+        await None<int>()
             .Async()
             .BindAsync(one => one.ToString().Optional())
-            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(None<string>()));
 
     [TestMethod]
     public async Task ItShouldBindAsyncWhenBecomesNone() =>
-        await Option.Some(1)
+        await Some(1)
             .Async()
-            .BindAsync(_ => Option.None<string>())
-            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+            .BindAsync(_ => None<string>())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(None<string>()));
 
     [TestMethod]
     public async Task ItShouldBindAsyncWhenSomeWithTaskBinding() =>
-    await Option.Some(1)
+    await Some(1)
         .Async()
         .BindAsync(one => one.ToString().Optional().Async())
-        .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.Some("1")));
+        .TapAsync(bound => bound.ShouldBeEquivalentTo(Some("1")));
 
     [TestMethod]
     public async Task ItShouldBindAsyncWhenStartAsNoneWithTaskBinding() =>
-        await Option.None<int>()
+        await None<int>()
             .Async()
             .BindAsync(one => one.ToString().Optional().Async())
-            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(None<string>()));
 
     [TestMethod]
     public async Task ItShouldBindAsyncWhenBecomesNoneWithTaskBinding() =>
-        await Option.Some(1)
+        await Some(1)
             .Async()
-            .BindAsync(_ => Option.None<string>().Async())
-            .TapAsync(bound => bound.ShouldBeEquivalentTo(Option.None<string>()));
+            .BindAsync(_ => None<string>().Async())
+            .TapAsync(bound => bound.ShouldBeEquivalentTo(None<string>()));
 
     [TestMethod]
     public void ItShouldBeSome() =>
-        "some value"
-            .Some()
+        Some("some value")
             .IsSome
             .ShouldBeTrue();
 
     [TestMethod]
     public void ItShouldNotBeNone() =>
-        "some value"
-            .Some()
+        Some("some value")
             .IsNone
             .ShouldBeFalse();
 
     [TestMethod]
     public void ItShouldBeNone() =>
-        Option.None<string>()
+        None<string>()
             .IsNone
             .ShouldBeTrue();
 
     [TestMethod]
     public void ItShouldNotBeSome() =>
-        Option.None<string>()
+        None<string>()
             .IsSome
             .ShouldBeFalse();
 
@@ -367,8 +334,7 @@ public class OptionTests
         void whenSome(string _) => wasCalled = true;
         void whenNone() => wasCalled = false;
 
-        _ = "value"
-            .Some()
+        _ = Some("value")
             .Tap(someValue => someValue.Effect(whenSome, whenNone));
 
         wasCalled.ShouldBeTrue();
@@ -381,7 +347,7 @@ public class OptionTests
         void whenSome(string _) => wasCalled = false;
         void whenNone() => wasCalled = true;
 
-        Option.None<string>()
+        None<string>()
             .Effect(whenSome, whenNone);
 
         wasCalled.ShouldBeTrue();
@@ -389,28 +355,27 @@ public class OptionTests
 
     [TestMethod]
     public void ItShouldUnwrapSomeValue() =>
-    "some value"
-        .Some()
+        Some("some value")
         .Unwrap()
         .ShouldBe("some value");
 
     [TestMethod]
     public void ItShouldThrowWhenUnwrappingNone()
     {
-        static void callback() => Option.None<int>().Unwrap();
+        static void callback() => None<int>().Unwrap();
         Assert.ThrowsException<InvalidOperationException>(callback);
     }
 
     [TestMethod]
     public async Task ItShouldThrowWhenUnwrappingNoneAsync()
     {
-        static Task callback() => Option.None<int>().Async().UnwrapAsync();
+        static Task callback() => None<int>().Async().UnwrapAsync();
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(callback);
     }
 
     [TestMethod]
     public async Task ItShouldSuccessfullyUnwrapSomeAsync() =>
-        await Option.Some(1)
+        await Some(1)
             .Async()
             .UnwrapAsync()
             .TapAsync(value => value.ShouldBe(1))
@@ -421,8 +386,7 @@ public class OptionTests
     {
         var msg = "";
 
-        await "123"
-            .Some()
+        await Some("123")
             .Async()
             .EffectAsync(
                 some => msg = some,
@@ -436,7 +400,7 @@ public class OptionTests
     {
         var msg = "";
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectAsync(
                 some => msg = some,
@@ -465,7 +429,7 @@ public class OptionTests
     public async Task ItShouldNotReturnTaskOfTaskWhenNone()
     {
         var taskOfTask =
-            Option.None<string>()
+            None<string>()
                 .Async()
                 .MatchAsync(
                     some => some.Async(),
@@ -496,7 +460,7 @@ public class OptionTests
     public async Task ItShouldNotReturnTaskOfTaskWhenNone1()
     {
         var taskOfTask =
-            Option.None<string>()
+            None<string>()
                 .Async()
                 .MatchAsync(
                     some => some.Async(),
@@ -527,7 +491,7 @@ public class OptionTests
     public async Task ItShouldNotReturnTaskOfTaskWhenNone2()
     {
         var taskOfTask =
-            Option.None<string>()
+            None<string>()
                 .Async()
                 .MatchAsync(
                     some => some,
@@ -558,7 +522,7 @@ public class OptionTests
     public async Task ItShouldNotReturnTaskOfTaskWhenNone3()
     {
         var taskOfTask =
-            Option.None<string>()
+            None<string>()
                 .Async()
                 .MatchAsync(
                     some => some,
@@ -605,7 +569,7 @@ public class OptionTests
 
     [TestMethod]
     public void ItShouldMapOptionsAndIgnoreInputs() =>
-        Option.Some("arbitrary value")
+        Some("arbitrary value")
             .Map(() => "new value")
             .EffectSome(value => value.ShouldBe("new value"))
             .ShouldBeOfType<Unit>();
@@ -616,7 +580,7 @@ public class OptionTests
         var someResult = false;
         var noneResult = false;
 
-        Option.Some("value")
+        Some("value")
             .Effect(
                 () => someResult = true,
                 () => noneResult = true);
@@ -631,7 +595,7 @@ public class OptionTests
         var someResult = false;
         var noneResult = false;
 
-        Option.Some("value")
+        Some("value")
             .EffectSome(value => someResult = true)
             .ShouldBeOfType<Unit>();
 
@@ -641,7 +605,7 @@ public class OptionTests
         someResult = false;
         noneResult = false;
 
-        Option.None<string>()
+        None<string>()
             .EffectSome(value => someResult = true)
             .ShouldBeOfType<Unit>();
 
@@ -655,14 +619,14 @@ public class OptionTests
         var someResult = false;
         var noneResult = false;
 
-        Option.Some("value")
+        Some("value")
             .EffectNone(() => noneResult = true)
             .ShouldBeOfType<Unit>();
 
         someResult.ShouldBeFalse();
         noneResult.ShouldBeFalse();
 
-        Option.None<string>()
+        None<string>()
             .EffectNone(() => noneResult = true)
             .ShouldBeOfType<Unit>();
 
@@ -676,7 +640,7 @@ public class OptionTests
         var someResult = false;
         var noneResult = false;
 
-        Option.None<string>()
+        None<string>()
             .Effect(() => someResult = true, () => noneResult = true);
 
         someResult.ShouldBeFalse();
@@ -689,7 +653,7 @@ public class OptionTests
         var someResult = false;
         var noneResult = false;
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectAsync(() => someResult = true, () => noneResult = true);
 
@@ -703,7 +667,7 @@ public class OptionTests
         var someResult = false;
         var noneResult = false;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectAsync(() => someResult = true, () => noneResult = true);
 
@@ -716,7 +680,7 @@ public class OptionTests
     {
         var someResult = string.Empty;
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectSomeAsync(value => someResult = value);
 
@@ -728,7 +692,7 @@ public class OptionTests
     {
         var someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectSomeAsync(value => someResult = value);
 
@@ -740,7 +704,7 @@ public class OptionTests
     {
         var someResult = string.Empty;
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectSomeAsync(() => someResult = "something");
 
@@ -752,7 +716,7 @@ public class OptionTests
     {
         var someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectSomeAsync(() => someResult = "something");
 
@@ -766,7 +730,7 @@ public class OptionTests
 
         Task doWork(string input) => Effect(() => someResult = input).Pipe(Task.CompletedTask);
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectSomeAsync(value => doWork(value))
             .TapAsync(output => output.ShouldBeOfType<Unit>())
@@ -775,7 +739,7 @@ public class OptionTests
         someResult.ShouldBe("value");
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectSomeAsync(value => doWork(value))
             .TapAsync(output => output.ShouldBeOfType<Unit>())
@@ -791,7 +755,7 @@ public class OptionTests
 
         Task doWork() => Effect(() => someResult = "doWork called").Pipe(Task.CompletedTask);
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectSomeAsync(() => doWork())
             .TapAsync(output => output.ShouldBeOfType<Unit>())
@@ -800,7 +764,7 @@ public class OptionTests
         someResult.ShouldBe("doWork called");
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectSomeAsync(() => doWork())
             .TapAsync(output => output.ShouldBeOfType<Unit>())
@@ -814,7 +778,7 @@ public class OptionTests
     {
         var noneResult = string.Empty;
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectNoneAsync(() => noneResult = "none");
 
@@ -826,7 +790,7 @@ public class OptionTests
     {
         var noneResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectNoneAsync(() => noneResult = "none");
 
@@ -840,7 +804,7 @@ public class OptionTests
 
         Task doWork() => Effect(() => noneResult = "none").Pipe(Task.CompletedTask);
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .EffectNoneAsync(() => doWork())
             .TapAsync(output => output.ShouldBeOfType<Unit>())
@@ -850,7 +814,7 @@ public class OptionTests
 
         noneResult = string.Empty;
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .EffectNoneAsync(() => doWork())
             .TapAsync(output => output.ShouldBeOfType<Unit>())
@@ -865,7 +829,7 @@ public class OptionTests
         var someResult = string.Empty;
         var noneResult = string.Empty;
 
-        Option.Some("value")
+        Some("value")
             .Tap(value => someResult = value, () => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -875,7 +839,7 @@ public class OptionTests
         someResult = string.Empty;
         noneResult = string.Empty;
 
-        Option.None<string>()
+        None<string>()
             .Tap(value => someResult = value, () => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -889,7 +853,7 @@ public class OptionTests
         var someResult = string.Empty;
         var noneResult = string.Empty;
 
-        Option.Some("value")
+        Some("value")
             .Tap(value => someResult = value, () => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -899,7 +863,7 @@ public class OptionTests
         someResult = string.Empty;
         noneResult = string.Empty;
 
-        Option.None<string>()
+        None<string>()
             .Tap(value => someResult = value, () => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -913,7 +877,7 @@ public class OptionTests
         var someResult = string.Empty;
         var noneResult = string.Empty;
 
-        Option.Some("value")
+        Some("value")
             .Tap(() => someResult = "some", () => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -923,7 +887,7 @@ public class OptionTests
         someResult = string.Empty;
         noneResult = string.Empty;
 
-        Option.None<string>()
+        None<string>()
             .Tap(() => someResult = "some", () => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -937,7 +901,7 @@ public class OptionTests
         var someResult = string.Empty;
         var noneResult = string.Empty;
 
-        Option.Some("value")
+        Some("value")
             .TapSome(value => someResult = value)
             .ShouldBeOfType<Option<string>>();
 
@@ -947,7 +911,7 @@ public class OptionTests
         someResult = string.Empty;
         noneResult = string.Empty;
 
-        Option.None<string>()
+        None<string>()
             .TapSome(value => someResult = value)
             .ShouldBeOfType<Option<string>>();
 
@@ -961,7 +925,7 @@ public class OptionTests
         var someResult = string.Empty;
         var noneResult = string.Empty;
 
-        Option.Some("value")
+        Some("value")
             .TapSome(() => someResult = "some")
             .ShouldBeOfType<Option<string>>();
 
@@ -971,7 +935,7 @@ public class OptionTests
         someResult = string.Empty;
         noneResult = string.Empty;
 
-        Option.None<string>()
+        None<string>()
             .TapSome(() => someResult = "some")
             .ShouldBeOfType<Option<string>>();
 
@@ -985,14 +949,14 @@ public class OptionTests
         var someResult = string.Empty;
         var noneResult = string.Empty;
 
-        Option.Some("value")
+        Some("value")
             .TapNone(() => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
         someResult.ShouldBe(string.Empty);
         noneResult.ShouldBe(string.Empty);
 
-        Option.None<string>()
+        None<string>()
             .TapNone(() => noneResult = "none")
             .ShouldBeOfType<Option<string>>();
 
@@ -1009,7 +973,7 @@ public class OptionTests
         void doSomeWork(string input) => someResult = input;
         void doNoneWork() => noneResult = "none";
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1020,7 +984,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1039,7 +1003,7 @@ public class OptionTests
         void doSomeWork(string input) => someResult = input;
         Task doNoneWork() => EffectAsync(() => noneResult = "none");
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1050,7 +1014,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1069,7 +1033,7 @@ public class OptionTests
         void doSomeWork() => someResult = "some";
         void doNoneWork() => noneResult = "none";
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1080,7 +1044,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1099,7 +1063,7 @@ public class OptionTests
         void doSomeWork() => someResult = "some";
         Task doNoneWork() => EffectAsync(() => noneResult = "none");
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1110,7 +1074,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1129,7 +1093,7 @@ public class OptionTests
         Task doSomeWork(string input) => EffectAsync(() => someResult = input);
         void doNoneWork() => noneResult = "none";
 
-        await Option.Some("some")
+        await Some("some")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1140,7 +1104,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1159,7 +1123,7 @@ public class OptionTests
         Task doSomeWork(string input) => EffectAsync(() => someResult = input);
         Task doNoneWork() => EffectAsync(() => noneResult = "none");
 
-        await Option.Some("some")
+        await Some("some")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1170,7 +1134,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1189,7 +1153,7 @@ public class OptionTests
         Task doSomeWork() => EffectAsync(() => someResult = "some");
         void doNoneWork() => noneResult = "none";
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1200,7 +1164,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1219,7 +1183,7 @@ public class OptionTests
         Task doSomeWork() => EffectAsync(() => someResult = "some");
         Task doNoneWork() => EffectAsync(() => noneResult = "none");
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1230,7 +1194,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapAsync(doSomeWork, doNoneWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1248,7 +1212,7 @@ public class OptionTests
         void doSomeWork(string input) => someResult = input;
 
 
-        await Option.Some("some")
+        await Some("some")
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1258,7 +1222,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1275,7 +1239,7 @@ public class OptionTests
         void doSomeWork() => someResult = "some";
 
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1285,7 +1249,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1302,7 +1266,7 @@ public class OptionTests
         Task doSomeWork(string input) => EffectAsync(() => someResult = input);
 
 
-        await Option.Some("some")
+        await Some("some")
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1312,7 +1276,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1329,7 +1293,7 @@ public class OptionTests
         Task doSomeWork() => EffectAsync(() => someResult = "some");
 
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1339,7 +1303,7 @@ public class OptionTests
 
         someResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapSomeAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1356,7 +1320,7 @@ public class OptionTests
         void doSomeWork() => noneResult = "none";
 
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapNoneAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1366,7 +1330,7 @@ public class OptionTests
 
         noneResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapNoneAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1383,7 +1347,7 @@ public class OptionTests
         Task doSomeWork() => EffectAsync(() => noneResult = "none");
 
 
-        await Option.Some("value")
+        await Some("value")
             .Async()
             .TapNoneAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())
@@ -1393,7 +1357,7 @@ public class OptionTests
 
         noneResult = string.Empty;
 
-        await Option.None<string>()
+        await None<string>()
             .Async()
             .TapNoneAsync(doSomeWork)
             .TapAsync(output => output.ShouldBeOfType<Option<string>>())

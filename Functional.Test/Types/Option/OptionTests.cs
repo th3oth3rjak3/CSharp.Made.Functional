@@ -72,4 +72,146 @@ public class OptionTests
         someResult.ShouldBe(string.Empty);
         noneResult.ShouldBe("none");
     }
+
+    [TestMethod]
+    public void OptionShouldPerformEffectsWhenSome()
+    {
+        var some = new Option<string>("some value");
+        var none = new Option<string>();
+
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void reset()
+        {
+            someResult = string.Empty;
+            noneResult = string.Empty;
+        }
+
+        some.EffectSome(some => someResult = some).AssertInstanceOfType(typeof(Unit));
+        someResult.ShouldBe("some value");
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.EffectSome(some => someResult = some).AssertInstanceOfType(typeof(Unit));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        some.EffectSome(() => someResult = "some").AssertInstanceOfType(typeof(Unit));
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.EffectSome(() => someResult = "some").AssertInstanceOfType(typeof(Unit));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe(string.Empty);
+    }
+
+    [TestMethod]
+    public void OptionShouldPerformEffectsWhenNone()
+    {
+        var some = new Option<string>("some value");
+        var none = new Option<string>();
+
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void reset()
+        {
+            someResult = string.Empty;
+            noneResult = string.Empty;
+        }
+
+        some.EffectNone(() => noneResult = "none").AssertInstanceOfType(typeof(Unit));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.EffectNone(() => noneResult = "none").AssertInstanceOfType(typeof(Unit));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+    }
+
+    [TestMethod]
+    public void OptionShouldTapAndReturnSelf()
+    {
+        var someResult = string.Empty;
+        var noneResult = string.Empty;
+
+        void setSomeInput(string input) => someResult = input;
+        void setSome() => someResult = "some";
+        void setNone() => noneResult = "none";
+
+        void reset()
+        {
+            someResult = string.Empty;
+            noneResult = string.Empty;
+        }
+
+        var none = new Option<string>();
+        var some = new Option<string>("some value");
+
+        some.Tap(setSomeInput, setNone).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe("some value");
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.Tap(setSomeInput, setNone).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+
+        reset();
+
+        some.Tap(setSome, setNone).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.Tap(setSome, setNone).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+
+        reset();
+
+        some.TapSome(setSomeInput).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe("some value");
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.TapSome(setSomeInput).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        some.TapSome(setSome).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe("some");
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.TapSome(setSome).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe(string.Empty);
+
+        reset();
+
+        none.TapNone(setNone).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe("none");
+
+        reset();
+
+        some.TapNone(setNone).AssertInstanceOfType(typeof(Option<string>));
+        someResult.ShouldBe(string.Empty);
+        noneResult.ShouldBe(string.Empty);
+    }
 }

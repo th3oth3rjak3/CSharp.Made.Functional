@@ -28,7 +28,7 @@ public static partial class Prelude
             where TResult : notnull =>
             optional
                 .Map(binder)
-                .Reduce(Option.None<TResult>);
+                .Reduce(None<TResult>);
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
@@ -56,7 +56,7 @@ public static partial class Prelude
             where TResult : notnull =>
             await optional
                 .MapAsync(binder)
-                .ReduceAsync(Option.None<TResult>);
+                .ReduceAsync(None<TResult>);
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
@@ -84,5 +84,5 @@ public static partial class Prelude
             where TResult : notnull =>
             await optional
                 .MapAsync(binder)
-                .ReduceAsync(Option.None<TResult>);
+                .ReduceAsync(None<TResult>);
 }
