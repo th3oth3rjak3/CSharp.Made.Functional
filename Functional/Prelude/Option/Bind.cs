@@ -4,6 +4,17 @@ public static partial class Prelude
 {
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; TryGetString(int input) => 
+    ///     input &gt; 10 
+    ///     ? new Option&lt;string&gt;(input.ToString()) 
+    ///     : new Option&lt;string&gt;();
+    ///     
+    /// Option&lt;string&gt; option = new Option&lt;int&gt;(42).Bind(TryGetString);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TInput">The type of the input.</typeparam>
     /// <typeparam name="TResult">The type of the output.</typeparam>
@@ -21,6 +32,17 @@ public static partial class Prelude
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; TryGetString(int input) =>
+    ///     input > 10
+    ///     ? new(input.ToString())
+    ///     : new();
+    ///     
+    /// Option&lt;string&gt; value = await 42.Optional().Async().BindAsync(TryGetString);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TInput">The type of the input.</typeparam>
     /// <typeparam name="TResult">The type of the output.</typeparam>
@@ -38,6 +60,17 @@ public static partial class Prelude
 
     /// <summary>
     /// Used instead of Map when the mapping function produces an Option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task&lt;Option&lt;string&gt;&gt; TryGetString(int input) =>
+    ///     input > 10
+    ///     ? new Option&lt;string&gt;(input.ToString()).Async()
+    ///     : new Option&lt;string&gt;().Async();
+    ///     
+    /// Option&lt;string&gt; value = await 42.Optional().Async().BindAsync(TryGetString);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TInput">The type of the input.</typeparam>
     /// <typeparam name="TResult">The type of the output.</typeparam>
