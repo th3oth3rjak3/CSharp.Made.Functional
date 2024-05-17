@@ -9,7 +9,7 @@ public static partial class Prelude
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static T Reduce<T>(this Option<T> optional, Func<T> alternate) =>
+    public static T Reduce<T>(this Option<T> optional, Func<T> alternate) where T : notnull =>
         optional
             .Match(
                 some => some,
@@ -22,7 +22,7 @@ public static partial class Prelude
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static T Reduce<T>(this Option<T> optional, T alternate) =>
+    public static T Reduce<T>(this Option<T> optional, T alternate) where T : notnull =>
         optional
             .Match(
                 some => some,
@@ -35,7 +35,7 @@ public static partial class Prelude
     /// <param name="optional">The option to extract contents from when Some.</param>
     /// <param name="alternate">An alternate value to provide when None.</param>
     /// <returns>The resulting contents.</returns>
-    public static async Task<T> ReduceAsync<T>(this Task<Option<T>> optional, Func<T> alternate)
+    public static async Task<T> ReduceAsync<T>(this Task<Option<T>> optional, Func<T> alternate) where T : notnull
     {
         var result = await optional;
 
@@ -53,7 +53,7 @@ public static partial class Prelude
     /// <returns>The resulting contents.</returns>
     public static async Task<T> ReduceAsync<T>(
         this Task<Option<T>> optional,
-        T alternate)
+        T alternate) where T : notnull
     {
         var result = await optional;
 
@@ -71,7 +71,7 @@ public static partial class Prelude
     /// <returns>The resulting contents.</returns>
     public static async Task<T> ReduceAsync<T>(
         this Task<Option<T>> optional,
-        Task<T> alternate)
+        Task<T> alternate) where T : notnull
     {
         var result = await optional;
 
@@ -88,6 +88,7 @@ public static partial class Prelude
     public static async Task<T> ReduceAsync<T>(
         this Task<Option<T>> optional,
         Func<Task<T>> alternate)
+        where T : notnull
     {
         var result = await optional;
         return result.IsSome ? result.Unwrap() : await alternate();
@@ -103,6 +104,7 @@ public static partial class Prelude
     public static async Task<T> ReduceAsync<T>(
         this Option<Task<T>> optional,
         T alternate)
+        where T : notnull
     {
         if (optional.IsNone) return alternate;
 
@@ -119,6 +121,7 @@ public static partial class Prelude
     public static async Task<T> ReduceAsync<T>(
         this Option<Task<T>> optional,
         Func<T> alternate)
+        where T : notnull
     {
         if (optional.IsNone) return alternate();
 
@@ -135,6 +138,7 @@ public static partial class Prelude
     public static async Task<T> ReduceAsync<T>(
         this Option<Task<T>> optional,
         Task<T> alternate)
+        where T : notnull
     {
         if (optional.IsNone) return await alternate;
 
@@ -151,6 +155,7 @@ public static partial class Prelude
     public static async Task<T> ReduceAsync<T>(
         this Option<Task<T>> optional,
         Func<Task<T>> alternate)
+        where T : notnull
     {
         if (optional.IsNone) return await alternate();
 

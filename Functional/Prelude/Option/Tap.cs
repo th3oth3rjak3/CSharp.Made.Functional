@@ -10,7 +10,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action<T> whenSome, Action whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action<T> whenSome, Action whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) whenSome(theOption.Unwrap());
@@ -27,7 +27,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action<T> whenSome, Func<Task> whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action<T> whenSome, Func<Task> whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) whenSome(theOption.Unwrap());
@@ -44,7 +44,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action whenSome, Action whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action whenSome, Action whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) whenSome();
@@ -60,7 +60,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action whenSome, Func<Task> whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Action whenSome, Func<Task> whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) whenSome();
@@ -76,7 +76,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<T, Task> whenSome, Action whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<T, Task> whenSome, Action whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) await whenSome(theOption.Unwrap());
@@ -92,7 +92,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<T, Task> whenSome, Func<Task> whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<T, Task> whenSome, Func<Task> whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) await whenSome(theOption.Unwrap());
@@ -108,7 +108,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<Task> whenSome, Action whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<Task> whenSome, Action whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) await whenSome();
@@ -124,7 +124,7 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<Task> whenSome, Func<Task> whenNone)
+    public static async Task<Option<T>> TapAsync<T>(this Task<Option<T>> optional, Func<Task> whenSome, Func<Task> whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) await whenSome();
@@ -139,7 +139,7 @@ public static partial class Prelude
     /// <param name="optional">The option to tap.</param>
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Action<T>[] whenSome) =>
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Action<T>[] whenSome) where T : notnull =>
         (await optional)
             .TapSome(whenSome);
 
@@ -150,7 +150,7 @@ public static partial class Prelude
     /// <param name="optional">The option to tap.</param>
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Action[] whenSome) =>
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Action[] whenSome) where T : notnull =>
         (await optional)
             .TapSome(whenSome);
 
@@ -161,7 +161,7 @@ public static partial class Prelude
     /// <param name="optional">The option to tap.</param>
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Func<T, Task>[] whenSome)
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Func<T, Task>[] whenSome) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome)
@@ -179,7 +179,7 @@ public static partial class Prelude
     /// <param name="optional">The option to tap.</param>
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Func<Task>[] whenSome)
+    public static async Task<Option<T>> TapSomeAsync<T>(this Task<Option<T>> optional, params Func<Task>[] whenSome) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome)
@@ -196,7 +196,7 @@ public static partial class Prelude
     /// <param name="optional">The option to tap.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapNoneAsync<T>(this Task<Option<T>> optional, params Action[] whenNone) =>
+    public static async Task<Option<T>> TapNoneAsync<T>(this Task<Option<T>> optional, params Action[] whenNone) where T : notnull =>
         (await optional)
             .TapNone(whenNone);
 
@@ -207,7 +207,7 @@ public static partial class Prelude
     /// <param name="optional">The option to tap.</param>
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
-    public static async Task<Option<T>> TapNoneAsync<T>(this Task<Option<T>> optional, params Func<Task>[] whenNone)
+    public static async Task<Option<T>> TapNoneAsync<T>(this Task<Option<T>> optional, params Func<Task>[] whenNone) where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsNone)

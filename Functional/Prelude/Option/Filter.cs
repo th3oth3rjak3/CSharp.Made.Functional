@@ -9,7 +9,7 @@ public static partial class Prelude
     /// <param name="option">The option to filter.</param>
     /// <param name="predicate">A predicate function to check if the contents of a Some match another value.</param>
     /// <returns>A new option.</returns>
-    public static Option<T> Filter<T>(this Option<T> option, Func<T, bool> predicate) =>
+    public static Option<T> Filter<T>(this Option<T> option, Func<T, bool> predicate) where T : notnull =>
         option
             .Match(
                 some =>
@@ -27,7 +27,7 @@ public static partial class Prelude
     /// <param name="option">The option to filter.</param>
     /// <param name="predicate">A predicate function to check if the contents of a Some match another value.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> FilterAsync<T>(this Task<Option<T>> option, Func<T, bool> predicate) =>
+    public static async Task<Option<T>> FilterAsync<T>(this Task<Option<T>> option, Func<T, bool> predicate) where T : notnull =>
         (await option)
             .Filter(predicate);
 }

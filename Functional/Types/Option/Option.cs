@@ -6,7 +6,7 @@
 /// A wrapper class which contains either Some value or no value (None).
 /// </summary>
 /// <typeparam name="T">The inner type of the Option.</typeparam>
-public sealed record Option<T>
+public sealed record Option<T> where T : notnull
 {
 
     /// <summary>
@@ -30,6 +30,18 @@ public sealed record Option<T>
 
     /// <summary>
     /// Create a new option.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // This will become Some value.
+    /// Option&lt;string&gt; option = new("something");
+    /// 
+    /// // These will become None
+    /// string? uninitialized;
+    /// option = new(uninitialized);
+    /// option = new(null as string);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="input">Input which may be null.</param>
     public Option(T? input)
@@ -43,23 +55,51 @@ public sealed record Option<T>
 
     /// <summary>
     /// Create a new option that is a None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // This will be a None by default.
+    /// Option&lt;string&gt; option = new();
+    /// </code>
+    /// </example>
     /// </summary>
     public Option() { }
 
     /// <summary>
     /// Determine if an Option is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; optional = new("value");
+    /// if (optional.IsSome)
+    /// {
+    ///     // Do something here when Some.
+    /// }
+    /// </code>
+    /// </example>
     /// </summary>
     public bool IsSome => _state == State.Some;
 
     /// <summary>
     /// Determine if an Option is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; optional = new();
+    /// if (optional.IsNone)
+    /// {
+    ///     // Do something here when None.
+    /// }
+    /// </code>
+    /// </example>
     /// </summary>
     public bool IsNone => _state == State.None;
 
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
-    /// contains some value. If an option is None, it will throw an InvalidOperationException.
-    /// <see cref="IsSome"/> or <see cref="IsNone"/>.
+    /// contains some value. 
+    /// <br/>If an option is None, it will throw an InvalidOperationException.
+    /// <br/>For more information, see: <see cref="IsSome"/> or <see cref="IsNone"/>.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -240,6 +280,6 @@ public static class Option
     /// </summary>
     /// <typeparam name="T">The type of the contents if they had been present.</typeparam>
     /// <returns>A new Option that represents a lack of contents.</returns>
-    public static Option<T> None<T>() =>
+    public static Option<T> None<T>() where T : notnull =>
         new();
 }

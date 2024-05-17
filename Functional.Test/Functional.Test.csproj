@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Prelude\Result\" />
-    <Folder Include="Prelude\Option\" />
   </ItemGroup>
 
 </Project>

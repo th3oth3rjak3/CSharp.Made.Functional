@@ -13,7 +13,7 @@ public static partial class Prelude
     /// <param name="optional">The option to unwrap.</param>
     /// <returns>The inner value of the Option.</returns>
     /// <exception cref="InvalidOperationException">Thrown when unwrapping a None.</exception>
-    public static async Task<T> UnwrapAsync<T>(this Task<Option<T>> optional)
+    public static async Task<T> UnwrapAsync<T>(this Task<Option<T>> optional) where T : notnull
     {
         var theOption = await optional;
 

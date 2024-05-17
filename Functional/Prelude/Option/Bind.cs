@@ -12,7 +12,9 @@ public static partial class Prelude
     /// <returns>An option of the output type.</returns>
     public static Option<TResult> Bind<TInput, TResult>(
         this Option<TInput> optional,
-        Func<TInput, Option<TResult>> binder) =>
+        Func<TInput, Option<TResult>> binder)
+            where TInput : notnull
+            where TResult : notnull =>
             optional
                 .Map(binder)
                 .Reduce(Option.None<TResult>);
@@ -27,7 +29,9 @@ public static partial class Prelude
     /// <returns>An option of the output type.</returns>
     public static async Task<Option<TResult>> BindAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
-        Func<TInput, Option<TResult>> binder) =>
+        Func<TInput, Option<TResult>> binder)
+            where TInput : notnull
+            where TResult : notnull =>
             await optional
                 .MapAsync(binder)
                 .ReduceAsync(Option.None<TResult>);
@@ -42,7 +46,9 @@ public static partial class Prelude
     /// <returns>An option of the output type.</returns>
     public static async Task<Option<TResult>> BindAsync<TInput, TResult>(
         this Task<Option<TInput>> optional,
-        Func<TInput, Task<Option<TResult>>> binder) =>
+        Func<TInput, Task<Option<TResult>>> binder)
+            where TInput : notnull
+            where TResult : notnull =>
             await optional
                 .MapAsync(binder)
                 .ReduceAsync(Option.None<TResult>);

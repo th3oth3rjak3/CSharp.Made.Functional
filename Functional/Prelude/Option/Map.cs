@@ -13,7 +13,9 @@ public static partial class Prelude
     /// <returns>A new option.</returns>
     public static Option<TResult> Map<T, TResult>(
         this Option<T> option,
-        Func<T, TResult> mapper) =>
+        Func<T, TResult> mapper)
+        where T : notnull
+        where TResult : notnull =>
         option
             .Match(
                 some => mapper(some).Optional(),
@@ -29,7 +31,9 @@ public static partial class Prelude
     /// <returns>A new option.</returns>
     public static Option<TResult> Map<T, TResult>(
         this Option<T> option,
-        Func<TResult> mapper) =>
+        Func<TResult> mapper)
+        where T : notnull
+        where TResult : notnull =>
         option
             .Match(
                 _ => mapper().Optional(),
@@ -47,6 +51,8 @@ public static partial class Prelude
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Task<Option<T>> option,
         Func<T, TResult> mapper)
+        where T : notnull
+        where TResult : notnull
     {
         var result = await option;
         return result.Map(mapper);
@@ -64,6 +70,8 @@ public static partial class Prelude
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Task<Option<T>> option,
         Func<T, Task<TResult>> mapper)
+        where T : notnull
+        where TResult : notnull
     {
         var result = await option;
 
@@ -86,6 +94,8 @@ public static partial class Prelude
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
         this Option<Task<T>> option,
         Func<T, TResult> mapper)
+        where T : notnull
+        where TResult : notnull
     {
         if (option.IsNone) return Option.None<TResult>();
 

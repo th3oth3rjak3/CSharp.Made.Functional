@@ -15,6 +15,7 @@ public static partial class Prelude
         this Task<Option<TInput>> optional,
         Func<TInput, TResult> whenSome,
         Func<TResult> whenNone)
+        where TInput : notnull
     {
         var option = await optional;
 
@@ -36,6 +37,7 @@ public static partial class Prelude
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
         Func<TResult> whenNone)
+        where TInput : notnull
     {
         var result = await optional;
 
@@ -56,6 +58,7 @@ public static partial class Prelude
         this Task<Option<TInput>> optional,
         Func<TInput, TResult> whenSome,
         Func<Task<TResult>> whenNone)
+        where TInput : notnull
     {
         var result = await optional;
 
@@ -77,6 +80,7 @@ public static partial class Prelude
         this Task<Option<TInput>> optional,
         Func<TInput, Task<TResult>> whenSome,
         Func<Task<TResult>> whenNone)
+        where TInput : notnull
     {
         var result = await optional;
 
