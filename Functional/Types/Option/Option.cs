@@ -148,6 +148,102 @@ public sealed record Option<T> where T : notnull
             whenNone);
 
     /// <summary>
+    /// When an Option is Some, map the existing value to a new type with a provided function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;int&gt; some = Some(123);
+    /// // Since the value is some, the mapping will be performed.
+    /// Option&lt;string&gt; mapped = some.Map(value => value.ToString());
+    /// Assert.IsTrue(mapped.IsSome);
+    /// 
+    /// Option&lt;int&gt; none = None&lt;int&gt;();
+    /// // Since the value is none, the mapping will not be performed, but instead a new None of string will be returned.
+    /// mapped = none.Map(value => value.ToString());
+    /// Assert.IsTrue(mapped.IsNone);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>A new option.</returns>
+    public Option<TResult> Map<TResult>(Func<T, TResult> mapper) where TResult : notnull =>
+        IsSome.Match(
+            () =>
+                Unwrap()
+                    .Pipe(mapper)
+                    .Pipe(mapped => new Option<TResult>(mapped)),
+            () => new Option<TResult>());
+
+    /// <summary>
+    /// When an Option is Some, perform a mapping function which generates a new value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;int&gt; some = Some(123);
+    /// // Since the value is some, the mapping will be performed.
+    /// Option&lt;string&gt; mapped = some.Map(() => "replacement value");
+    /// Assert.IsTrue(mapped.IsSome);
+    /// Assert.AreEqual(mapped.Unwrap(), "replacement value");
+    /// 
+    /// Option&lt;int&gt; none = None&lt;int&gt;();
+    /// // Since the value is none, the mapping will not be performed, but instead a new None of string will be returned.
+    /// mapped = none.Map(() => "replacement value");
+    /// Assert.IsTrue(mapped.IsNone);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>A new option.</returns>
+    public Option<TResult> Map<TResult>(Func<TResult> mapper) where TResult : notnull =>
+        IsSome.Match(
+            () => new Option<TResult>(mapper()),
+            () => new Option<TResult>());
+
+    /// <summary>
+    /// Convert a Some into a None when it doesn't match the provided predicate.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // Filters out strings with length greater than or equal to 10
+    /// bool filterCriteria(string input) => input.Length &lt; 10;
+    /// 
+    /// Option&lt;string&gt; some = Some("short");
+    /// 
+    /// // Not filtered out because the value "short" matched the predicate.
+    /// var filtered = some.Filter(filterCriteria);
+    /// Assert.IsTrue(filtered.IsSome);
+    /// 
+    /// some = Some("a really long message that will get filtered out");
+    /// 
+    /// // Filtered out because the Length of the input was greater than 10 characters.
+    /// filtered = some.Filter(filterCriteria);
+    /// Assert.IsTrue(filtered.IsNone);
+    /// 
+    /// Option&lt;string&gt; none = None&lt;string&gt;();
+    /// 
+    /// // Input was None, so it's still a None.
+    /// filtered = none.Filter(filterCriteria);
+    /// Assert.IsTrue(filtered.IsNone);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="predicate">A predicate function to check if the contents of a Some match another value.</param>
+    /// <returns>A new option.</returns>
+    public Option<T> Filter(Func<T, bool> predicate)
+    {
+        // None is automatically filtered out, so return it directly.
+        if (this.IsNone) return this;
+
+        // If the value is Some and matches the requirements return it directly.
+        if (this.IsSome && predicate(this.Unwrap())) return this;
+
+        // Allocate a new None since neither case matched.
+        return new();
+    }
+
+    /// <summary>
     /// Perform a side-effect on an option type and consume the option.
     /// <example>
     /// <br/><br/>Example:

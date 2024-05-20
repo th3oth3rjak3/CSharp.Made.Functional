@@ -3,77 +3,66 @@
 public static partial class Prelude
 {
     /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
+    /// When an Option is Some, map the existing value to a new type with a provided function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;int&gt; some = Some(123);
+    /// // Since the value is some, the mapping will be performed.
+    /// Option&lt;string&gt; mapped = await some.Async().MapAsync(value => value.ToString());
+    /// Assert.IsTrue(mapped.IsSome);
+    /// 
+    /// Option&lt;int&gt; none = None&lt;int&gt;();
+    /// // Since the value is none, the mapping will not be performed, but instead a new None of string will be returned.
+    /// mapped = await none.Async().MapAsync(value => value.ToString());
+    /// Assert.IsTrue(mapped.IsNone);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
+    /// <typeparam name="T">The type of the original option.</typeparam>
     /// <typeparam name="TResult">The new type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
-    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
-    /// <returns>A new option.</returns>
-    public static Option<TResult> Map<T, TResult>(
-        this Option<T> option,
-        Func<T, TResult> mapper)
-        where T : notnull
-        where TResult : notnull =>
-        option
-            .Match(
-                some => mapper(some).Optional(),
-                None<TResult>);
-
-    /// <summary>
-    /// When an Option is Some, map to a new value, ignoring the old value.
-    /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
-    /// <typeparam name="TResult">The new type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
-    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
-    /// <returns>A new option.</returns>
-    public static Option<TResult> Map<T, TResult>(
-        this Option<T> option,
-        Func<TResult> mapper)
-        where T : notnull
-        where TResult : notnull =>
-        option
-            .Match(
-                _ => mapper().Optional(),
-                None<TResult>);
-
-    /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
-    /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
-    /// <typeparam name="TResult">The new type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
+    /// <param name="optional">The option to map.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
-        this Task<Option<T>> option,
+        this Task<Option<T>> optional,
         Func<T, TResult> mapper)
         where T : notnull
         where TResult : notnull
     {
-        var result = await option;
+        var result = await optional;
         return result.Map(mapper);
     }
 
     /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
+    /// When an Option is Some, map the existing value to a new type with a provided function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;int&gt; some = Some(123);
+    /// // Since the value is some, the mapping will be performed.
+    /// Option&lt;string&gt; mapped = await some.Async().MapAsync(value => value.ToString().Async());
+    /// Assert.IsTrue(mapped.IsSome);
+    /// 
+    /// Option&lt;int&gt; none = None&lt;int&gt;();
+    /// // Since the value is none, the mapping will not be performed, but instead a new None of string will be returned.
+    /// mapped = await none.Async().MapAsync(value => value.ToString().Async());
+    /// Assert.IsTrue(mapped.IsNone);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
+    /// <typeparam name="T">The type of the original option.</typeparam>
     /// <typeparam name="TResult">The new type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
+    /// <param name="optional">The option to map.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
-        this Task<Option<T>> option,
+        this Task<Option<T>> optional,
         Func<T, Task<TResult>> mapper)
         where T : notnull
         where TResult : notnull
     {
-        var result = await option;
+        var result = await optional;
 
         if (result.IsNone) return None<TResult>();
 
@@ -83,24 +72,70 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// When an Option is Some, map the existing
-    /// value to a new type with a provided function.
+    /// When an Option is Some, map the existing value to a new type with a provided function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;int&gt; some = Some(123);
+    /// // Since the value is some, the mapping will be performed.
+    /// Option&lt;string&gt; mapped = await some.Async().MapAsync(() => "Some".Async());
+    /// Assert.IsTrue(mapped.IsSome);
+    /// 
+    /// Option&lt;int&gt; none = None&lt;int&gt;();
+    /// // Since the value is none, the mapping will not be performed, but instead a new None of string will be returned.
+    /// mapped = await none.Async().MapAsync(() => "Some".Async());
+    /// Assert.IsTrue(mapped.IsNone);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <typeparam name="T">The original type.</typeparam>
+    /// <typeparam name="T">The type of the original option.</typeparam>
     /// <typeparam name="TResult">The new type.</typeparam>
-    /// <param name="option">The option to be mapped.</param>
+    /// <param name="optional">The option to map.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
     public static async Task<Option<TResult>> MapAsync<T, TResult>(
-        this Option<Task<T>> option,
-        Func<T, TResult> mapper)
+        this Task<Option<T>> optional,
+        Func<Task<TResult>> mapper)
         where T : notnull
         where TResult : notnull
     {
-        if (option.IsNone) return None<TResult>();
+        var theOption = await optional;
 
-        var contents = await option.Unwrap();
+        if (theOption.IsSome) return new Option<TResult>(await mapper());
+        return None<TResult>();
+    }
 
-        return mapper(contents).Optional();
+    /// <summary>
+    /// When an Option is Some, map the existing value to a new type with a provided function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;int&gt; some = Some(123);
+    /// // Since the value is some, the mapping will be performed.
+    /// Option&lt;string&gt; mapped = await some.Async().MapAsync(() => "Some");
+    /// Assert.IsTrue(mapped.IsSome);
+    /// 
+    /// Option&lt;int&gt; none = None&lt;int&gt;();
+    /// // Since the value is none, the mapping will not be performed, but instead a new None of string will be returned.
+    /// mapped = await none.Async().MapAsync(() => "Some");
+    /// Assert.IsTrue(mapped.IsNone);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the original option.</typeparam>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="optional">The option to map.</param>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>A new option.</returns>
+    public static async Task<Option<TResult>> MapAsync<T, TResult>(
+        this Task<Option<T>> optional,
+        Func<TResult> mapper)
+        where T : notnull
+        where TResult : notnull
+    {
+        var theOption = await optional;
+        if (theOption.IsSome) return new Option<TResult>(mapper());
+
+        return None<TResult>();
     }
 }

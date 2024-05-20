@@ -1,5 +1,6 @@
 ﻿namespace Functional.Test.Types.Option;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class OptionTests
 {
@@ -33,6 +34,53 @@ public class OptionTests
         new Option<string>()
             .Match(value => value, () => "none")
             .ShouldBe("none");
+    }
+
+    [TestMethod]
+    public void OptionShouldMap()
+    {
+        new Option<int>(42)
+            .Map(value => value.ToString())
+            .Unwrap()
+            .ShouldBe("42");
+
+        new Option<int>()
+            .Map(value => value.ToString())
+            .AssertInstanceOfType(typeof(Option<string>))
+            .IsNone
+            .ShouldBeTrue();
+
+        new Option<int>(42)
+            .Map(() => "hello, world!")
+            .Unwrap()
+            .ShouldBe("hello, world!");
+
+        new Option<int>()
+            .Map(() => "hello, world!")
+            .AssertInstanceOfType(typeof(Option<string>))
+            .IsNone
+            .ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void OptionShouldFilter()
+    {
+        static bool filterCriteria(string input) => input.Length < 10;
+
+        Some("short")
+            .Filter(filterCriteria)
+            .IsSome
+            .ShouldBeTrue();
+
+        Some("a really long message that should get filtered out")
+            .Filter(filterCriteria)
+            .IsNone
+            .ShouldBeTrue();
+
+        None<string>()
+            .Filter(filterCriteria)
+            .IsNone
+            .ShouldBeTrue();
     }
 
     [TestMethod]

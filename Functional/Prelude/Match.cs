@@ -1,6 +1,9 @@
 ﻿namespace Functional;
 public static partial class Prelude
 {
+    /// <summary>
+    /// Return the default Unit.
+    /// </summary>
     public static Unit Unit => Unit.Default;
 
     /// <summary>
@@ -8,7 +11,12 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// (1 &lt; 10).Match(() => "this will be returned", () => "not returned");
+    /// (1 &lt; 10)
+    ///     .Match(
+    ///         // Returned because the condition evaluates to true        
+    ///         () => "this will be returned", 
+    ///         // Would be returned if the condition had evaluated to false.
+    ///         () => "not returned");
     /// </code>
     /// </example>
     /// </summary>

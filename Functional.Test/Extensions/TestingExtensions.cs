@@ -18,6 +18,7 @@ internal static class TestingExtensions
     /// <typeparam name="T">The input type.</typeparam>
     /// <param name="instance">The instance to test against the provided type.</param>
     /// <param name="expectedType">A type that the instance should implement or inherit from.</param>
-    internal static void AssertInstanceOfType<T>(this T instance, Type expectedType) =>
-        Assert.IsInstanceOfType(instance, expectedType);
+    internal static T AssertInstanceOfType<T>(this T instance, Type expectedType) =>
+        Effect(() => Assert.IsInstanceOfType(instance, expectedType))
+            .Pipe(instance);
 }
