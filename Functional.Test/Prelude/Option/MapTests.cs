@@ -68,4 +68,25 @@ public class MapTests
                 output => output.IsNone.ShouldBeTrue(),
                 output => output.AssertInstanceOfType(typeof(Option<string>)));
     }
+
+    [TestMethod]
+    public async Task CollectionsShouldMapOptions()
+    {
+        IEnumerable<Option<int>> collection = [Some(123), None<int>(), Some(456)];
+        var mapped = collection.Map(value => value.ToString());
+
+        mapped.ShouldBe([Some("123"), None<string>(), Some("456")]);
+
+        mapped = collection.Map(() => "Some");
+
+        mapped.ShouldBe([Some("Some"), None<string>(), Some("Some")]);
+
+        mapped = await collection.Async().MapAsync(value => value.ToString());
+
+        mapped.ShouldBe([Some("123"), None<string>(), Some("456")]);
+
+        mapped = await collection.Async().MapAsync(() => "Some");
+
+        mapped.ShouldBe([Some("Some"), None<string>(), Some("Some")]);
+    }
 }

@@ -1,4 +1,8 @@
 ﻿namespace Functional;
+
+/// <summary>
+/// Import this static class to gain access to all of the extension methods and static methods.
+/// </summary>
 public static partial class Prelude
 {
     /// <summary>

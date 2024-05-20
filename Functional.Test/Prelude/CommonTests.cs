@@ -8,17 +8,17 @@ public class CommonTests
     {
         var task = "something".Async();
 
-        task.AssertInstanceOfType(typeof(Task<string>));
+        await task.AssertInstanceOfType(typeof(Task<string>));
 
         (await task).ShouldBe("something");
     }
 
     [TestMethod]
-    public void ItShouldIgnoreAsync()
+    public async Task ItShouldIgnoreAsync()
     {
         var ignore = "hello".Async();
 
-        ignore.IgnoreAsync().AssertInstanceOfType(typeof(Task));
+        await ignore.IgnoreAsync().AssertInstanceOfType(typeof(Task));
     }
 
 }

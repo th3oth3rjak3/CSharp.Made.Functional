@@ -4,10 +4,9 @@
 public class PipeTests
 {
     [TestMethod]
-    public void ItShouldPipeValues()
-    {
-        42.Pipe(value => value.ToString()).ShouldBe("42");
-    }
+    public void ItShouldPipeValues() =>
+        42.Pipe(value => value.ToString())
+            .ShouldBe("42");
 
     [TestMethod]
     public void ItShouldPipeAndReturnUnit()

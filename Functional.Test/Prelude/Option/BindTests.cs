@@ -28,7 +28,7 @@ public class BindTests
             : new();
 
         var option = 42.Optional().Async();
-        option.BindAsync(TryGetString).AssertInstanceOfType(typeof(Task<Option<string>>));
+        await option.BindAsync(TryGetString).AssertInstanceOfType(typeof(Task<Option<string>>));
         (await option.BindAsync(TryGetString)).Unwrap().ShouldBe("42");
 
         (await new Option<int>().Async().BindAsync(TryGetString)).IsNone.ShouldBeTrue();
@@ -43,7 +43,7 @@ public class BindTests
             : new Option<string>().Async();
 
         var option = 42.Optional().Async();
-        option.BindAsync(TryGetString).AssertInstanceOfType(typeof(Task<Option<string>>));
+        await option.BindAsync(TryGetString).AssertInstanceOfType(typeof(Task<Option<string>>));
         (await option.BindAsync(TryGetString)).Unwrap().ShouldBe("42");
 
         (await new Option<int>().Async().BindAsync(TryGetString)).IsNone.ShouldBeTrue();
