@@ -1,5 +1,6 @@
 ﻿namespace Functional.Test.Prelude.Common;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class TapTests
 {

@@ -1,5 +1,6 @@
 ﻿namespace Functional.Test.Extensions;
 
+[ExcludeFromCodeCoverage]
 [TestClass]
 public class TestingExtensionTests
 {
