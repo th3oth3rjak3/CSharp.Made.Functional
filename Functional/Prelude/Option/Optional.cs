@@ -62,10 +62,10 @@ public static partial class Prelude
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
     public static Option<T> Optional<T>(this T? entity) =>
-        entity switch
+        (entity is null) switch
         {
-            null => new(),
-            _ => new(entity)
+            true => None<T>(),
+            false => Some(entity!)
         };
 
 
@@ -129,11 +129,8 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> Optional<T>(this Task<T> entity)
-    {
-        var result = await entity;
-        return result.Optional();
-    }
+    public static async Task<Option<T>> Optional<T>(this Task<T?> entity) =>
+        (await entity).Optional();
 
     /// <summary>
     /// Convert any value to an Option type. When null, it will become None, otherwise Some.
@@ -193,7 +190,7 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> Optional<T>(this ValueTask<T> entity)
+    public static async Task<Option<T>> Optional<T>(this ValueTask<T?> entity)
     {
         var result = await entity;
         return result.Optional();

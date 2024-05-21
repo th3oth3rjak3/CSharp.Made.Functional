@@ -17,31 +17,38 @@ public class OptionalTests
     [TestMethod]
     public async Task ItShouldConvertNullableToOptions()
     {
-        "some value"
+        static string? maybeString(bool provideNull = false) =>
+            provideNull
+            ? null
+            : "some value";
+
+        maybeString()
             .Optional()
             .IsSome
             .ShouldBeTrue();
 
-        (null as string)
+        maybeString(true)
             .Optional()
             .IsNone
             .ShouldBeTrue();
 
-        await "some value"
+        await maybeString()
             .Async()
             .Optional()
             .EffectAsync(option => option.IsSome.ShouldBeTrue());
 
-        await (null as string)
+        await maybeString(true)
             .Async()
             .Optional()
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
-        await ValueTask.FromResult("some value")
+        await maybeString()
+            .Pipe(ValueTask.FromResult)
             .Optional()
             .EffectAsync(option => option.IsSome.ShouldBeTrue());
 
-        await ValueTask.FromResult(null as string)
+        await maybeString(true)
+            .Pipe(ValueTask.FromResult)
             .Optional()
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
