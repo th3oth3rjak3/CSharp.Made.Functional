@@ -15,7 +15,7 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the inner content.</typeparam>
     /// <param name="entity">The contents to store.</param>
     /// <returns>A new Option with some data inside.</returns>
-    public static Option<T> Some<T>(T entity) where T : notnull =>
+    public static Option<T> Some<T>(T entity) =>
         new(entity);
 
     /// <summary>
@@ -30,7 +30,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="T">The type of the contents if they had been present.</typeparam>
     /// <returns>A new Option that represents a lack of contents.</returns>
-    public static Option<T> None<T>() where T : notnull =>
+    public static Option<T> None<T>() =>
         new();
 
     /// <summary>
@@ -61,12 +61,13 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static Option<T> Optional<T>(this T? entity) where T : notnull =>
+    public static Option<T> Optional<T>(this T? entity) =>
         entity switch
         {
-            null => None<T>(),
+            null => new(),
             _ => new(entity)
         };
+
 
     /// <summary>
     /// <example>
@@ -128,7 +129,7 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> Optional<T>(this Task<T?> entity) where T : notnull
+    public static async Task<Option<T>> Optional<T>(this Task<T> entity)
     {
         var result = await entity;
         return result.Optional();
@@ -192,7 +193,7 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> Optional<T>(this ValueTask<T?> entity) where T : notnull
+    public static async Task<Option<T>> Optional<T>(this ValueTask<T?> entity)
     {
         var result = await entity;
         return result.Optional();

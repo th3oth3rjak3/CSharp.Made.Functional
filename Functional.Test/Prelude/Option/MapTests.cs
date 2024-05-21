@@ -72,20 +72,33 @@ public class MapTests
     [TestMethod]
     public async Task CollectionsShouldMapOptions()
     {
+        static string mapWithInput(int input) => input.ToString();
+        static string mapWithoutInput() => "Some";
+        static Task<string> mapWithInputAsync(int input) => mapWithInput(input).Async();
+        static Task<string> mapWithoutInputAsync() => mapWithoutInput().Async();
+
         IEnumerable<Option<int>> collection = [Some(123), None<int>(), Some(456)];
-        var mapped = collection.Map(value => value.ToString());
+        var mapped = collection.Map(mapWithInput);
 
         mapped.ShouldBe([Some("123"), None<string>(), Some("456")]);
 
-        mapped = collection.Map(() => "Some");
+        mapped = collection.Map(mapWithoutInput);
 
         mapped.ShouldBe([Some("Some"), None<string>(), Some("Some")]);
 
-        mapped = await collection.Async().MapAsync(value => value.ToString());
+        mapped = await collection.Async().MapAsync(mapWithInput);
 
         mapped.ShouldBe([Some("123"), None<string>(), Some("456")]);
 
-        mapped = await collection.Async().MapAsync(() => "Some");
+        mapped = await collection.Async().MapAsync(mapWithoutInput);
+
+        mapped.ShouldBe([Some("Some"), None<string>(), Some("Some")]);
+
+        mapped = await collection.Async().MapAsync(mapWithInputAsync);
+
+        mapped.ShouldBe([Some("123"), None<string>(), Some("456")]);
+
+        mapped = await collection.Async().MapAsync(mapWithoutInputAsync);
 
         mapped.ShouldBe([Some("Some"), None<string>(), Some("Some")]);
     }

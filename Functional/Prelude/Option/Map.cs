@@ -220,7 +220,101 @@ public static partial class Prelude
     /// <param name="collection">The collection of options to map.</param>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>The mapped collection.</returns>
-    public static async Task<IEnumerable<Option<TResult>>> MapAsync<T, TResult>(this Task<IEnumerable<Option<T>>> collection, Func<TResult> mapper) where T : notnull where TResult : notnull =>
-        (await collection).Map(mapper);
+    public static async Task<IEnumerable<Option<TResult>>> MapAsync<T, TResult>(
+        this Task<IEnumerable<Option<T>>> collection,
+        Func<TResult> mapper)
+        where T : notnull
+        where TResult : notnull =>
+            (await collection).Map(mapper);
 
+
+    /// <summary>
+    /// Map a collection of options using a mapping function when an option is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// Task&lt;string&gt; toStringAsync(int input) => Task.FromResult(input.ToString());
+    /// 
+    /// IEnumerable&lt;Option&lt;int&gt;&gt; collection = [ Some(123), None&lt;int&gt;(), Some(456) ];
+    /// 
+    /// IEnumerable&lt;Option&lt;string&gt;&gt; mapped = await collection.Async().MapAsync(toStringAsync);
+    ///         
+    /// Assert.AreEqual(mapped, [ Some("123"), None&lt;string&gt;(), Some("456") ]);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option.</typeparam>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="collection">The collection of options to map.</param>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>The mapped collection.</returns>
+    public static async Task<IEnumerable<Option<TResult>>> MapAsync<T, TResult>(
+        this Task<IEnumerable<Option<T>>> collection,
+        Func<T, Task<TResult>> mapper)
+        where T : notnull
+        where TResult : notnull
+    {
+        var output = new List<Option<TResult>>();
+
+        var theCollection = await collection;
+
+        foreach (var option in theCollection)
+        {
+            if (option.IsSome)
+            {
+                var mapped = await mapper(option.Unwrap());
+                output.Add(new Option<TResult>(mapped));
+            }
+
+            if (option.IsNone) output.Add(new Option<TResult>());
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Map a collection of options using a mapping function when an option is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// Task&lt;string&gt; getStringAsync() => Task.FromResult("Some");
+    /// 
+    /// IEnumerable&lt;Option&lt;int&gt;&gt; collection = [ Some(123), None&lt;int&gt;(), Some(456) ];
+    /// 
+    /// IEnumerable&lt;Option&lt;string&gt;&gt; mapped = await collection.Async().MapAsync(getStringAsync);
+    ///         
+    /// Assert.AreEqual(mapped, [ Some("Some"), None&lt;string&gt;(), Some("Some") ]);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option.</typeparam>
+    /// <typeparam name="TResult">The new type.</typeparam>
+    /// <param name="collection">The collection of options to map.</param>
+    /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
+    /// <returns>The mapped collection.</returns>
+    public static async Task<IEnumerable<Option<TResult>>> MapAsync<T, TResult>(
+        this Task<IEnumerable<Option<T>>> collection,
+        Func<Task<TResult>> mapper)
+        where T : notnull
+        where TResult : notnull
+    {
+        var output = new List<Option<TResult>>();
+
+        var theCollection = await collection;
+
+        foreach (var option in theCollection)
+        {
+            if (option.IsSome)
+            {
+                var mapped = await mapper();
+                output.Add(new Option<TResult>(mapped));
+            }
+
+            if (option.IsNone) output.Add(new Option<TResult>());
+        }
+
+        return output;
+    }
 }

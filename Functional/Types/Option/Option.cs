@@ -4,7 +4,7 @@
 /// A wrapper class which contains either Some value or no value (None).
 /// </summary>
 /// <typeparam name="T">The inner type of the Option.</typeparam>
-public sealed record Option<T> where T : notnull
+public sealed record Option<T>
 {
 
     /// <summary>
@@ -44,6 +44,7 @@ public sealed record Option<T> where T : notnull
     /// <param name="input">Input which may be null.</param>
     public Option(T? input)
     {
+
         if (input is not null)
         {
             _contents = input;
@@ -146,6 +147,26 @@ public sealed record Option<T> where T : notnull
         IsSome.Match(
             () => whenSome(Unwrap()),
             whenNone);
+
+    /// <summary>
+    /// Match the option to either Some or None and provide functions to handle each case.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string someValue = new Option&lt;string&gt;("some value").Match(() => "some", () => "none");
+    /// Assert.AreEqual(someValue, "some");
+    /// 
+    /// string noneValue = new Option&lt;string&gt;().Match(() => "some", () => "none");
+    /// Assert.AreEqual(noneValue, "none");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TResult">The output type.</typeparam>
+    /// <param name="whenSome">The function to execute when some.</param>
+    /// <param name="whenNone">The function to execute when none.</param>
+    /// <returns>The result of the function performed on Some or None.</returns>
+    public TResult Match<TResult>(Func<TResult> whenSome, Func<TResult> whenNone) =>
+        IsSome.Match(whenSome, whenNone);
 
     /// <summary>
     /// When an Option is Some, map the existing value to a new type with a provided function.

@@ -34,6 +34,14 @@ public class OptionTests
         new Option<string>()
             .Match(value => value, () => "none")
             .ShouldBe("none");
+
+        new Option<string>("some value")
+            .Match(() => "some", () => "none")
+            .ShouldBe("some");
+
+        new Option<string>()
+            .Match(() => "some", () => "none")
+            .ShouldBe("none");
     }
 
     [TestMethod]
