@@ -38,11 +38,9 @@ public static partial class Prelude
         Func<TResult> whenNone)
         where TInput : notnull
     {
-        var option = await optional;
-
-        return option.IsNone
-            ? whenNone()
-            : whenSome(option.Unwrap());
+        var theOption = await optional;
+        if (theOption.IsSome) return whenSome(theOption.Unwrap());
+        return whenNone();
     }
 
     /// <summary>
@@ -81,11 +79,9 @@ public static partial class Prelude
         Func<TResult> whenNone)
         where TInput : notnull
     {
-        var result = await optional;
-
-        if (result.IsNone) return whenNone();
-
-        return await whenSome(result.Unwrap());
+        var theOption = await optional;
+        if (theOption.IsNone) return whenNone();
+        return await whenSome(theOption.Unwrap());
     }
 
     /// <summary>
@@ -124,11 +120,9 @@ public static partial class Prelude
         Func<Task<TResult>> whenNone)
         where TInput : notnull
     {
-        var result = await optional;
-
-        if (result.IsNone) return await whenNone();
-
-        return whenSome(result.Unwrap());
+        var theOption = await optional;
+        if (theOption.IsNone) return await whenNone();
+        return whenSome(theOption.Unwrap());
     }
 
     /// <summary>
@@ -167,11 +161,9 @@ public static partial class Prelude
         Func<Task<TResult>> whenNone)
         where TInput : notnull
     {
-        var result = await optional;
-
-        if (result.IsNone) return await whenNone();
-
-        return await whenSome(result.Unwrap());
+        var theOption = await optional;
+        if (theOption.IsNone) return await whenNone();
+        return await whenSome(theOption.Unwrap());
     }
 
     /// <summary>

@@ -177,10 +177,10 @@ public static partial class Prelude
     ///     if (entityId > 10) 
     ///     {
     ///         await Task.Delay(1000);
-    ///         return entityId.ToString();
+    ///         return ValueTask.FromResult(entityId.ToString());
     ///     }
     ///     
-    ///     return null;
+    ///     return ValueTask.FromResult(null as string);
     /// }
     /// 
     /// // Converts a ValueTask&lt;string?&gt; into a Task&lt;Option&lt;string&gt;&gt;
@@ -193,7 +193,7 @@ public static partial class Prelude
     /// <typeparam name="T">The type of the original entity.</typeparam>
     /// <param name="entity">The entity to convert to an Option.</param>
     /// <returns>A new option.</returns>
-    public static async Task<Option<T>> Optional<T>(this ValueTask<T?> entity)
+    public static async Task<Option<T>> Optional<T>(this ValueTask<T> entity)
     {
         var result = await entity;
         return result.Optional();
@@ -209,10 +209,10 @@ public static partial class Prelude
     ///     if (entityId > 10) 
     ///     {
     ///         await Task.Delay(1000);
-    ///         return entityId;
+    ///         return ValueTask.FromResult(entityId);
     ///     }
     ///     
-    ///     return null;
+    ///     return ValueTask.FromResult(null as int?);
     /// }
     /// 
     /// // Converts a ValueTask&lt;int?&gt; into a Task&lt;Option&lt;int&gt;&gt;

@@ -92,6 +92,26 @@ public class OptionTests
     }
 
     [TestMethod]
+    public void OptionShouldReduce()
+    {
+        new Option<string>("some value")
+            .Reduce("none")
+            .ShouldBe("some value");
+
+        new Option<string>("some value")
+            .Reduce(() => "none")
+            .ShouldBe("some value");
+
+        new Option<string>()
+            .Reduce("none")
+            .ShouldBe("none");
+
+        new Option<string>()
+            .Reduce(() => "none")
+            .ShouldBe("none");
+    }
+
+    [TestMethod]
     public void OptionShouldPerformEffects()
     {
         var some = new Option<string>("some value");

@@ -265,6 +265,62 @@ public sealed record Option<T>
     }
 
     /// <summary>
+    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// Option&lt;string&gt; maybeString(int input) =>
+    ///     input &lt; 10
+    ///     ? Some(input.ToString())
+    ///     : None&lt;string&gt;();
+    /// 
+    /// string contents = maybeString(5).Reduce("none");
+    ///         
+    /// Assert.AreEqual(contents, "5");
+    /// 
+    /// contents = maybeString(42).Reduce("none");
+    ///         
+    /// Assert.AreEqual(contents, "none");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="alternate">An alternate value to provide when None.</param>
+    /// <returns>The resulting contents.</returns>
+    public T Reduce(T alternate) =>
+        Match(
+            some => some,
+            () => alternate);
+
+    /// <summary>
+    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// Option&lt;string&gt; maybeString(int input) =>
+    ///     input &lt; 10
+    ///     ? Some(input.ToString())
+    ///     : None&lt;string&gt;();
+    /// 
+    /// string contents = maybeString(5).Reduce(() => "none");
+    ///         
+    /// Assert.AreEqual(contents, "5");
+    /// 
+    /// contents = maybeString(42).Reduce(() => "none");
+    ///         
+    /// Assert.AreEqual(contents, "none");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="alternate">An alternate value to provide when None.</param>
+    /// <returns>The resulting contents.</returns>
+    public T Reduce(Func<T> alternate) =>
+        Match(
+            some => some,
+            alternate);
+
+    /// <summary>
     /// Perform a side-effect on an option type and consume the option.
     /// <example>
     /// <br/><br/>Example:
