@@ -4,94 +4,96 @@
 [TestClass]
 public class MatchTests
 {
+    // TODO: Break this up into multiple tests. See TapTests for inspo.
     [TestMethod]
     public async Task OptionShouldMatchAsync()
     {
-        static string matchSomeInput(int input) => input.ToString();
-        static string matchSome() => "Some";
-        static Task<string> matchSomeAsync() => matchSome().Async();
-        static Task<string> matchSomeInputAsync(int input) => matchSomeInput(input).Async();
-        static string matchNone() => "None";
-        static Task<string> matchNoneAsync() => matchNone().Async();
-
         await Some(42)
             .Async()
-            .MatchAsync(matchSomeInput, matchNone)
+            .MatchAsync(MatchSomeInput, MatchNone)
             .EffectAsync(output => output.ShouldBe("42"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSomeInput, matchNone)
+            .MatchAsync(MatchSomeInput, MatchNone)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSomeInputAsync, matchNone)
+            .MatchAsync(MatchSomeInputAsync, MatchNone)
             .EffectAsync(output => output.ShouldBe("42"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSomeInputAsync, matchNone)
+            .MatchAsync(MatchSomeInputAsync, MatchNone)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSomeInput, matchNoneAsync)
+            .MatchAsync(MatchSomeInput, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("42"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSomeInput, matchNoneAsync)
+            .MatchAsync(MatchSomeInput, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSomeInputAsync, matchNoneAsync)
+            .MatchAsync(MatchSomeInputAsync, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("42"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSomeInputAsync, matchNoneAsync)
+            .MatchAsync(MatchSomeInputAsync, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSome, matchNone)
+            .MatchAsync(MatchSome, MatchNone)
             .EffectAsync(output => output.ShouldBe("Some"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSome, matchNone)
+            .MatchAsync(MatchSome, MatchNone)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSomeAsync, matchNone)
+            .MatchAsync(MatchSomeAsync, MatchNone)
             .EffectAsync(output => output.ShouldBe("Some"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSomeAsync, matchNoneAsync)
+            .MatchAsync(MatchSomeAsync, MatchNone)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSome, matchNoneAsync)
+            .MatchAsync(MatchSome, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("Some"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSome, matchNoneAsync)
+            .MatchAsync(MatchSome, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("None"));
 
         await Some(42)
             .Async()
-            .MatchAsync(matchSomeAsync, matchNoneAsync)
+            .MatchAsync(MatchSomeAsync, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("Some"));
 
         await None<int>()
             .Async()
-            .MatchAsync(matchSomeAsync, matchNoneAsync)
+            .MatchAsync(MatchSomeAsync, MatchNoneAsync)
             .EffectAsync(output => output.ShouldBe("None"));
+        return;
+
+        static string MatchSome() => "Some";
+        static Task<string> MatchSomeAsync() => MatchSome().Async();
+        static string MatchSomeInput(int input) => input.ToString();
+        static Task<string> MatchSomeInputAsync(int input) => MatchSomeInput(input).Async();
+        static string MatchNone() => "None";
+        static Task<string> MatchNoneAsync() => MatchNone().Async();
     }
 }

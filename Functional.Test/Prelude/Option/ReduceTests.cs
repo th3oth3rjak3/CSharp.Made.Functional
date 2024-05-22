@@ -4,60 +4,34 @@
 [TestClass]
 public class ReduceTests
 {
+    // TODO: Maybe break into multiple tests. See TapTests.
+    [DataRow("some value", "some value")]
+    [DataRow(null, "none")]
     [TestMethod]
-    public async Task OptionsShouldReduceAsync()
+    public async Task OptionsShouldReduceAsync(string? input, string expected)
     {
-        await "some value"
-            .AsNullable()
+        await input
             .Async()
             .Optional()
             .ReduceAsync(() => "none")
-            .EffectAsync(output => output.ShouldBe("some value"));
+            .EffectAsync(output => output.ShouldBe(expected));
 
-        await (null as string)
-            .Async()
-            .Optional()
-            .ReduceAsync(() => "none")
-            .EffectAsync(output => output.ShouldBe("none"));
-
-        await "some value"
-            .AsNullable()
+        await input
             .Async()
             .Optional()
             .ReduceAsync("none")
-            .EffectAsync(output => output.ShouldBe("some value"));
+            .EffectAsync(output => output.ShouldBe(expected));
 
-        await (null as string)
-            .Async()
-            .Optional()
-            .ReduceAsync("none")
-            .EffectAsync(output => output.ShouldBe("none"));
-
-
-        await "some value"
-            .AsNullable()
+        await input
             .Async()
             .Optional()
             .ReduceAsync(() => "none".Async())
-            .EffectAsync(output => output.ShouldBe("some value"));
+            .EffectAsync(output => output.ShouldBe(expected));
 
-        await (null as string)
-            .Async()
-            .Optional()
-            .ReduceAsync(() => "none".Async())
-            .EffectAsync(output => output.ShouldBe("none"));
-
-        await "some value"
-            .AsNullable()
+        await input
             .Async()
             .Optional()
             .ReduceAsync("none".Async())
-            .EffectAsync(output => output.ShouldBe("some value"));
-
-        await (null as string)
-            .Async()
-            .Optional()
-            .ReduceAsync("none".Async())
-            .EffectAsync(output => output.ShouldBe("none"));
+            .EffectAsync(output => output.ShouldBe(expected));
     }
 }

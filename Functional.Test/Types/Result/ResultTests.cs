@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
+using Functional;
 
-namespace Functional.Test.Results;
+namespace Functional.Test.Types.Results;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
@@ -348,14 +348,15 @@ public class ResultTests
         var successEffect = false;
         var failureEffect = false;
 
-        void SuccessAction(string _) => successEffect = true;
-        void FailureAction(string _) => failureEffect = true;
-
         "success".Ok<string, string>()
             .Effect(SuccessAction, FailureAction);
 
         successEffect.ShouldBeTrue();
         failureEffect.ShouldBeFalse();
+        return;
+
+        void FailureAction(string _) => failureEffect = true;
+        void SuccessAction(string _) => successEffect = true;
     }
 
     [TestMethod]
@@ -379,7 +380,7 @@ public class ResultTests
         var msg = "";
 
         await "123"
-            .Pipe(Result.Ok<string, Exception>)
+            .Pipe(value => value.Ok())
             .Async()
             .EffectAsync(
                 ok => msg = ok,
@@ -394,7 +395,7 @@ public class ResultTests
         var msg = "";
 
         await new Exception("Error")
-            .Pipe(Result.Error<string, Exception>)
+            .Pipe(exn => exn.Error<string>())
             .Async()
             .EffectAsync(
                 ok => msg = ok,
@@ -565,8 +566,9 @@ public class ResultTests
         var okResult = false;
         var errorResult = false;
 
-        Result.Error<string>(new Exception("It's a problem"))
-            .EffectOk(ok => okResult = true);
+        new Exception("It's a problem")
+            .Error<string>()
+            .EffectOk(_ => okResult = true);
 
         okResult.ShouldBeFalse();
         errorResult.ShouldBeFalse();
@@ -574,8 +576,8 @@ public class ResultTests
         okResult = false;
         errorResult = false;
 
-        Result.Ok("ok")
-            .EffectOk(ok => okResult = true);
+        "ok".Ok()
+            .EffectOk(_ => okResult = true);
 
         okResult.ShouldBeTrue();
         errorResult.ShouldBeFalse();
@@ -588,8 +590,9 @@ public class ResultTests
         var okResult = false;
         var errorResult = false;
 
-        Result.Error<string>(new Exception("It's a problem"))
-            .EffectError(error => errorResult = true);
+        new Exception("It's a problem")
+            .Error<string>()
+            .EffectError(_ => errorResult = true);
 
         okResult.ShouldBeFalse();
         errorResult.ShouldBeTrue();
@@ -597,8 +600,8 @@ public class ResultTests
         okResult = false;
         errorResult = false;
 
-        Result.Ok("ok")
-            .EffectError(error => errorResult = true);
+        "ok".Ok()
+            .EffectError(_ => errorResult = true);
 
         okResult.ShouldBeFalse();
         errorResult.ShouldBeFalse();
@@ -608,27 +611,30 @@ public class ResultTests
     public async Task ItShouldHandleEffectAsyncWithOkPlainAction()
     {
         var okResult = false;
-        var errorResult = false;
 
-        await Result.Ok<string, string>("It's ok")
+
+        await "It's ok"
+            .Ok<string, string>()
             .Async()
-            .EffectAsync(() => okResult = true, error => throw new ShouldAssertException("It shouldn't have executed this branch."));
+            .EffectAsync(
+                () => okResult = true, 
+                _ => throw new ShouldAssertException("It shouldn't have executed this branch."));
 
         okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
     }
 
     [TestMethod]
     public async Task ItShouldHandleEffectAsyncWithErrorPlainAction()
     {
-        var okResult = false;
         var errorResult = false;
 
-        await Result.Error<string>(new Exception("It's an error!"))
+        await new Exception("It's an error!")
+            .Error<string>()
             .Async()
-            .EffectAsync(ok => throw new ShouldAssertException("It shouldn't have been ok."), () => errorResult = true);
-
-        okResult.ShouldBeFalse();
+            .EffectAsync(
+                _ => throw new ShouldAssertException("It shouldn't have been ok."), 
+                () => errorResult = true);
+        
         errorResult.ShouldBeTrue();
     }
 
@@ -638,7 +644,8 @@ public class ResultTests
         var okResult = false;
         var errorResult = false;
 
-        await Result.Error<string>(new Exception("It's an error!"))
+        await new Exception("It's an error!")
+            .Error<string>()
             .Async()
             .EffectAsync(() => okResult = true, () => errorResult = true);
 
@@ -648,7 +655,8 @@ public class ResultTests
         okResult = false;
         errorResult = false;
 
-        await Result.Ok<string, Exception>("It's ok")
+        await "It's ok"
+            .Ok()
             .Async()
             .EffectAsync(() => okResult = true, () => errorResult = true);
 
@@ -661,9 +669,9 @@ public class ResultTests
     {
         var okResult = false;
         var okContents = string.Empty;
-        var errorResult = false;
 
-        await Result.Ok<string, Exception>("it's okay")
+        await "it's okay"
+            .Ok()
             .Async()
             .EffectOkAsync(ok =>
             {
@@ -673,21 +681,19 @@ public class ResultTests
 
         okResult.ShouldBeTrue();
         okContents.ShouldBe("it's okay");
-        errorResult.ShouldBeFalse();
     }
 
     [TestMethod]
     public async Task ItShouldHandleEffectOkAsyncWhenOkNoInput()
     {
         var okResult = false;
-        var errorResult = false;
 
-        await Result.Ok<string, Exception>("it's okay")
+        await "it's okay"
+            .Ok()
             .Async()
             .EffectOkAsync(() => okResult = true);
 
         okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
     }
 
     [TestMethod]
@@ -695,9 +701,9 @@ public class ResultTests
     {
         var okResult = false;
         var okContents = string.Empty;
-        var errorResult = false;
 
-        await Result.Error<string>(new Exception("It's an error"))
+        await new Exception("It's an error")
+            .Error<string>()
             .Async()
             .EffectOkAsync(ok =>
             {
@@ -707,7 +713,6 @@ public class ResultTests
 
         okResult.ShouldBeFalse();
         okContents.ShouldBe(string.Empty);
-        errorResult.ShouldBeFalse();
     }
 
     [TestMethod]
@@ -715,11 +720,9 @@ public class ResultTests
     {
         var okResult = false;
 
-        Task doWork() => Effect(() => okResult = true).Pipe(Task.CompletedTask);
-
         await Result.Ok(true)
             .Async()
-            .EffectOkAsync(() => doWork())
+            .EffectOkAsync(() => DoWork())
             .TapAsync(output => output.ShouldBeOfType<Unit>())
             .IgnoreAsync();
 
@@ -727,27 +730,30 @@ public class ResultTests
 
         okResult = false;
 
-        await Result.Exception<bool>("error")
+        await "error"
+            .Exception<bool>()
             .Async()
-            .EffectOkAsync(() => doWork())
+            .EffectOkAsync(DoWork)
             .TapAsync(output => output.ShouldBeOfType<Unit>())
             .IgnoreAsync();
 
         okResult.ShouldBeFalse();
+        return;
+
+        Task DoWork() => Effect(() => okResult = true).Pipe(Task.CompletedTask);
     }
 
     [TestMethod]
     public async Task ItShouldHandleEffectOkAsyncWhenErrorNoInput()
     {
         var okResult = false;
-        var errorResult = false;
 
-        await Result.Error<string>(new Exception("It's an error"))
+        await new Exception("It's an error")
+            .Error<string>()
             .Async()
             .EffectOkAsync(() => okResult = true);
 
         okResult.ShouldBeFalse();
-        errorResult.ShouldBeFalse();
     }
 
     [TestMethod]
@@ -1814,4 +1820,3 @@ public class ResultTests
             .EffectAsync(output => output.Message.ShouldBe("error message"));
 
 }
-

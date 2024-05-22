@@ -1,7 +1,5 @@
 ﻿namespace Functional;
 
-// TODO: Document this whole file with examples.
-
 /// <summary>
 /// A class which represents a success or a failure. 
 /// This is the primary way to return error types from a function
@@ -23,17 +21,17 @@ public sealed record Result<TOk, TError>
     /// <summary>
     /// The internal state of the result.
     /// </summary>
-    private readonly ResultState _state;
+    private readonly ResultState state;
 
     /// <summary>
     /// The contents of the result when the result is Ok.
     /// </summary>
-    private readonly TOk? _okContents;
+    private readonly TOk? okContents;
 
     /// <summary>
     /// The contents of the result when the result is an Error.
     /// </summary>
-    private readonly TError? _errorContents;
+    private readonly TError? errorContents;
 
     // TODO: add examples.
     /// <summary>
@@ -42,8 +40,8 @@ public sealed record Result<TOk, TError>
     /// <param name="ok">An instance of the value for when the Result is Ok.</param>
     public Result(TOk ok)
     {
-        _okContents = ok;
-        _state = ResultState.Ok;
+        okContents = ok;
+        state = ResultState.Ok;
     }
 
     // TODO: add examples.
@@ -53,20 +51,21 @@ public sealed record Result<TOk, TError>
     /// <param name="error">An instance of the value for when the Result is an Error.</param>
     public Result(TError error)
     {
-        _errorContents = error;
-        _state = ResultState.Error;
+        errorContents = error;
+        state = ResultState.Error;
     }
 
     /// <summary>
     /// Determine if the Result is an Ok.
     /// </summary>
-    public bool IsOk => _state == ResultState.Ok;
+    public bool IsOk => state == ResultState.Ok;
 
     /// <summary>
     /// Determine if the Result is an Error.
     /// </summary>
-    public bool IsError => _state == ResultState.Error;
+    public bool IsError => state == ResultState.Error;
 
+    // TODO: Examples
     /// <summary>
     /// Unwrap is used to get the inner value of a Result when the Result type
     /// is ok. If the result is an error, it will throw an InvalidOperationException.
@@ -80,17 +79,17 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the result was an error and was unwrapped as ok.</exception>
-
     public TOk Unwrap()
     {
-        if (this.IsOk && _okContents is not null)
+        if (IsOk && okContents is not null)
         {
-            return _okContents;
+            return okContents;
         }
 
         throw new InvalidOperationException("Tried to unwrap an Ok when it was not Ok.");
     }
 
+    // TODO: Examples
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
@@ -103,6 +102,7 @@ public sealed record Result<TOk, TError>
             () => whenOk(Unwrap()),
             () => whenError(UnwrapError()));
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -110,11 +110,12 @@ public sealed record Result<TOk, TError>
     /// <param name="doWhenError">Perform this action when the value is Error.</param>
     public Unit Effect(Action<TOk> doWhenOk, Action<TError> doWhenError)
     {
-        if (this.IsOk) doWhenOk(this.Unwrap());
-        if (this.IsError) doWhenError(this.UnwrapError());
+        if (IsOk) doWhenOk(Unwrap());
+        if (IsError) doWhenError(UnwrapError());
         return Unit.Default;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -123,6 +124,7 @@ public sealed record Result<TOk, TError>
     public Unit Effect(Action doWhenOk, Action<TError> doWhenError) =>
         Effect(_ => doWhenOk(), doWhenError);
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -131,6 +133,7 @@ public sealed record Result<TOk, TError>
     public Unit Effect(Action<TOk> doWhenOk, Action doWhenError) =>
         Effect(doWhenOk, _ => doWhenError());
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -139,6 +142,7 @@ public sealed record Result<TOk, TError>
     public Unit Effect(Action doWhenOk, Action doWhenError) =>
         Effect(_ => doWhenOk(), _ => doWhenError());
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side effect on a result type when the type is Ok.
     /// </summary>
@@ -146,6 +150,7 @@ public sealed record Result<TOk, TError>
     public Unit EffectOk(Action<TOk> doWhenOk) =>
         Effect(doWhenOk, _ => { });
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side effect on a result type when the type is an error.
     /// </summary>
@@ -153,7 +158,7 @@ public sealed record Result<TOk, TError>
     public Unit EffectError(Action<TError> doWhenError) =>
         Effect(_ => { }, doWhenError);
 
-
+    // TODO: Examples
     /// <summary>
     /// UnwrapError is used to get the inner value of a Result when the Result type
     /// is an error. If the result is ok, it will throw an InvalidOperationException.
@@ -169,11 +174,12 @@ public sealed record Result<TOk, TError>
     /// <exception cref="InvalidOperationException">Thrown when the result was an ok value and unwrapped as an error.</exception>
     public TError UnwrapError()
     {
-        if (IsError && _errorContents is not null) return _errorContents;
+        if (IsError && errorContents is not null) return errorContents;
 
         throw new InvalidOperationException("Tried to unwrap an Error when it was not an Error.");
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
     /// </summary>
@@ -182,19 +188,20 @@ public sealed record Result<TOk, TError>
     /// <returns>The input.</returns>
     public Result<TOk, TError> Tap(Action<TOk> whenOk, Action<TError> whenError)
     {
-        if (IsOk && _okContents is not null)
+        if (IsOk && okContents is not null)
         {
-            whenOk(_okContents);
+            whenOk(okContents);
         }
 
-        if (IsError && _errorContents is not null)
+        if (IsError && errorContents is not null)
         {
-            whenError(_errorContents);
+            whenError(errorContents);
         }
 
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
     /// </summary>
@@ -204,6 +211,7 @@ public sealed record Result<TOk, TError>
     public Result<TOk, TError> Tap(Action whenOk, Action<TError> whenError) =>
         Tap(_ => whenOk(), whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
     /// </summary>
@@ -213,6 +221,7 @@ public sealed record Result<TOk, TError>
     public Result<TOk, TError> Tap(Action<TOk> whenOk, Action whenError) =>
         Tap(whenOk, _ => whenError());
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
     /// </summary>
@@ -222,6 +231,7 @@ public sealed record Result<TOk, TError>
     public Result<TOk, TError> Tap(Action whenOk, Action whenError) =>
         Tap(_ => whenOk(), _ => whenError());
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
@@ -229,15 +239,16 @@ public sealed record Result<TOk, TError>
     /// <returns>The input value.</returns>
     public Result<TOk, TError> TapOk(params Action<TOk>[] whenOk)
     {
-        if (this.IsOk)
+        if (IsOk)
         {
-            var contents = this.Unwrap();
+            var contents = Unwrap();
             whenOk.ToList().ForEach(action => action(contents));
         }
 
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
@@ -245,7 +256,7 @@ public sealed record Result<TOk, TError>
     /// <returns>The input value.</returns>
     public Result<TOk, TError> TapOk(params Action[] whenOk)
     {
-        if (this.IsOk)
+        if (IsOk)
         {
             whenOk.ToList().ForEach(action => action());
         }
@@ -253,6 +264,7 @@ public sealed record Result<TOk, TError>
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
@@ -260,15 +272,16 @@ public sealed record Result<TOk, TError>
     /// <returns>The input value.</returns>
     public Result<TOk, TError> TapError(params Action<TError>[] whenError)
     {
-        if (this.IsError)
+        if (IsError)
         {
-            var contents = this.UnwrapError();
+            var contents = UnwrapError();
             whenError.ToList().ForEach(action => action(contents));
         }
 
         return this;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
@@ -276,7 +289,7 @@ public sealed record Result<TOk, TError>
     /// <returns>The input value.</returns>
     public Result<TOk, TError> TapError(params Action[] whenError)
     {
-        if (this.IsError)
+        if (IsError)
         {
             whenError.ToList().ForEach(action => action());
         }
@@ -285,6 +298,7 @@ public sealed record Result<TOk, TError>
     }
 }
 
+// TODO: move to prelude folder.
 /// <summary>
 /// A class which represents a success or a failure. 
 /// This is the primary way to return error types from a function
@@ -292,6 +306,7 @@ public sealed record Result<TOk, TError>
 /// </summary>
 public static class Result
 {
+    // TODO: Examples
     /// <summary>
     /// A result that indicates that the value is Ok.
     /// </summary>
@@ -302,6 +317,7 @@ public static class Result
     public static Result<TOk, TError> Ok<TOk, TError>(this TOk input) =>
         new(input);
 
+    // TODO: Examples
     /// <summary>
     /// A result that indicates that the value is Ok.
     /// </summary>
@@ -311,6 +327,7 @@ public static class Result
     public static Result<TOk, Exception> Ok<TOk>(this TOk input) =>
         new(input);
 
+    // TODO: Examples
     /// <summary>
     /// A result that indicates failure.
     /// </summary>
@@ -320,6 +337,7 @@ public static class Result
     public static Result<TOk, TError> Error<TOk, TError>(this TError error) =>
         new(error);
 
+    // TODO: Examples
     /// <summary>
     /// A result that indicates failure.
     /// </summary>
@@ -329,6 +347,7 @@ public static class Result
     public static Result<TOk, Exception> Error<TOk>(this Exception error) =>
         new(error);
 
+    // TODO: Examples
     /// <summary>
     /// A result that constructs an exception on your behalf.
     /// </summary>

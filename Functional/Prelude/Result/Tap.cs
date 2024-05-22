@@ -2,6 +2,7 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -15,6 +16,7 @@ public static partial class Prelude
         (await result)
             .Tap(whenOk, whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -28,6 +30,7 @@ public static partial class Prelude
         (await result)
             .Tap(whenOk, whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -46,6 +49,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -64,6 +68,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -77,6 +82,7 @@ public static partial class Prelude
         (await result)
             .Tap(whenOk, whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -90,6 +96,7 @@ public static partial class Prelude
         (await result)
             .Tap(whenOk, whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -108,6 +115,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -126,6 +134,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -144,6 +153,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -162,6 +172,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -180,6 +191,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -198,6 +210,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -216,6 +229,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -234,6 +248,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -252,6 +267,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a result to perform a side-effect without consuming the result.
     /// </summary>
@@ -270,6 +286,7 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
@@ -281,6 +298,7 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action<Ok>[] whenOk) =>
         (await result).TapOk(whenOk);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
@@ -292,6 +310,8 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action[] whenOk) =>
         (await result).TapOk(whenOk);
 
+    // TODO: Examples
+    // TODO: remove async lambda
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
@@ -310,6 +330,8 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Examples
+    // TODO: remove async lambda
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// </summary>
@@ -321,14 +343,13 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Func<Ok, Task>[] whenOk)
     {
         var theResult = await result;
-        if (theResult.IsOk)
-        {
-            var contents = theResult.Unwrap();
-            whenOk.ToList().ForEach(async action => await action(contents));
-        }
+        if (theResult.IsError) return theResult;
+        var contents = theResult.Unwrap();
+        whenOk.ToList().ForEach(async action => await action(contents));
         return theResult;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
@@ -341,6 +362,7 @@ public static partial class Prelude
         (await result)
             .TapError(whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
@@ -352,6 +374,7 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action[] whenError) =>
         (await result).TapError(whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>
@@ -370,6 +393,8 @@ public static partial class Prelude
         return theResult;
     }
 
+    // TODO: Remove async lambda
+    // TODO: Examples
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// </summary>

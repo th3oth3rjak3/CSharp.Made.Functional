@@ -2,6 +2,7 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Obtains the inner exception message when present.
     /// </summary>
@@ -13,6 +14,7 @@ public static partial class Prelude
             .Optional()
             .Map(exn => exn.Message);
 
+    // TODO: Examples
     /// <summary>
     /// Try something which could throw an exception.
     /// </summary>
@@ -32,6 +34,7 @@ public static partial class Prelude
         }
     }
 
+    // TODO: Examples
     /// <summary>
     /// Try something which could throw an exception.
     /// </summary>
@@ -53,6 +56,7 @@ public static partial class Prelude
         }
     }
 
+    // TODO: Examples
     /// <summary>
     /// Try something async that might throw.
     /// </summary>
@@ -69,10 +73,11 @@ public static partial class Prelude
         catch (Exception ex)
         {
             return await ex.Async()
-                .PipeAsync(Result.Error<TResult, Exception>);
+                .PipeAsync(exn => exn.Error<TResult>());
         }
     }
 
+    // TODO: Examples
     /// <summary>
     /// Try something async which could throw and Exception.
     /// </summary>
@@ -92,7 +97,7 @@ public static partial class Prelude
         catch (Exception ex)
         {
             return await ex
-                .Pipe(Result.Error<TResult, Exception>)
+                .Pipe(exn => exn.Error<TResult>())
                 .Async();
         }
     }

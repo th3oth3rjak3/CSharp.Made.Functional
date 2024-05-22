@@ -1,6 +1,7 @@
 ﻿namespace Functional;
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
     /// contains some value. If an option is None, it will throw an <see cref="InvalidOperationException"/>

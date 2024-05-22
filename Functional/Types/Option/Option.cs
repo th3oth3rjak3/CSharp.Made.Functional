@@ -19,12 +19,12 @@ public sealed record Option<T>
     /// <summary>
     /// The internal contents of the Option.
     /// </summary>
-    private readonly T? _contents;
+    private readonly T? contents;
 
     /// <summary>
     /// The current state of the Option. None by default.
     /// </summary>
-    private readonly State _state = State.None;
+    private readonly State state = State.None;
 
     /// <summary>
     /// Create a new option.
@@ -44,12 +44,9 @@ public sealed record Option<T>
     /// <param name="input">Input which may be null.</param>
     public Option(T? input)
     {
-
-        if (input is not null)
-        {
-            _contents = input;
-            _state = State.Some;
-        }
+        if (input is null) return;
+        contents = input;
+        state = State.Some;
     }
 
     /// <summary>
@@ -77,7 +74,7 @@ public sealed record Option<T>
     /// </code>
     /// </example>
     /// </summary>
-    public bool IsSome => _state == State.Some;
+    public bool IsSome => state == State.Some;
 
     /// <summary>
     /// Determine if an Option is None.
@@ -92,7 +89,7 @@ public sealed record Option<T>
     /// </code>
     /// </example>
     /// </summary>
-    public bool IsNone => _state == State.None;
+    public bool IsNone => state == State.None;
 
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
@@ -122,7 +119,7 @@ public sealed record Option<T>
     /// <exception cref="InvalidOperationException">Thrown when unwrapping a None.</exception>
     public T Unwrap()
     {
-        if (this.IsSome && this._contents is not null) return _contents;
+        if (IsSome && contents is not null) return contents;
         throw new InvalidOperationException("Tried to unwrap a None! Be sure to check with IsSome before unwrapping.");
     }
 
@@ -255,13 +252,13 @@ public sealed record Option<T>
     public Option<T> Filter(Func<T, bool> predicate)
     {
         // None is automatically filtered out, so return it directly.
-        if (this.IsNone) return this;
+        if (IsNone) return this;
 
         // If the value is Some and matches the requirements return it directly.
-        if (this.IsSome && predicate(this.Unwrap())) return this;
+        if (IsSome && predicate(Unwrap())) return this;
 
         // Allocate a new None since neither case matched.
-        return new();
+        return new Option<T>();
     }
 
     /// <summary>
@@ -353,7 +350,7 @@ public sealed record Option<T>
         if (IsSome) doWhenSome(Unwrap());
         if (IsNone) doWhenNone();
 
-        return new();
+        return new Unit();
     }
 
     /// <summary>
@@ -388,7 +385,7 @@ public sealed record Option<T>
     {
         if (IsSome) doWhenSome();
         if (IsNone) doWhenNone();
-        return new();
+        return new Unit();
     }
 
     /// <summary>
@@ -410,7 +407,7 @@ public sealed record Option<T>
     public Unit EffectSome(Action<T> doWhenSome)
     {
         if (IsSome) doWhenSome(Unwrap());
-        return new();
+        return new Unit();
     }
 
     /// <summary>
@@ -433,7 +430,7 @@ public sealed record Option<T>
     public Unit EffectSome(Action doWhenSome)
     {
         if (IsSome) doWhenSome();
-        return new();
+        return new Unit();
     }
 
     /// <summary>
@@ -456,12 +453,27 @@ public sealed record Option<T>
     public Unit EffectNone(Action doWhenNone)
     {
         if (IsNone) doWhenNone();
-        return new();
+        return new Unit();
     }
-
-    // TODO: Examples
+    
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // value is 123 since the input was Some.
+    /// int value =
+    ///     Some(123)
+    ///         // Tap performs side-effects, then returns the value that was input.
+    ///         // In this case, that means it returns Some(123) as an Option&lt;int&gt;
+    ///         .Tap(
+    ///             // Performed when the value is Some.
+    ///             value => Console.WriteLine($"The value was: {value}"),
+    ///             // Performed when the value is None.
+    ///             () => Console.WriteLine("The value was: None"))
+    ///         .Reduce(0);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="whenSome">Perform this action when the value is Some.</param>
     /// <param name="whenNone">Perform this action when the value is None.</param>
@@ -473,10 +485,25 @@ public sealed record Option<T>
 
         return this;
     }
-
-    // TODO: Examples
+    
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // value is 123 since the input was Some.
+    /// int value =
+    ///     Some(123)
+    ///         // Tap performs side-effects, then returns the value that was input.
+    ///         // In this case, that means it returns Some(123) as an Option&lt;int&gt;
+    ///         .Tap(
+    ///             // Performed when the value is Some.
+    ///             () => Console.WriteLine("The value was: Some"),
+    ///             // Performed when the value is None.
+    ///             () => Console.WriteLine("The value was: None"))
+    ///         .Reduce(0);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="whenSome">Perform this action when the value is Some.</param>
     /// <param name="whenNone">Perform this action when the value is None.</param>
@@ -488,27 +515,61 @@ public sealed record Option<T>
 
         return this;
     }
-
-    // TODO: Examples
+    
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int temp;
+    /// // Tap returns the input value.
+    /// Option&lt;int&gt; some =
+    ///     Some(123)
+    ///         // TapSome can take multiple inputs
+    ///         .TapSome(
+    ///             value => Console.WriteLine(value),
+    ///             value => temp = value);
+    ///
+    /// None&lt;int&gt;()
+    ///     // Nothing happens here since the input is None.
+    ///     .TapSome(
+    ///         value => Console.WriteLine(value),
+    ///         value => temp = value);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="whenSome">Perform this action when the value is Some.</param>
     /// <returns>The input value.</returns>
     public Option<T> TapSome(params Action<T>[] whenSome)
     {
-        if (IsSome)
-        {
-            var contents = Unwrap();
-            whenSome.ToList().ForEach(action => action(contents));
-        }
+        if (IsNone) return this;
+        
+        var unwrapped = Unwrap();
+        whenSome.ToList().ForEach(action => action(unwrapped));
 
         return this;
     }
-
-    // TODO: Examples
+    
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // Tap returns the input value.
+    /// Option&lt;int&gt; some =
+    ///     Some(123)
+    ///         // TapSome can take multiple inputs
+    ///         .TapSome(
+    ///             () => WriteCode(),
+    ///             () => MakeMoney());
+    ///
+    /// None&lt;int&gt;()
+    ///     // Nothing happens here since the input is None.
+    ///     .TapSome(
+    ///         () => WriteCode(),
+    ///         () => MakeMoney());
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="whenSome">Perform this action when the value is Some.</param>
     /// <returns>The input value.</returns>
@@ -521,10 +582,27 @@ public sealed record Option<T>
 
         return this;
     }
-
-    // TODO: Examples
+    
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// // Tap returns the input value.
+    /// None&lt;int&gt;()
+    ///     // TapNone can take multiple inputs.
+    ///     .TapNone(
+    ///         () => WriteCode(),
+    ///         () => MakeMoney());
+    ///
+    /// Option&lt;int&gt; some =
+    ///     Some(123)
+    ///         // This doesn't do anything since the input is Some.
+    ///         .TapNone(
+    ///             () => WriteCode(),
+    ///             () => MakeMoney());
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="whenNone">Perform this action when the value is None.</param>
     /// <returns>The input value.</returns>

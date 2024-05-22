@@ -3,7 +3,25 @@
 public static partial class Prelude
 {
     /// <summary>
-    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// Extract the contents of an Option when Some, otherwise return the alternate value when None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int some =
+    ///     await Some(123)
+    ///         .Async()
+    ///         .ReduceAsync(() => 0);
+    ///
+    /// Assert.AreEqual(some, 123);
+    ///
+    /// int none =
+    ///     await None&lt;int&gt;()
+    ///         .Async()
+    ///         .ReduceAsync(() => 0);
+    ///
+    /// Assert.AreEqual(none, 0);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the input.</typeparam>
     /// <param name="optional">The option to extract contents from when Some.</param>
@@ -17,9 +35,27 @@ public static partial class Prelude
             some => some,
             alternate);
     }
-
+    
     /// <summary>
-    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// Extract the contents of an Option when Some, otherwise return the alternate value when None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int some =
+    ///     await Some(123)
+    ///         .Async()
+    ///         .ReduceAsync(0);
+    ///
+    /// Assert.AreEqual(some, 123);
+    ///
+    /// int none =
+    ///     await None&lt;int&gt;()
+    ///         .Async()
+    ///         .ReduceAsync(0);
+    ///
+    /// Assert.AreEqual(none, 0);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the input.</typeparam>
     /// <param name="optional">The option to extract contents from when Some.</param>
@@ -37,7 +73,25 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// Extract the contents of an Option when Some, otherwise return the alternate value when None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int some =
+    ///     await Some(123)
+    ///         .Async()
+    ///         .ReduceAsync(Task.FromResult(0));
+    ///
+    /// Assert.AreEqual(some, 123);
+    ///
+    /// int none =
+    ///     await None&lt;int&gt;()
+    ///         .Async()
+    ///         .ReduceAsync(Task.FromResult(0));
+    ///
+    /// Assert.AreEqual(none, 0);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the input.</typeparam>
     /// <param name="optional">The option to extract contents from when Some.</param>
@@ -53,7 +107,25 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// Extract the contents of an Option when Some, otherwise return the alternate value when None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int some =
+    ///     await Some(123)
+    ///         .Async()
+    ///         .ReduceAsync(() => Task.FromResult(0));
+    ///
+    /// Assert.AreEqual(some, 123);
+    ///
+    /// int none =
+    ///     await None&lt;int&gt;()
+    ///         .Async()
+    ///         .ReduceAsync(() => Task.FromResult(0));
+    ///
+    /// Assert.AreEqual(none, 0);
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the input.</typeparam>
     /// <param name="optional">The option to extract contents from when Some.</param>

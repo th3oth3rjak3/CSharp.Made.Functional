@@ -65,7 +65,7 @@ public static partial class Prelude
         (entity is null) switch
         {
             true => None<T>(),
-            false => Some(entity!)
+            false => Some(entity)
         };
 
 
@@ -100,7 +100,7 @@ public static partial class Prelude
         entity.HasValue switch
         {
             true => entity.Value.Pipe(Some),
-            false => None<T>(),
+            false => None<T>()
         };
 
     /// <summary>
