@@ -2,6 +2,15 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
+    public static async Task<bool> IsOk<Ok, Error>(this Task<Result<Ok, Error>> result) =>
+        (await result).IsOk;
+
+    // TODO: Examples
+    public static async Task<bool> IsError<Ok, Error>(this Task<Result<Ok, Error>> result) =>
+        (await result).IsError;
+
+    // TODO: Examples
     /// <summary>
     /// Unwrap is used to get the inner value of a Result when the Result type
     /// is ok. If the result is an error, it will throw an InvalidOperationException.
@@ -22,6 +31,7 @@ public static partial class Prelude
         return theResult.Unwrap();
     }
 
+    // TODO: Examples
     /// <summary>
     /// UnwrapError is used to get the inner value of a Result when the Result type
     /// is an error. If the result is ok, it will throw an InvalidOperationException.
@@ -41,5 +51,4 @@ public static partial class Prelude
         if (theResult.IsOk) throw new InvalidOperationException("Failed to unwrap the result as an error type because it was Ok. When using this method, be sure to check if the value is Error by using the IsError method beforehand. ");
         return theResult.UnwrapError();
     }
-
 }

@@ -2,6 +2,8 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
+    // TODO: Move to result class.
     /// <summary>
     /// Map an Ok result from a previous operation to a new result.
     /// </summary>
@@ -19,6 +21,8 @@ public static partial class Prelude
                     ok => Result.Ok<Output, Error>(mapper(ok)),
                     Result.Error<Output, Error>);
 
+    // TODO: Examples
+    // TODO: Move to result class
     /// <summary>
     /// Map a result with one error type to another.
     /// </summary>
@@ -38,6 +42,7 @@ public static partial class Prelude
                     errorMapper(error)
                         .Pipe(Result.Error<Ok, NewError>));
 
+    // TODO: Examples
     /// <summary>
     /// Map a successful result from a previous operation to a new result.
     /// </summary>
@@ -56,6 +61,7 @@ public static partial class Prelude
         return outcome.Map(mapper);
     }
 
+    // TODO: Examples
     /// <summary>
     /// Map an Ok result from a previous operation to a new result.
     /// </summary>
@@ -81,7 +87,7 @@ public static partial class Prelude
         return err.Error<Output, Error>();
     }
 
-
+    // TODO: Examples
     /// <summary>
     /// Map a result with one error type to another.
     /// </summary>
@@ -100,6 +106,7 @@ public static partial class Prelude
     }
 
 
+    // TODO: Examples
     /// <summary>
     /// Map a result with one error type to another.
     /// </summary>

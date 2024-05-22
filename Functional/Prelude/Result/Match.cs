@@ -2,6 +2,7 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
@@ -23,6 +24,7 @@ public static partial class Prelude
             .Match(whenOk, whenError);
     }
 
+    // TODO: Examples
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
@@ -45,6 +47,7 @@ public static partial class Prelude
         return await whenError(outcome.UnwrapError());
     }
 
+    // TODO: Examples
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>
@@ -67,6 +70,7 @@ public static partial class Prelude
         return await whenError(outcome.UnwrapError());
     }
 
+    // TODO: Examples
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// </summary>

@@ -52,7 +52,8 @@ public class OptionalTests
             .Optional()
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
-        42.Optional()
+        (42 as int?)
+            .Optional()
             .IsSome
             .ShouldBeTrue();
 
@@ -61,7 +62,7 @@ public class OptionalTests
             .IsNone
             .ShouldBeTrue();
 
-        await 42
+        await (42 as int?)
             .Async()
             .Optional()
             .EffectAsync(option => option.IsSome.ShouldBeTrue());
@@ -71,7 +72,7 @@ public class OptionalTests
             .Optional()
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
-        await ValueTask.FromResult(42)
+        await ValueTask.FromResult(42 as int?)
             .Optional()
             .EffectAsync(option => option.IsSome.ShouldBeTrue());
 

@@ -11,6 +11,13 @@ public static partial class Prelude
 
     /// <summary>
     /// Create a Task from an input.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task&lt;string&gt; asyncString = "hello world".Async();
+    /// string value = await asyncString;
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
     /// <param name="input">The input to wrap as a Task.</param>
@@ -19,9 +26,25 @@ public static partial class Prelude
         Task.FromResult(input);
 
     /// <summary>
-    /// Ignores the output of a function. C# does this by default in functions
-    /// that return void, but this can be used to declare that the output is
-    /// intentionally ignored.
+    /// Ignores the output of a function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// void PerformWork()
+    /// {
+    ///     // Without Ignore, using discard operator
+    ///     _ = Some("123")
+    ///         .Match(() => "some", () => "none");
+    ///         
+    ///     // With Ignore
+    ///     Some("123")
+    ///         // Returns a string
+    ///         .Match(() => "some", () => "none") 
+    ///         // Ignores that output.
+    ///         .Ignore();  
+    /// }
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">Any input type.</typeparam>
     /// <param name="_">This parameter is ignored.</param>
@@ -29,9 +52,27 @@ public static partial class Prelude
     public static void Ignore<T>(this T? _) { }
 
     /// <summary>
-    /// Ignores the output of an async function. C# does this by default in functions
-    /// that return void, but this can be used to declare that the output is
-    /// intentionally ignored.
+    /// Ignores the output of an async function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task PerformWork()
+    /// {
+    ///     // Without Ignore, using discard operator
+    ///     _ = await Some("123")
+    ///         .Async()
+    ///         .MatchAsync(() => "some", () => "none");
+    ///         
+    ///     // With Ignore
+    ///     await Some("123")
+    ///         .Async()
+    ///         // Returns a string
+    ///         .MatchAsync(() => "some", () => "none") 
+    ///         // Ignores that output.
+    ///         .IgnoreAsync();  
+    /// }
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">Any input type.</typeparam>
     /// <param name="toIgnore">This parameter is ignored.</param>

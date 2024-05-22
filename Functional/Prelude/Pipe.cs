@@ -2,6 +2,7 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Map one object type to another using a mapping function.
     /// </summary>
@@ -14,6 +15,7 @@ public static partial class Prelude
     public static TResult Pipe<T, TResult>(this T input, Func<T, TResult> mapper) =>
         mapper(input);
 
+    // TODO: Examples
     /// <summary>
     /// Perform a series of actions on the input and return unit.
     /// </summary>
@@ -26,6 +28,7 @@ public static partial class Prelude
             .Tap(actions)
             .Pipe(_ => Unit.Default);
 
+    // TODO: Examples
     /// <summary>
     /// Perform a series of actions while ignoring the input.
     /// </summary>
@@ -36,6 +39,7 @@ public static partial class Prelude
     public static Unit Pipe<T>(this T input, params Action[] actions) =>
         input.Tap(actions).Pipe(_ => Unit.Default);
 
+    // TODO: Examples
     /// <summary>
     /// Perform a series of actions on the input and return unit.
     /// </summary>
@@ -47,6 +51,7 @@ public static partial class Prelude
     public static TOutput Pipe<T, TOutput>(this T input, Func<TOutput> mapper) =>
         input.Pipe(_ => mapper());
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an async function that transforms a Task of <typeparamref name="TInput"/> to <typeparamref name="TInput"/>.
     /// </summary>
@@ -58,6 +63,7 @@ public static partial class Prelude
     public static async Task<TResult> PipeAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, Task<TResult>> func) =>
         await func(await input);
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an async mapping function that transforms 
     /// <typeparamref name="TInput"/> to <typeparamref name="TResult"/>.
@@ -72,6 +78,7 @@ public static partial class Prelude
         Func<TInput, TResult> func) =>
             func(await input);
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an async input that performs actions on the awaited input.
     /// </summary>
@@ -85,6 +92,7 @@ public static partial class Prelude
             .Pipe(_ => Unit.Default)
             .Async();
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an async input that performs async actions on the awaited input.
     /// </summary>
@@ -98,6 +106,7 @@ public static partial class Prelude
             .TapAsync(actions)
             .PipeAsync(_ => Unit.Default);
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an async input that performs actions.
     /// </summary>
@@ -111,6 +120,7 @@ public static partial class Prelude
             .Async()
             .PipeAsync(_ => Unit.Default);
 
+    // TODO: Examples
     /// <summary>
     /// Used to perform actions that return only a task.
     /// </summary>
@@ -125,6 +135,7 @@ public static partial class Prelude
         return Unit.Default;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an async input that performs actions.
     /// </summary>

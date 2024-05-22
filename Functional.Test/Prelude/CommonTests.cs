@@ -21,4 +21,12 @@ public class CommonTests
         await ignore.IgnoreAsync().AssertInstanceOfType(typeof(Task));
     }
 
+    [TestMethod]
+    public void PreludeUnitShouldReturnUnit()
+    {
+
+        Unit unit = Functional.Prelude.Unit;
+        unit.AssertInstanceOfType(typeof(Unit));
+        unit.ShouldBe(Unit.Default);
+    }
 }

@@ -254,11 +254,9 @@ public sealed record Option<T>
         // None is automatically filtered out, so return it directly.
         if (IsNone) return this;
 
-        // If the value is Some and matches the requirements return it directly.
-        if (IsSome && predicate(Unwrap())) return this;
-
-        // Allocate a new None since neither case matched.
-        return new Option<T>();
+        return predicate(Unwrap())
+            ? this              // Predicate matched, keep the value
+            : new Option<T>();  // Not matched, create new None.
     }
 
     /// <summary>
@@ -455,7 +453,7 @@ public sealed record Option<T>
         if (IsNone) doWhenNone();
         return new Unit();
     }
-    
+
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
     /// <example>
@@ -485,7 +483,7 @@ public sealed record Option<T>
 
         return this;
     }
-    
+
     /// <summary>
     /// Tap into the contents of the Option and perform different actions when the value is some or none.
     /// <example>
@@ -515,7 +513,7 @@ public sealed record Option<T>
 
         return this;
     }
-    
+
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
     /// <example>
@@ -543,13 +541,13 @@ public sealed record Option<T>
     public Option<T> TapSome(params Action<T>[] whenSome)
     {
         if (IsNone) return this;
-        
+
         var unwrapped = Unwrap();
         whenSome.ToList().ForEach(action => action(unwrapped));
 
         return this;
     }
-    
+
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is Some.
     /// <example>
@@ -582,7 +580,7 @@ public sealed record Option<T>
 
         return this;
     }
-    
+
     /// <summary>
     /// Tap into the contents of the Option and perform an action when the value is None.
     /// <example>

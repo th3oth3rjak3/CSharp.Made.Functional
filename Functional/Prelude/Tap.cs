@@ -1,6 +1,7 @@
 ﻿namespace Functional;
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
@@ -19,6 +20,7 @@ public static partial class Prelude
         return input;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
@@ -37,6 +39,7 @@ public static partial class Prelude
         return input;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an action function that is asynchronous.
     /// </summary>
@@ -54,6 +57,7 @@ public static partial class Prelude
         return await input;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Used to wrap an action that is asynchronous.
     /// </summary>
@@ -76,6 +80,7 @@ public static partial class Prelude
         return await input;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Used to perform an action which returns void on an input that is a Task.
     /// </summary>

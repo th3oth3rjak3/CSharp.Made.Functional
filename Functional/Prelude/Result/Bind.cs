@@ -2,6 +2,8 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
+    // TODO: Move to Result
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
     /// perform work on the result by providing a function.
@@ -26,6 +28,7 @@ public static partial class Prelude
         return binder(contents);
     }
 
+    // TODO: Examples
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
     /// perform work on the result by providing a binding function.
@@ -52,6 +55,7 @@ public static partial class Prelude
         return binder(contents);
     }
 
+    // TODO: Examples
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
     /// perform work on the result by providing a binding function.
@@ -77,41 +81,4 @@ public static partial class Prelude
 
         return await binder(contents);
     }
-
-    /// <summary>
-    /// Bind a List of Results to a Result of List of the inner object.
-    /// </summary>
-    /// <typeparam name="Ok">The type of the input.</typeparam>
-    /// <typeparam name="Error">The type of the error.</typeparam>
-    /// <param name="inputs"></param>
-    /// <returns>A success result when all inner results are a success. A failure result when one or more failures occurred.</returns>
-    public static Result<List<Ok>, List<Error>> BindAll<Ok, Error>(this List<Result<Ok, Error>> inputs) =>
-        new
-        {
-            OutputSuccesses = new List<Ok>(),
-            OutputFailures = new List<Error>()
-        }
-            .Pipe(mutableData =>
-                inputs
-                    .Select(input =>
-                        input
-                            .Match(
-                                ok =>
-                                {
-                                    mutableData.OutputSuccesses.Add(ok);
-                                    return true;
-                                },
-                                error =>
-                                {
-                                    mutableData.OutputFailures.Add(error);
-                                    return false;
-                                }))
-                    .ToList()
-                    .All(result => result == true)
-                    .Pipe(wasSuccessful =>
-                        wasSuccessful switch
-                        {
-                            true => mutableData.OutputSuccesses.Ok<List<Ok>, List<Error>>(),
-                            false => mutableData.OutputFailures.Error<List<Ok>, List<Error>>()
-                        }));
 }

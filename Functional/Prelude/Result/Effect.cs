@@ -2,6 +2,7 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -12,6 +13,7 @@ public static partial class Prelude
         (await result)
             .Effect(whenOk, whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -22,6 +24,7 @@ public static partial class Prelude
         (await result)
             .Effect(_ => whenOk(), whenError);
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -32,6 +35,7 @@ public static partial class Prelude
         (await result)
             .Effect(whenOk, _ => whenError());
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type.
     /// </summary>
@@ -45,6 +49,7 @@ public static partial class Prelude
         (await result)
             .Effect(_ => whenOk(), _ => whenError());
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type when the inner value is ok.
     /// </summary>
@@ -57,6 +62,7 @@ public static partial class Prelude
         (await result)
             .Effect(whenOk, _ => { });
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type when the inner value is ok, consuming the result.
     /// </summary>
@@ -69,6 +75,7 @@ public static partial class Prelude
         (await result)
             .Effect(_ => whenOk(), _ => { });
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type when the inner value is ok, consuming the result.
     /// </summary>
@@ -85,6 +92,7 @@ public static partial class Prelude
         return Unit.Default;
     }
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type when the inner value is an error, consuming the result.
     /// </summary>
@@ -97,7 +105,7 @@ public static partial class Prelude
         (await result)
             .Effect(_ => { }, whenError);
 
-
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type when the inner value is an error, consuming the result.
     /// </summary>
@@ -110,6 +118,7 @@ public static partial class Prelude
         (await result)
             .Effect(_ => { }, _ => whenError());
 
+    // TODO: Examples
     /// <summary>
     /// Perform a side-effect on a result type when the inner type is Error, consuming the result.
     /// </summary>
@@ -124,6 +133,5 @@ public static partial class Prelude
         if (theResult.IsError) await whenError();
         return Unit.Default;
     }
-
 }
 

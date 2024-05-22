@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Functional;
+﻿namespace Functional;
 
 /// <summary>
 /// Represents a Discriminated Union which contains two Variants.
@@ -60,7 +58,6 @@ public sealed record Union<A, B>
     /// <param name="caseOne">The function to execute if the type is <typeparamref name="A"/></param>
     /// <param name="caseTwo">The function to execute if the type is <typeparamref name="B"/></param>
     /// <returns>The result of the mapping function that was executed.</returns>
-    [ExcludeFromCodeCoverage]
     public T Match<T>(Func<A, T> caseOne, Func<B, T> caseTwo)
     {
         if (_state == State.A) return caseOne(_a);

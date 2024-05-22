@@ -2,6 +2,8 @@
 
 public static partial class Prelude
 {
+    // TODO: Examples
+    // TODO: Move to result class
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// </summary>
@@ -18,6 +20,8 @@ public static partial class Prelude
                 ok => ok,
                 _ => alternate);
 
+    // TODO: Examples
+    // TODO: Move to result class.
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value discarding the error.
@@ -39,6 +43,8 @@ public static partial class Prelude
                 ok => ok,
                 _ => alternate());
 
+    // TODO: Examples
+    // TODO: move to result class.
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value using the error.
@@ -58,6 +64,7 @@ public static partial class Prelude
                 ok => ok,
                 alternate);
 
+    // TODO: Examples
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// </summary>
@@ -75,6 +82,7 @@ public static partial class Prelude
                     _ => alternate)
                 .Async();
 
+    // TODO: Examples
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value.
@@ -95,6 +103,7 @@ public static partial class Prelude
                     alternate)
                 .Async();
 
+    // TODO: Examples
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value by discarding the error.
