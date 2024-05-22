@@ -1,18 +1,15 @@
-﻿namespace Functional.Test.Prelude;
+﻿namespace Functional.Test.PreludeTests;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
 public class EffectTests
 {
-    private List<string> EffectResult { get; set; } = new List<string>();
+    private List<string> EffectResult { get; set; } = [];
 
     [TestInitialize]
-    public void Reset()
-    {
-        EffectResult.Clear();
-    }
+    public void Reset() => EffectResult.Clear();
 
-    private Task PerformEffectAsync(string input) => EffectAsync(() => EffectResult.Add(input));
+    private Task PerformEffectAsync(string input) => EffectAsync(() => EffectResult.Add(input)).IgnoreAsync();
     private void PerformEffect(string input) => EffectResult.Add(input);
 
     [TestMethod]

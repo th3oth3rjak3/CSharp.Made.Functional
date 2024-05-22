@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.Prelude;
+﻿namespace Functional.Test.PreludeTests;
 
 [TestClass]
 public class CollectionTests

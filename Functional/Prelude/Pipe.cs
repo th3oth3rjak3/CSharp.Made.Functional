@@ -2,9 +2,17 @@
 
 public static partial class Prelude
 {
-    // TODO: Examples
     /// <summary>
     /// Map one object type to another using a mapping function.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int input = 42;
+    /// string output = input.Pipe(value => value.ToString());
+    /// 
+    /// Assert.AreEqual(output, "42");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
     /// <typeparam name="TResult">The type to convert to.</typeparam>
@@ -14,30 +22,6 @@ public static partial class Prelude
     /// <returns>The mapped result.</returns>
     public static TResult Pipe<T, TResult>(this T input, Func<T, TResult> mapper) =>
         mapper(input);
-
-    // TODO: Examples
-    /// <summary>
-    /// Perform a series of actions on the input and return unit.
-    /// </summary>
-    /// <typeparam name="T">The input type.</typeparam>
-    /// <param name="input">The input value.</param>
-    /// <param name="actions">Actions to be performed.</param>
-    /// <returns>Unit.</returns>
-    public static Unit Pipe<T>(this T input, params Action<T>[] actions) =>
-        input
-            .Tap(actions)
-            .Pipe(_ => Unit.Default);
-
-    // TODO: Examples
-    /// <summary>
-    /// Perform a series of actions while ignoring the input.
-    /// </summary>
-    /// <typeparam name="T">The input type.</typeparam>
-    /// <param name="input">The ignored input.</param>
-    /// <param name="actions">Actions to perform.</param>
-    /// <returns>Unit.</returns>
-    public static Unit Pipe<T>(this T input, params Action[] actions) =>
-        input.Tap(actions).Pipe(_ => Unit.Default);
 
     // TODO: Examples
     /// <summary>
@@ -77,63 +61,6 @@ public static partial class Prelude
         this Task<TInput> input,
         Func<TInput, TResult> func) =>
             func(await input);
-
-    // TODO: Examples
-    /// <summary>
-    /// Used to wrap an async input that performs actions on the awaited input.
-    /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <param name="input">The input to perform actions on.</param>
-    /// <param name="actions">A series of actions to perform on the input.</param>
-    /// <returns>An awaitable Unit.</returns>
-    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Action<TInput>[] actions) =>
-        await (await input)
-            .Tap(actions)
-            .Pipe(_ => Unit.Default)
-            .Async();
-
-    // TODO: Examples
-    /// <summary>
-    /// Used to wrap an async input that performs async actions on the awaited input.
-    /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <param name="input">The input to perform actions on.</param>
-    /// <param name="actions">A series of actions to perform on the input.</param>
-    /// <returns>An awaitable Unit.</returns>
-    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Func<TInput, Task>[] actions) =>
-        await (await input)
-            .Async()
-            .TapAsync(actions)
-            .PipeAsync(_ => Unit.Default);
-
-    // TODO: Examples
-    /// <summary>
-    /// Used to wrap an async input that performs actions.
-    /// </summary>
-    /// <typeparam name="TInput">The type of the input.</typeparam>
-    /// <param name="input">The input to perform actions on.</param>
-    /// <param name="actions">A series of actions to perform on the input.</param>
-    /// <returns>An awaitable Unit.</returns>
-    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Action[] actions) =>
-        await (await input)
-            .Tap(actions)
-            .Async()
-            .PipeAsync(_ => Unit.Default);
-
-    // TODO: Examples
-    /// <summary>
-    /// Used to perform actions that return only a task.
-    /// </summary>
-    /// <typeparam name="TInput">The type of input that is ignored.</typeparam>
-    /// <param name="input">The ignored input.</param>
-    /// <param name="actions">Actions to be performed which result in a task.</param>
-    /// <returns>Unit.</returns>
-    public static async Task<Unit> PipeAsync<TInput>(this Task<TInput> input, params Func<Task>[] actions)
-    {
-        await input;
-        actions.ToList().ForEach(async action => await action());
-        return Unit.Default;
-    }
 
     // TODO: Examples
     /// <summary>

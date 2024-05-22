@@ -23,7 +23,7 @@ public static partial class Prelude
     /// <param name="actions">Actions to perform on the input value.</param>
     /// <returns>Unit.</returns>
     public static Unit Effect<T>(this T input, params Action<T>[] actions) =>
-        input.Pipe(actions);
+        input.Tap(actions).Pipe(_ => Unit());
 
     /// <summary>
     /// Perform effects ignoring the input value.
@@ -47,7 +47,7 @@ public static partial class Prelude
     /// <param name="actions">Actions to perform.</param>
     /// <returns>Unit.</returns>
     public static Unit Effect<T>(this T input, params Action[] actions) =>
-        input.Pipe(actions);
+        input.Tap(actions).Pipe(_ => Unit());
 
     /// <summary>
     /// Perform an effect that returns unit.
@@ -71,7 +71,7 @@ public static partial class Prelude
     public static Unit Effect(Action action)
     {
         action();
-        return Unit.Default;
+        return Unit();
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public static partial class Prelude
     /// <param name="actions">The actions to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Action<T>[] actions) =>
-        await input.PipeAsync(actions);
+        await input.TapAsync(actions).PipeAsync(_ => Unit());
 
     /// <summary>
     /// Perform effects ignoring the input value.
@@ -121,7 +121,7 @@ public static partial class Prelude
     /// <param name="actions">The actions to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Action[] actions) =>
-        await input.PipeAsync(actions);
+        await input.TapAsync(actions).PipeAsync(() => Unit());
 
     /// <summary>
     /// Perform effects on the input value.
@@ -145,7 +145,7 @@ public static partial class Prelude
     /// <param name="actions">The actions to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Func<T, Task>[] actions) =>
-        await input.PipeAsync(actions);
+        await input.TapAsync(actions).PipeAsync(() => Unit());
 
     /// <summary>
     /// Perform effects ignoring the input value.
@@ -168,7 +168,7 @@ public static partial class Prelude
     /// <param name="actions">The actions to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(this Task<T> input, params Func<Task>[] actions) =>
-        await input.PipeAsync(actions);
+        await input.TapAsync(actions).PipeAsync(() => Unit());
 
     /// <summary>
     /// Perform an effect which returns unit.
@@ -201,6 +201,6 @@ public static partial class Prelude
     public static async Task<Unit> EffectAsync(Func<Task> action)
     {
         await action();
-        return Unit.Default;
+        return Unit();
     }
 }

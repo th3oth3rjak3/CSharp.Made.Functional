@@ -89,7 +89,7 @@ public static partial class Prelude
         var theResult = await result;
         if (theResult.IsOk) await whenOk();
 
-        return Unit.Default;
+        return Unit();
     }
 
     // TODO: Examples
@@ -131,7 +131,7 @@ public static partial class Prelude
     {
         var theResult = await result;
         if (theResult.IsError) await whenError();
-        return Unit.Default;
+        return Unit();
     }
 }
 

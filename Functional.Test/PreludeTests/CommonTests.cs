@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.Prelude.Common;
+﻿namespace Functional.Test.PreludeTests.Common;
 
 [TestClass]
 public class CommonTests
@@ -25,7 +25,7 @@ public class CommonTests
     public void PreludeUnitShouldReturnUnit()
     {
 
-        Unit unit = Functional.Prelude.Unit;
+        Unit unit = Unit();
         unit.AssertInstanceOfType(typeof(Unit));
         unit.ShouldBe(Unit.Default);
     }

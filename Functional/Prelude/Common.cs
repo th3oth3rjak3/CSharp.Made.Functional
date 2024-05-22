@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+
 namespace Functional;
 
 public static partial class Prelude
@@ -7,7 +8,7 @@ public static partial class Prelude
     /// <summary>
     /// Return the default Unit.
     /// </summary>
-    public static Unit Unit => Unit.Default;
+    public static Unit Unit() => Functional.Unit.Default;
 
     /// <summary>
     /// Create a Task from an input.

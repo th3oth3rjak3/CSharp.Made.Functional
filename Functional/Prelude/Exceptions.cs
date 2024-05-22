@@ -2,9 +2,25 @@
 
 public static partial class Prelude
 {
-    // TODO: Examples
     /// <summary>
     /// Obtains the inner exception message when present.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Exception withInnerException = new Exception("message", new Exception("inner exception"));
+    /// Exception noInnerException = new Exception("message", null);
+    /// 
+    /// withInnerException
+    ///     .InnerExceptionMessage()
+    ///     // Prints the message when it's some.
+    ///     .EffectSome(innerMessage => Console.WriteLine(innerMessage));
+    ///     
+    /// noInnerException
+    ///     .InnerExceptionMessage()
+    ///     // Doesn't print since there isn't an inner exception
+    ///     .EffectSome(innerMessage => Console.WriteLine(innerMessage));
+    /// </code>
+    /// </example>
     /// </summary>
     /// <param name="exception">The exception to get the inner Exception message from.</param>
     /// <returns>An optional inner exception message.</returns>
@@ -23,6 +39,9 @@ public static partial class Prelude
     /// <returns>A result that is Ok or an exception.</returns>
     public static Result<TResult, Exception> Try<TResult>(Func<TResult> toTry)
     {
+        Exception withInnerException = new Exception("message", new Exception("inner exception"));
+        Exception noInnerMessage = new Exception("message", null);
+
         try
         {
             return toTry()

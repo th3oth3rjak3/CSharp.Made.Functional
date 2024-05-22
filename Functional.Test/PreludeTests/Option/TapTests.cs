@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.Prelude.Option;
+﻿namespace Functional.Test.PreludeTests.Option;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
@@ -252,7 +252,7 @@ public class TapTests
         SomeResult.ShouldBe("123");
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldNotTapSomeAsyncWhenNone_1()
     {
@@ -264,7 +264,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldTapSomeAsyncWhenSome_2()
     {
@@ -276,7 +276,7 @@ public class TapTests
         SomeResult.ShouldBe("Some");
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldNotTapSomeAsyncWhenNone_2()
     {
@@ -288,7 +288,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldTapSomeAsyncWhenSome_3()
     {
@@ -300,7 +300,7 @@ public class TapTests
         SomeResult.ShouldBe("123");
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldNotTapSomeAsyncWhenNone_3()
     {
@@ -312,7 +312,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldTapSomeAsyncWhenSome_4()
     {
@@ -324,7 +324,7 @@ public class TapTests
         SomeResult.ShouldBe("Some");
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldNotTapSomeAsyncWhenNone_4()
     {
@@ -336,7 +336,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldTapNoneAsyncWhenNone_1()
     {
@@ -348,7 +348,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe("None");
     }
-    
+
     [TestMethod]
     public async Task OptionShouldNotTapNoneAsyncWhenSome_1()
     {
@@ -360,7 +360,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe(string.Empty);
     }
-    
+
     [TestMethod]
     public async Task OptionShouldTapNoneAsyncWhenNone_2()
     {
@@ -372,7 +372,7 @@ public class TapTests
         SomeResult.ShouldBe(string.Empty);
         NoneResult.ShouldBe("None");
     }
-    
+
     [TestMethod]
     public async Task OptionShouldNotTapNoneAsyncWhenSome_2()
     {

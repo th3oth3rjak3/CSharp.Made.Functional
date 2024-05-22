@@ -49,12 +49,28 @@ public static partial class Prelude
     /// <returns>The resulting input as a task.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, params Func<T, Task>[] actions)
     {
-        await Task.WhenAll(
-            actions
-                .Select(async action =>
-                    await action(await input)));
+        var theInput = await input;
 
-        return await input;
+        foreach (var action in actions)
+        {
+            await action(theInput);
+        }
+
+        return theInput;
+    }
+
+    // TODO: Documentation
+    // TODO: Examples
+    public static async Task<T> TapAsync<T>(this Task<T> input, params Func<Task>[] actions)
+    {
+        var theInput = await input;
+
+        foreach (var action in actions)
+        {
+            await action();
+        }
+
+        return theInput;
     }
 
     // TODO: Examples
@@ -92,4 +108,9 @@ public static partial class Prelude
         (await input)
             .Tap(actions);
 
+    // TODO: Examples
+    // TODO: Documentation
+    public static async Task<T> TapAsync<T>(this Task<T> input, params Action[] actions) =>
+        (await input)
+            .Tap(actions);
 }

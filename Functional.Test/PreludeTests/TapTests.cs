@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.Prelude.Common;
+﻿namespace Functional.Test.PreludeTests.Common;
 
 [ExcludeFromCodeCoverage]
 [TestClass]

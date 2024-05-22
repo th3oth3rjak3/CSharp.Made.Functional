@@ -74,7 +74,7 @@ public static partial class Prelude
         if (theOption.IsSome) doWhenSome(theOption.Unwrap());
         if (theOption.IsNone) await doWhenNone();
 
-        return Unit;
+        return Unit();
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public static partial class Prelude
         if (theOption.IsSome) doWhenSome();
         if (theOption.IsNone) await doWhenNone();
 
-        return Unit;
+        return Unit();
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public static partial class Prelude
         if (theOption.IsSome) await doWhenSome(theOption.Unwrap());
         if (theOption.IsNone) doWhenNone();
 
-        return Unit;
+        return Unit();
     }
 
     /// <summary>
@@ -238,7 +238,7 @@ public static partial class Prelude
         if (theOption.IsSome) await doWhenSome(theOption.Unwrap());
         if (theOption.IsNone) await doWhenNone();
 
-        return Unit;
+        return Unit();
     }
 
     /// <summary>
@@ -281,7 +281,7 @@ public static partial class Prelude
         if (theOption.IsSome) await doWhenSome();
         if (theOption.IsNone) doWhenNone();
 
-        return Unit;
+        return Unit();
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public static partial class Prelude
         if (theOption.IsSome) await doWhenSome();
         if (theOption.IsNone) await doWhenNone();
 
-        return Unit;
+        return Unit();
     }
 
     /// <summary>
@@ -420,7 +420,7 @@ public static partial class Prelude
             await doWhenSome(option.Unwrap()!);
         }
 
-        return Unit.Default;
+        return Unit();
     }
 
     /// <summary>
@@ -458,7 +458,7 @@ public static partial class Prelude
             await doWhenSome();
         }
 
-        return Unit.Default;
+        return Unit();
     }
 
     /// <summary>
@@ -522,6 +522,6 @@ public static partial class Prelude
         var option = await optional;
         if (option.IsNone) await doWhenNone();
 
-        return Unit.Default;
+        return Unit();
     }
 }

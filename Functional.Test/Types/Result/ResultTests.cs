@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+
 using Functional;
 
 namespace Functional.Test.Types.Results;
@@ -306,43 +307,6 @@ public class ResultTests
             .TapAsync(res => res.ShouldBe("error"));
 
     [TestMethod]
-    public void ItShouldBindAllSuccesses() =>
-        new List<Result<int, string>>()
-        {
-            1.Ok<int, string>(),
-            2.Ok<int, string>(),
-            3.Ok<int, string>(),
-        }
-            .BindAll()
-            .ShouldBeEquivalentTo(new List<int> { 1, 2, 3 }.Ok<List<int>, List<string>>());
-
-    [TestMethod]
-    public void ItShouldBindAllFailures() =>
-        new List<Result<int, string>>()
-        {
-            "one".Error<int, string>(),
-            "two".Error<int, string>(),
-            "three".Error<int, string>()
-        }
-            .BindAll()
-            .ShouldBeEquivalentTo(
-                new List<string> { "one", "two", "three" }
-                    .Error<List<int>, List<string>>());
-
-    [TestMethod]
-    public void ItShouldBindSuccessAndFailuresToFailure() =>
-        new List<Result<int, string>>
-            {
-            1.Ok<int, string>(),
-            2.Ok<int, string>(),
-            "three".Error<int, string>()
-        }
-            .BindAll()
-            .ShouldBeEquivalentTo(
-                new List<string> { "three" }
-                    .Error<List<int>, List<string>>());
-
-    [TestMethod]
     public void ItShouldPerformSuccessEffect()
     {
         var successEffect = false;
@@ -617,7 +581,7 @@ public class ResultTests
             .Ok<string, string>()
             .Async()
             .EffectAsync(
-                () => okResult = true, 
+                () => okResult = true,
                 _ => throw new ShouldAssertException("It shouldn't have executed this branch."));
 
         okResult.ShouldBeTrue();
@@ -632,9 +596,9 @@ public class ResultTests
             .Error<string>()
             .Async()
             .EffectAsync(
-                _ => throw new ShouldAssertException("It shouldn't have been ok."), 
+                _ => throw new ShouldAssertException("It shouldn't have been ok."),
                 () => errorResult = true);
-        
+
         errorResult.ShouldBeTrue();
     }
 

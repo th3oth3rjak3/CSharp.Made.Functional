@@ -1,5 +1,6 @@
 global using System.Diagnostics.CodeAnalysis;
 
+global using Functional;
 global using Functional.Test.Extensions;
 
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
