@@ -5,6 +5,11 @@ namespace Functional;
 public static partial class Prelude
 {
     /// <summary>
+    /// Return the default Unit.
+    /// </summary>
+    public static Unit Unit => Unit.Default;
+
+    /// <summary>
     /// Create a Task from an input.
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
