@@ -4,7 +4,6 @@
 [TestClass]
 public class ReduceTests
 {
-    // TODO: Maybe break into multiple tests. See TapTests.
     [DataRow("some value", "some value")]
     [DataRow(null, "none")]
     [TestMethod]
