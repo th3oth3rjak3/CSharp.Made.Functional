@@ -65,7 +65,7 @@ public sealed record Union<A, B>
     }
 
     /// <summary>
-    /// Perform a side-effect on the Union based on its inner type.
+    /// Perform a side effect on the Union based on its inner type.
     /// </summary>
     /// <param name="caseOne">The action to perform when the Union is a <typeparamref name="A"/>.</param>
     /// <param name="caseTwo">The action to perform when the Union is a <typeparamref name="B"/>.</param>

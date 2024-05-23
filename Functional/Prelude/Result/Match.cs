@@ -42,9 +42,9 @@ public static partial class Prelude
     {
         var outcome = await result;
 
-        if (outcome.IsOk) return await whenOk(outcome.Unwrap());
+        if (outcome.IsSuccess) return await whenOk(outcome.Unwrap());
 
-        return await whenError(outcome.UnwrapError());
+        return await whenError(outcome.UnwrapFailure());
     }
 
     // TODO: Examples
@@ -65,9 +65,9 @@ public static partial class Prelude
     {
         var outcome = await result;
 
-        if (outcome.IsOk) return whenOk(outcome.Unwrap());
+        if (outcome.IsSuccess) return whenOk(outcome.Unwrap());
 
-        return await whenError(outcome.UnwrapError());
+        return await whenError(outcome.UnwrapFailure());
     }
 
     // TODO: Examples
@@ -88,8 +88,8 @@ public static partial class Prelude
     {
         var outcome = await result;
 
-        if (outcome.IsOk) return await whenOk(outcome.Unwrap());
+        if (outcome.IsSuccess) return await whenOk(outcome.Unwrap());
 
-        return whenError(outcome.UnwrapError());
+        return whenError(outcome.UnwrapFailure());
     }
 }

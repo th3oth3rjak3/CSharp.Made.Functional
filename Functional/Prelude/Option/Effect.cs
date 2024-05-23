@@ -3,7 +3,7 @@
 public static partial class Prelude
 {
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -27,7 +27,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -36,7 +36,7 @@ public static partial class Prelude
             .Effect(doWhenSome, doWhenNone);
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -64,7 +64,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -78,7 +78,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -102,7 +102,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -111,7 +111,7 @@ public static partial class Prelude
             .Effect(_ => doWhenSome(), doWhenNone);
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -139,7 +139,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -153,7 +153,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -181,7 +181,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -195,7 +195,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -228,7 +228,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -242,7 +242,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -271,7 +271,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -285,7 +285,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -318,7 +318,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
@@ -332,7 +332,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type when the inner value is Some.
+    /// Perform a side effect on an option type when the inner value is Some.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -351,7 +351,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Action<T> doWhenSome) where T : notnull =>
@@ -359,7 +359,7 @@ public static partial class Prelude
             .Effect(doWhenSome, () => { });
 
     /// <summary>
-    /// Perform a side-effect on an option type when the inner value is Some.
+    /// Perform a side effect on an option type when the inner value is Some.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -378,7 +378,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Action doWhenSome) where T : notnull =>
@@ -386,7 +386,7 @@ public static partial class Prelude
             .Effect(_ => doWhenSome(), () => { });
 
     /// <summary>
-    /// Perform a side-effect on an option type when the inner value is Some.
+    /// Perform a side effect on an option type when the inner value is Some.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -409,7 +409,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Func<T, Task> doWhenSome) where T : notnull
@@ -424,7 +424,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type when the inner value is Some.
+    /// Perform a side effect on an option type when the inner value is Some.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -447,7 +447,7 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Func<Task> doWhenSome) where T : notnull
@@ -462,7 +462,7 @@ public static partial class Prelude
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type when the inner value is None.
+    /// Perform a side effect on an option type when the inner value is None.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -482,7 +482,7 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the option if it were some.</typeparam>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, Action doWhenNone) where T : notnull =>
@@ -490,7 +490,7 @@ public static partial class Prelude
             .Effect(_ => { }, doWhenNone);
 
     /// <summary>
-    /// Perform a side-effect on an option type when the inner value is None.
+    /// Perform a side effect on an option type when the inner value is None.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -514,7 +514,7 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the option if it were some.</typeparam>
-    /// <param name="optional">The option to perform the side-effect on.</param>
+    /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, Func<Task> doWhenNone) where T : notnull

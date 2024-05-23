@@ -4,7 +4,7 @@ public static partial class Prelude
 {
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type of the result when ok.</typeparam>
     /// <typeparam name="Error">The type of the result when error.</typeparam>
@@ -18,7 +18,7 @@ public static partial class Prelude
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type of the result when ok.</typeparam>
     /// <typeparam name="Error">The type of the result when error.</typeparam>
@@ -32,7 +32,7 @@ public static partial class Prelude
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -43,15 +43,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk, Func<Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) theResult.TapOk(whenOk);
-        if (theResult.IsError) await whenError();
+        if (theResult.IsSuccess) theResult.TapSuccess(whenOk);
+        if (theResult.IsFailure) await whenError();
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -62,15 +62,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action<Ok> whenOk, Func<Error, Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) theResult.TapOk(whenOk);
-        if (theResult.IsError) await whenError(theResult.UnwrapError());
+        if (theResult.IsSuccess) theResult.TapSuccess(whenOk);
+        if (theResult.IsFailure) await whenError(theResult.UnwrapFailure());
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -84,7 +84,7 @@ public static partial class Prelude
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -98,7 +98,7 @@ public static partial class Prelude
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -109,15 +109,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action whenOk, Func<Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) whenOk();
-        if (theResult.IsError) await whenError();
+        if (theResult.IsSuccess) whenOk();
+        if (theResult.IsFailure) await whenError();
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -128,15 +128,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Action whenOk, Func<Error, Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) whenOk();
-        if (theResult.IsError) await whenError(theResult.UnwrapError());
+        if (theResult.IsSuccess) whenOk();
+        if (theResult.IsFailure) await whenError(theResult.UnwrapFailure());
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -147,15 +147,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Task> whenOk, Action<Error> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk();
-        if (theResult.IsError) whenError(theResult.UnwrapError());
+        if (theResult.IsSuccess) await whenOk();
+        if (theResult.IsFailure) whenError(theResult.UnwrapFailure());
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -166,15 +166,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Task> whenOk, Action whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk();
-        if (theResult.IsError) whenError();
+        if (theResult.IsSuccess) await whenOk();
+        if (theResult.IsFailure) whenError();
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -185,15 +185,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Task> whenOk, Func<Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk();
-        if (theResult.IsError) await whenError();
+        if (theResult.IsSuccess) await whenOk();
+        if (theResult.IsFailure) await whenError();
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -204,15 +204,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Task> whenOk, Func<Error, Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk();
-        if (theResult.IsError) await whenError(theResult.UnwrapError());
+        if (theResult.IsSuccess) await whenOk();
+        if (theResult.IsFailure) await whenError(theResult.UnwrapFailure());
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -223,15 +223,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Ok, Task> whenOk, Action<Error> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk(theResult.Unwrap());
-        if (theResult.IsError) whenError(theResult.UnwrapError());
+        if (theResult.IsSuccess) await whenOk(theResult.Unwrap());
+        if (theResult.IsFailure) whenError(theResult.UnwrapFailure());
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -242,15 +242,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Ok, Task> whenOk, Action whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk(theResult.Unwrap());
-        if (theResult.IsError) whenError();
+        if (theResult.IsSuccess) await whenOk(theResult.Unwrap());
+        if (theResult.IsFailure) whenError();
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -261,15 +261,15 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Ok, Task> whenOk, Func<Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk(theResult.Unwrap());
-        if (theResult.IsError) await whenError();
+        if (theResult.IsSuccess) await whenOk(theResult.Unwrap());
+        if (theResult.IsFailure) await whenError();
 
         return theResult;
     }
 
     // TODO: Examples
     /// <summary>
-    /// Tap into a result to perform a side-effect without consuming the result.
+    /// Tap into a result to perform a side effect without consuming the result.
     /// </summary>
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <typeparam name="Error">The type when the result is error.</typeparam>
@@ -280,8 +280,8 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(this Task<Result<Ok, Error>> result, Func<Ok, Task> whenOk, Func<Error, Task> whenError)
     {
         var theResult = await result;
-        if (theResult.IsOk) await whenOk(theResult.Unwrap());
-        if (theResult.IsError) await whenError(theResult.UnwrapError());
+        if (theResult.IsSuccess) await whenOk(theResult.Unwrap());
+        if (theResult.IsFailure) await whenError(theResult.UnwrapFailure());
 
         return theResult;
     }
@@ -296,7 +296,7 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action<Ok>[] whenOk) =>
-        (await result).TapOk(whenOk);
+        (await result).TapSuccess(whenOk);
 
     // TODO: Examples
     /// <summary>
@@ -308,7 +308,7 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action[] whenOk) =>
-        (await result).TapOk(whenOk);
+        (await result).TapSuccess(whenOk);
 
     // TODO: Examples
     // TODO: remove async lambda
@@ -323,7 +323,7 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Func<Task>[] whenOk)
     {
         var theResult = await result;
-        if (theResult.IsOk)
+        if (theResult.IsSuccess)
         {
             whenOk.ToList().ForEach(async action => await action());
         }
@@ -343,7 +343,7 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Func<Ok, Task>[] whenOk)
     {
         var theResult = await result;
-        if (theResult.IsError) return theResult;
+        if (theResult.IsFailure) return theResult;
         var contents = theResult.Unwrap();
         whenOk.ToList().ForEach(async action => await action(contents));
         return theResult;
@@ -360,7 +360,7 @@ public static partial class Prelude
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action<Error>[] whenError) =>
         (await result)
-            .TapError(whenError);
+            .TapFailure(whenError);
 
     // TODO: Examples
     /// <summary>
@@ -372,7 +372,7 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Action[] whenError) =>
-        (await result).TapError(whenError);
+        (await result).TapFailure(whenError);
 
     // TODO: Examples
     /// <summary>
@@ -386,7 +386,7 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Func<Task>[] whenError)
     {
         var theResult = await result;
-        if (theResult.IsError)
+        if (theResult.IsFailure)
         {
             whenError.ToList().ForEach(async action => await action());
         }
@@ -406,9 +406,9 @@ public static partial class Prelude
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result, params Func<Error, Task>[] whenError)
     {
         var theResult = await result;
-        if (theResult.IsError)
+        if (theResult.IsFailure)
         {
-            var contents = theResult.UnwrapError();
+            var contents = theResult.UnwrapFailure();
             whenError.ToList().ForEach(async action => await action(contents));
         }
         return theResult;

@@ -1,1786 +1,593 @@
-﻿using System.Collections.Immutable;
-
-using Functional;
-
-namespace Functional.Test.Types.Results;
+﻿namespace Functional.Test.Types.Results;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
 public class ResultTests
 {
     [TestMethod]
-    public void ItShouldCreateFailureWithManyMessages() =>
-        ImmutableList<string>
-            .Empty
-            .Add("zero")
-            .Add("one")
-            .Pipe(strings =>
-                strings
-                    .Error<string, ImmutableList<string>>()
-                    .Tap(
-                        res => res.Match(
-                            _ => throw new ShouldAssertException("It should fail."),
-                            failure => failure.Tap(
-                                f => f.Count.ShouldBe(2),
-                                f => f.ElementAt(0).ShouldBe("zero"),
-                                f => f.ElementAt(1).ShouldBe("one")))));
+    public void ResultShouldConstructCorrectly()
+    {
+        new Result<string, Exception>("hello world")
+            .AssertInstanceOfType(typeof(Result<string, Exception>))
+            .IsSuccess
+            .ShouldBeTrue();
+
+        new Result<string, Exception>(new Exception("failure"))
+            .AssertInstanceOfType(typeof(Result<string, Exception>))
+            .IsFailure
+            .ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ResultShouldUnwrap()
+    {
+        new Result<string, Exception>("hello world")
+            .Unwrap()
+            .ShouldBe("hello world");
+
+        Assert.ThrowsException<InvalidOperationException>(() =>
+            new Result<string, Exception>(new Exception("failure"))
+                .Unwrap());
+
+        new Result<string, Exception>(new Exception("failure"))
+            .UnwrapFailure()
+            .Message
+            .ShouldBe("failure");
+
+        Assert.ThrowsException<InvalidOperationException>(() =>
+            new Result<string, Exception>("success")
+                .UnwrapFailure());
+    }
+
+    [TestMethod]
+    public void ResultShouldMatch()
+    {
+        Success(1)
+            .Match(value => value, _ => -1)
+            .ShouldBe(1);
+
+        Failure<int>(new Exception("error"))
+            .Match(value => value, _ => -1)
+            .ShouldBe(-1);
+
+        Success(1)
+            .Match(() => 2, _ => -1)
+            .ShouldBe(2);
+
+        Failure<int>(new Exception("error"))
+            .Match(() => 2, _ => -1)
+            .ShouldBe(-1);
+
+        Success(1)
+            .Match(value => value, () => -1)
+            .ShouldBe(1);
+
+        Failure<int>(new Exception("error"))
+            .Match(value => value, () => -1)
+            .ShouldBe(-1);
+
+        Success(1)
+            .Match(() => 1, () => -1)
+            .ShouldBe(1);
+
+        Failure<int>(new Exception("error"))
+            .Match(() => 1, () => -1)
+            .ShouldBe(-1);
+    }
+
+    [TestMethod]
+    public void ResultShouldMapSuccesses()
+    {
+        Success(1)
+            .Map(value => value.ToString())
+            .Unwrap()
+            .ShouldBe("1");
+
+        Success(1)
+            .Map(() => "something")
+            .Unwrap()
+            .ShouldBe("something");
+
+        Failure<int, string>("fail")
+            .Map(value => value.ToString())
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .IsFailure
+            .ShouldBeTrue();
+
+        Failure<int, string>("fail")
+            .Map(() => "something")
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .IsFailure
+            .ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ResultShouldMapFailures()
+    {
+        Success<int, string>(1)
+            .MapFailure(err => new Exception(err))
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .Unwrap()
+            .ShouldBe(1);
+
+        Success<int, string>(1)
+            .MapFailure(() => new Exception("something else"))
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .Unwrap()
+            .ShouldBe(1);
+
+        Failure<int, string>("failure")
+            .MapFailure(err => new Exception(err))
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .UnwrapFailure()
+            .Message
+            .ShouldBe("failure");
+
+        Failure<int, string>("ignored")
+            .MapFailure(() => new Exception("expected"))
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .UnwrapFailure()
+            .Message
+            .ShouldBe("expected");
+    }
+
+    [TestMethod]
+    public void ResultShouldBindToSuccesses()
+    {
+        Success<int, string>(1)
+            .Bind(value => Success<string, string>(value.ToString()))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .Unwrap()
+            .ShouldBe("1");
+
+        Success<int, string>(1)
+            .Bind(() => Success<string, string>("new value"))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .Unwrap()
+            .ShouldBe("new value");
+
+        Failure<int, string>("failure")
+            .Bind(value => Success<string, string>(value.ToString()))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .IsFailure
+            .ShouldBeTrue();
+
+        Failure<int, string>("failure")
+            .Bind(() => Success<string, string>("new value"))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .IsFailure
+            .ShouldBeTrue();
+    }
+
+    [TestMethod]
+    public void ResultShouldBindToFailures()
+    {
+        Success<int, string>(1)
+            .Bind(value => Failure<string, string>("failure!"))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .UnwrapFailure()
+            .ShouldBe("failure!");
+
+        Success<int, string>(1)
+            .Bind(() => Failure<string, string>("failure!"))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .UnwrapFailure()
+            .ShouldBe("failure!");
+
+        Failure<int, string>("original")
+            .Bind(value => Failure<string, string>("ignored"))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .UnwrapFailure()
+            .ShouldBe("original");
+
+        Failure<int, string>("original")
+            .Bind(() => Failure<string, string>("ignored"))
+            .AssertInstanceOfType(typeof(Result<string, string>))
+            .UnwrapFailure()
+            .ShouldBe("original");
+    }
+
+    [TestMethod]
+    public void ResultShouldPerformEffects_1()
+    {
+        var successResult = string.Empty;
+        var failureResult = string.Empty;
+
+        Success(1)
+            .Effect(
+                value => successResult = value.ToString(),
+                exn => failureResult = exn.Message);
+
+        successResult.ShouldBe("1");
+        failureResult.ShouldBe(string.Empty);
+
+        Reset();
+
+        Failure<int>(new Exception("error"))
+            .Effect(
+                value => successResult = value.ToString(),
+                exn => failureResult = exn.Message);
+
+        successResult.ShouldBe(string.Empty);
+        failureResult.ShouldBe("error");
+
+        return;
+
+        void Reset()
+        {
+            successResult = string.Empty;
+            failureResult = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldPerformEffects_2()
+    {
+        var successResult = string.Empty;
+        var failureResult = string.Empty;
+
+        Success(1)
+            .Effect(
+                () => successResult = "success",
+                exn => failureResult = exn.Message);
+
+        successResult.ShouldBe("success");
+        failureResult.ShouldBe(string.Empty);
+
+        Reset();
+
+        Failure<int>(new Exception("error"))
+            .Effect(
+                () => successResult = "success",
+                exn => failureResult = exn.Message);
+
+        successResult.ShouldBe(string.Empty);
+        failureResult.ShouldBe("error");
+
+        return;
+
+        void Reset()
+        {
+            successResult = string.Empty;
+            failureResult = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldPerformEffects_3()
+    {
+        var successResult = string.Empty;
+        var failureResult = string.Empty;
+
+        Success(1)
+            .Effect(
+                value => successResult = value.ToString(),
+                () => failureResult = "failure");
+
+        successResult.ShouldBe("1");
+        failureResult.ShouldBe(string.Empty);
+
+        Reset();
+
+        Failure<int>(new Exception("error"))
+            .Effect(
+                value => successResult = value.ToString(),
+                () => failureResult = "failure");
+
+        successResult.ShouldBe(string.Empty);
+        failureResult.ShouldBe("failure");
+
+        return;
+
+        void Reset()
+        {
+            successResult = string.Empty;
+            failureResult = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldPerformEffects_4()
+    {
+        var successResult = string.Empty;
+        var failureResult = string.Empty;
+
+        Success(1)
+            .Effect(
+                () => successResult = "success",
+                () => failureResult = "failure");
+
+        successResult.ShouldBe("success");
+        failureResult.ShouldBe(string.Empty);
+
+        Reset();
+
+        Failure<int>(new Exception("error"))
+            .Effect(
+                () => successResult = "success",
+                () => failureResult = "failure");
+
+        successResult.ShouldBe(string.Empty);
+        failureResult.ShouldBe("failure");
+
+
+        return;
+
+        void Reset()
+        {
+            successResult = string.Empty;
+            failureResult = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldPerformEffectSuccess()
+    {
+        string result = string.Empty;
+
+        Failure<int, string>("error")
+            .EffectSuccess(value => result = value.ToString());
+
+        result.ShouldBeEmpty();
+
+        Failure<int, string>("error")
+            .EffectSuccess(() => result = "success");
+
+        result.ShouldBeEmpty();
+
+        Success(1)
+            .EffectSuccess(value => result = value.ToString());
+
+        result.ShouldBe("1");
+
+        Success(1)
+            .EffectSuccess(() => result = "success");
+
+        result.ShouldBe("success");
+    }
+
+    [TestMethod]
+    public void ResultShouldPerformEffectFailure()
+    {
+        string result = string.Empty;
+
+        Success(1)
+            .EffectFailure(value => result = value.Message);
+
+        result.ShouldBeEmpty();
+
+        Success(1)
+            .EffectFailure(() => result = "failure");
+
+        result.ShouldBeEmpty();
+
+        Failure<int, string>("fail")
+            .EffectFailure(value => result = value);
+
+        result.ShouldBe("fail");
+
+        Failure<int, string>("fail")
+            .EffectFailure(() => result = "failure");
+
+        result.ShouldBe("failure");
+    }
+
+    [TestMethod]
+    public void ResultShouldTap_1()
+    {
+        var success = string.Empty;
+        var failure = string.Empty;
+
+        Success(1)
+            .Tap(value => success = value.ToString(), err => failure = err.Message)
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .IsSuccess
+            .ShouldBeTrue();
+
+        success.ShouldBe("1");
+        failure.ShouldBeEmpty();
+
+        Reset();
+
+        Failure<int, string>("error")
+            .Tap(value => success = value.ToString(), err => failure = err)
+            .AssertInstanceOfType(typeof(Result<int, string>))
+            .IsFailure
+            .ShouldBeTrue();
+
+        success.ShouldBeEmpty();
+        failure.ShouldBe("error");
+
+        return;
+
+        void Reset()
+        {
+            success = string.Empty;
+            failure = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldTap_2()
+    {
+        var success = string.Empty;
+        var failure = string.Empty;
+
+        Success(1)
+            .Tap(() => success = "success", err => failure = err.Message)
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .IsSuccess
+            .ShouldBeTrue();
+
+        success.ShouldBe("success");
+        failure.ShouldBeEmpty();
+
+        Reset();
+
+        Failure<int, string>("error")
+            .Tap(() => success = "success", err => failure = err)
+            .AssertInstanceOfType(typeof(Result<int, string>))
+            .IsFailure
+            .ShouldBeTrue();
+
+        success.ShouldBeEmpty();
+        failure.ShouldBe("error");
+
+        return;
+
+        void Reset()
+        {
+            success = string.Empty;
+            failure = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldTap_3()
+    {
+        var success = string.Empty;
+        var failure = string.Empty;
+
+        Success(1)
+            .Tap(value => success = value.ToString(), () => failure = "failure")
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .IsSuccess
+            .ShouldBeTrue();
+
+        success.ShouldBe("1");
+        failure.ShouldBeEmpty();
+
+        Reset();
+
+        Failure<int, string>("error")
+            .Tap(value => success = value.ToString(), () => failure = "failure")
+            .AssertInstanceOfType(typeof(Result<int, string>))
+            .IsFailure
+            .ShouldBeTrue();
+
+        success.ShouldBeEmpty();
+        failure.ShouldBe("failure");
+
+        return;
+
+        void Reset()
+        {
+            success = string.Empty;
+            failure = string.Empty;
+        }
+    }
+
+    [TestMethod]
+    public void ResultShouldTap_4()
+    {
+        var success = string.Empty;
+        var failure = string.Empty;
+
+        Success(1)
+            .Tap(() => success = "success", () => failure = "failure")
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .IsSuccess
+            .ShouldBeTrue();
+
+        success.ShouldBe("success");
+        failure.ShouldBeEmpty();
+
+        Reset();
+
+        Failure<int, string>("error")
+            .Tap(() => success = "success", () => failure = "failure")
+            .AssertInstanceOfType(typeof(Result<int, string>))
+            .IsFailure
+            .ShouldBeTrue();
+
+        success.ShouldBeEmpty();
+        failure.ShouldBe("failure");
+
+        return;
+
+        void Reset()
+        {
+            success = string.Empty;
+            failure = string.Empty;
+        }
+    }
 
     [TestMethod]
     public void ItShouldReduceSuccesses() =>
-        "success".Ok<string, string>()
+        Success("success")
             .Reduce("failure")
             .ShouldBe("success");
 
     [TestMethod]
     public void ItShouldReduceSuccessWithFunctions() =>
-    "success".Ok<string, string>()
-        .Reduce(() => "something else")
-        .ShouldBe("success");
+        Success("success")
+            .Reduce(() => "something else")
+            .ShouldBe("success");
 
     [TestMethod]
     public void ItShouldReduceSuccessWithFunctionsAndFailureResults() =>
-        "success".Ok<string, string>()
-            .Reduce(failure => failure)
+        Success("success")
+            .Reduce(failure => failure.Message)
             .ShouldBe("success");
 
     [TestMethod]
     public void ItShouldReduceFailures() =>
-        "failure message"
-            .Error<string, string>()
+        Failure<string, string>("failure message")
             .Reduce("another message")
             .ShouldBe("another message");
 
     [TestMethod]
     public void ItShouldReduceFailuresWithFunctions() =>
-        "failure message"
-            .Error<string, string>()
+        Failure<string, string>("failure message")
             .Reduce(() => "something else")
             .ShouldBe("something else");
 
     [TestMethod]
     public void ItShouldReduceFailuresWithFunctionsAndFailureResults() =>
-        "failure message"
-            .Error<string, string>()
+        Failure<string, string>("failure message")
             .Reduce(failure => failure)
             .ShouldBe("failure message");
 
     [TestMethod]
     public Task ItShouldReduceSuccessesAsync() =>
-        Task.FromResult("success")
-            .PipeAsync(res => res.Ok<string, string>())
+        Success("success")
+            .Async()
             .ReduceAsync("alternate")
-            .TapAsync(
-                result => result.ShouldBe("success"));
+            .EffectAsync(result => result.ShouldBe("success"));
 
     [TestMethod]
     public Task ItShouldReduceSuccessWithFunctionsAsync() =>
-        Task.FromResult("success")
-            .PipeAsync(res => res.Ok<string, string>())
+        Success("success")
+            .Async()
             .ReduceAsync(() => "alternate")
-            .TapAsync(
-                result => result.ShouldBe("success"));
+            .EffectAsync(result => result.ShouldBe("success"));
 
     [TestMethod]
     public Task ItShouldReduceSuccessWithFunctionsAsyncFailure() =>
-    Task.FromResult("success")
-        .PipeAsync(res => res.Ok<string, string>())
-        .ReduceAsync(_ => "alternate")
-        .TapAsync(
-            result => result.ShouldBe("success"));
+        Success("success")
+            .Async()
+            .ReduceAsync(exn => exn.Message)
+            .EffectAsync(result => result.ShouldBe("success"));
 
     [TestMethod]
     public Task ItShouldReduceFailuresAsync() =>
-    Task.FromResult("success")
-        .PipeAsync(_ => "failure message".Error<string, string>())
-        .ReduceAsync("alternate")
-        .TapAsync(
-            result => result.ShouldBe("alternate"));
+        Failure<string, string>("failure message")
+            .Async()
+            .ReduceAsync("alternate")
+            .EffectAsync(result => result.ShouldBe("alternate"));
 
     [TestMethod]
     public Task ItShouldReduceFailuresWithFunctionsAsync() =>
-        Task.FromResult("success")
-            .PipeAsync(_ => "failure message".Error<string, string>())
+        Failure<string, string>("failure message")
+            .Async()
             .ReduceAsync(() => "alternate")
-            .TapAsync(
-                result => result.ShouldBe("alternate"));
+            .EffectAsync(result => result.ShouldBe("alternate"));
 
     [TestMethod]
     public Task ItShouldReduceFailuresWithFunctionsAsyncFailure() =>
-    Task.FromResult("success")
-        .PipeAsync(_ => "failure message".Error<string, string>())
-        .ReduceAsync(failure => failure)
-        .TapAsync(
-            result => result.ShouldBe("failure message"));
-
-    [TestMethod]
-    public void ItShouldBindSuccessesToSuccesses() =>
-        1.Ok<int, string>()
-            .Bind(value => value.ToString().Ok<string, string>())
-            .ShouldBeOfType(typeof(Result<string, string>));
-
-    [TestMethod]
-    public void ItShouldBindSuccessesToFailures() =>
-        1.Ok<int, string>()
-            .Bind(_ => "oh no".Error<string, string>())
-            .ShouldBeOfType(typeof(Result<string, string>));
-
-    [TestMethod]
-    public void ItShouldBindFailuresWithSuccessesToFailures() =>
-        "oh no"
-            .Error<string, string>()
-            .Bind(never => never.Ok<string, string>())
-            .Match(
-                _ => throw new ShouldAssertException("Shouldn't succeed"),
-                failure => failure.Tap(f => f.ShouldBe("oh no")));
-
-    [TestMethod]
-    public void ItShouldBindFailuresWithFailuresToFailures() =>
-        "oh no"
-            .Error<string, string>()
-            .Bind(_ => "Some other failure.".Error<int, string>())
-            .Match(
-                _ => throw new ShouldAssertException("Shouldn't succeed"),
-                failure => failure.Tap(f => f.ShouldBe("oh no")));
-
-    [TestMethod]
-    public async Task ItShouldBindAsync() =>
-        await "yay"
-            .Ok<string, string>()
+        Failure<string, string>("failure message")
             .Async()
-            .BindAsync(res => res.Ok<string, string>())
-            .TapAsync(res =>
-                res.Match(
-                    success => success.Tap(s => s.ShouldBe("yay")),
-                    _ => throw new ShouldAssertException("Shouldn't have failed")));
-
-    [TestMethod]
-    public async Task ItShouldBindAsyncWithFailure() =>
-    await "failure message"
-        .Error<string, string>()
-        .Async()
-        .BindAsync(res => res.Ok<string, string>())
-        .TapAsync(res =>
-            res.Match(
-                _ => throw new ShouldAssertException("Shouldn't have passed"),
-                failure => res.Tap(_ => failure.ShouldBe("failure message"))));
-
-    [TestMethod]
-    public async Task ItShouldBind() =>
-        await "yay"
-            .Ok<string, string>()
-            .Async()
-            .BindAsync(res => res.Ok<string, string>().Async())
-            .TapAsync(res =>
-                res.Match(
-                    success => success.Tap(s => s.ShouldBe("yay")),
-                    _ => throw new ShouldAssertException("Shouldn't have failed")));
-
-    [TestMethod]
-    public async Task ItShouldBindFailures() =>
-        await "failure message"
-            .Error<string, string>()
-            .Async()
-            .BindAsync(res => res.Ok<string, string>().Async())
-            .TapAsync(res =>
-                res.Match(
-                    _ => throw new ShouldAssertException("Shouldn't have passed"),
-                    failure => res.Tap(_ => failure.ShouldBe("failure message"))));
-
-    [TestMethod]
-    public void ItShouldMapSuccessResults() =>
-        1.Ok<int, string>()
-            .Map(one => one.ToString())
-            .ShouldBeEquivalentTo("1".Ok<string, string>());
-
-    [TestMethod]
-    public void ItShouldNotMapFailureResults() =>
-        "error".Error<int, string>()
-            .Map(one => one.ToString())
-            .Match(
-                _ => throw new ShouldAssertException("It should have been a failure."),
-                failure => failure.Tap(f => f.ShouldBe("error")))
-            .Ignore();
-
-    [TestMethod]
-    public async Task ItShouldMapSuccessResultsAsync() =>
-        await 1.Ok<int, string>()
-            .Async()
-            .MapAsync(one => one.ToString())
-            .TapAsync(res => res.ShouldBeEquivalentTo("1".Ok<string, string>()));
-
-    [TestMethod]
-    public async Task ItShouldNotMapFailureResultsAsync() =>
-        await "error".Error<int, string>()
-            .Async()
-            .MapAsync(one => one.ToString())
-            .TapAsync(res =>
-                res.Match(
-                    _ => throw new ShouldAssertException("Shouldn't have passed"),
-                    failure => res.Tap(_ => failure.ShouldBe("error"))));
-
-    [TestMethod]
-    public async Task ItShouldMapSuccessResultsWithAsyncMapperWhenOk()
-    {
-        var result =
-            100
-                .Ok<int, int>()
-                .Async()
-                .MapAsync(intValue => intValue.ToString().Async());
-
-        var awaited = await result;
-        awaited.ShouldBeOfType<Result<string, int>>();
-
-        awaited.IsOk.ShouldBeTrue();
-        awaited.Unwrap().ShouldBe("100");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMapSuccessResultsWithAsyncMapperWhenError()
-    {
-        var result =
-            404
-                .Error<int, int>()
-                .Async()
-                .MapAsync(intValue => intValue.ToString().Async());
-
-        var awaited = await result;
-        awaited.ShouldBeOfType<Result<string, int>>();
-
-        awaited.IsError.ShouldBeTrue();
-        awaited.UnwrapError().ShouldBe(404);
-    }
-
-    [TestMethod]
-    public async Task ItShouldBindSuccessAsyncResults() =>
-        await 1.Ok<int, string>()
-            .Async()
-            .BindAsync(one => one.ToString().Ok<string, string>().Async())
-            .ReduceAsync("error")
-            .TapAsync(str => str.ShouldBe("1"));
-
-    [TestMethod]
-    public async Task ItShouldBindFailureAsyncResults() =>
-    await "error".Error<int, string>()
-        .Async()
-        .BindAsync(one => one.ToString().Ok<string, string>().Async())
-        .ReduceAsync("error")
-        .TapAsync(str => str.ShouldBe("error"));
-
-    [TestMethod]
-    public async Task ItShouldMatchSuccessesAsync() =>
-        await 1
-            .Ok<int, string>()
-            .Async()
-            .MatchAsync(
-                success => success.ToString(),
-                 failure => failure)
-            .TapAsync(res => res.ShouldBe("1"));
-
-    [TestMethod]
-    public async Task ItShouldMatchFailuresAsync() =>
-        await "error"
-            .Error<int, string>()
-            .Async()
-            .MatchAsync(
-                success => success.ToString(),
-                failure => failure)
-            .TapAsync(res => res.ShouldBe("error"));
-
-    [TestMethod]
-    public async Task ItShouldMatchSuccessesAsyncWithAsyncMapping() =>
-    await 1
-        .Ok<int, string>()
-        .Async()
-        .MatchAsync(
-            success => success.ToString().Async(),
-             failure => failure.Async())
-        .TapAsync(res => res.ShouldBe("1"));
-
-    [TestMethod]
-    public async Task ItShouldMatchFailuresAsyncWithAsyncMapping() =>
-        await "error"
-            .Error<int, string>()
-            .Async()
-            .MatchAsync(
-                success => success.ToString().Async(),
-                failure => failure.Async())
-            .TapAsync(res => res.ShouldBe("error"));
-
-    [TestMethod]
-    public void ItShouldPerformSuccessEffect()
-    {
-        var successEffect = false;
-        var failureEffect = false;
-
-        "success".Ok<string, string>()
-            .Effect(SuccessAction, FailureAction);
-
-        successEffect.ShouldBeTrue();
-        failureEffect.ShouldBeFalse();
-        return;
-
-        void FailureAction(string _) => failureEffect = true;
-        void SuccessAction(string _) => successEffect = true;
-    }
-
-    [TestMethod]
-    public void ItShouldPerformFailureEffect()
-    {
-        var successEffect = false;
-        var failureEffect = false;
-        void FailureAction(string _) => failureEffect = true;
-        void SuccessAction(string _) => successEffect = true;
-
-        "failure".Error<string, string>()
-            .Effect(SuccessAction, FailureAction);
-
-        successEffect.ShouldBeFalse();
-        failureEffect.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public async Task ItShouldDoEffectsAsyncWhenOk()
-    {
-        var msg = "";
-
-        await "123"
-            .Pipe(value => value.Ok())
-            .Async()
-            .EffectAsync(
-                ok => msg = ok,
-                _ => msg = "Exception");
-
-        msg.ShouldBe("123");
-    }
-
-    [TestMethod]
-    public async Task ItShouldDoEffectsAsyncWhenError()
-    {
-        var msg = "";
-
-        await new Exception("Error")
-            .Pipe(exn => exn.Error<string>())
-            .Async()
-            .EffectAsync(
-                ok => msg = ok,
-                exn => msg = exn.Message);
-
-        msg.ShouldBe("Error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMatchAsyncWhenOkSyncAndErrorAsyncWhenOk()
-    {
-        var result =
-            "ok"
-                .Ok<string, int>()
-                .Async()
-                .MatchAsync(
-                    ok => ok,
-                    err => err.ToString().Async());
-
-        (await result).ShouldBe("ok");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMatchAsyncWhenOkSyncAndErrorAsyncWhenError()
-    {
-        var result =
-            1
-                .Error<string, int>()
-                .Async()
-                .MatchAsync(
-                    ok => ok,
-                    err => err.ToString().Async());
-
-        (await result).ShouldBe("1");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMatchAsyncWhenOkAsyncAndErrorSyncWhenOk()
-    {
-        var result =
-            "ok"
-                .Ok<string, int>()
-                .Async()
-                .MatchAsync(
-                    ok => ok.Async(),
-                    err => err.ToString());
-
-        (await result).ShouldBe("ok");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMatchAsyncWhenOkAsyncAndErrorSyncWhenError()
-    {
-        var result =
-            1
-                .Error<string, int>()
-                .Async()
-                .MatchAsync(
-                    ok => ok.Async(),
-                    err => err.ToString());
-
-        (await result).ShouldBe("1");
-    }
-
-    [TestMethod]
-    public void ItShouldMapErrorsWhenOk() =>
-        "ok value"
-            .Ok<string, int>()
-            .MapError(errInt => errInt.ToString())
-            .ShouldBeOfType<Result<string, string>>();
-
-    [TestMethod]
-    public void ItShouldMapErrorsWhenError()
-    {
-        var result =
-            404
-                .Error<string, int>()
-                .MapError(errCode => errCode.ToString());
-
-        result.ShouldBeOfType<Result<string, string>>();
-
-        result.UnwrapError().ShouldBe("404");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMapErrorsAsyncWhenOkWithSyncMapper()
-    {
-        var result =
-            "ok value"
-                .Ok<string, int>()
-                .Async()
-                .MapErrorAsync(errInt => errInt.ToString());
-
-        var contents = await result;
-
-        contents.ShouldBeOfType<Result<string, string>>();
-        contents.IsOk.ShouldBeTrue();
-        contents.Unwrap().ShouldBe("ok value");
-
-    }
-
-
-    [TestMethod]
-    public async Task ItShouldMapErrorsAsyncWhenErrorWithSyncMapper()
-    {
-        var result =
-            404
-                .Error<string, int>()
-                .Async()
-                .MapErrorAsync(errCode => errCode.ToString());
-
-        var contents = await result;
-
-        contents.ShouldBeOfType<Result<string, string>>();
-        contents.IsError.ShouldBeTrue();
-        contents.UnwrapError().ShouldBe("404");
-    }
-
-    [TestMethod]
-    public async Task ItShouldMapErrorsAsyncWhenOkWithAsyncMapper()
-    {
-        var result =
-            "ok value"
-                .Ok<string, int>()
-                .Async()
-                .MapErrorAsync(errInt => errInt.ToString().Async());
-
-        var contents = await result;
-
-        contents.ShouldBeOfType<Result<string, string>>();
-        contents.IsOk.ShouldBeTrue();
-        contents.Unwrap().ShouldBe("ok value");
-
-    }
-
-
-    [TestMethod]
-    public async Task ItShouldMapErrorsAsyncWhenErrorWithAsyncMapper()
-    {
-        var result =
-            404
-                .Error<string, int>()
-                .Async()
-                .MapErrorAsync(errCode => errCode.ToString().Async());
-
-        var contents = await result;
-
-        contents.ShouldBeOfType<Result<string, string>>();
-        contents.IsError.ShouldBeTrue();
-        contents.UnwrapError().ShouldBe("404");
-    }
-
-    [TestMethod]
-    public void ItShouldMapErrorsThatAreExceptions() =>
-        new Exception("Something bad happened")
-            .Pipe(Result.Error<string>)
-            .Tap(result => result.ShouldBeOfType<Result<string, Exception>>());
-
-    [TestMethod]
-    public void ItShouldMapOkResultsThatAreHaveExceptionErrorTypes() =>
-        "valid"
-            .Pipe(Result.Ok)
-            .Tap(result => result.ShouldBeOfType<Result<string, Exception>>());
-
-    [TestMethod]
-    public void ItShouldHandleEffectForOkOnly()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        new Exception("It's a problem")
-            .Error<string>()
-            .EffectOk(_ => okResult = true);
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeFalse();
-
-        okResult = false;
-        errorResult = false;
-
-        "ok".Ok()
-            .EffectOk(_ => okResult = true);
-
-        okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
-
-    }
-
-    [TestMethod]
-    public void ItShouldHandleEffectForErrorOnly()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        new Exception("It's a problem")
-            .Error<string>()
-            .EffectError(_ => errorResult = true);
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeTrue();
-
-        okResult = false;
-        errorResult = false;
-
-        "ok".Ok()
-            .EffectError(_ => errorResult = true);
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectAsyncWithOkPlainAction()
-    {
-        var okResult = false;
-
-
-        await "It's ok"
-            .Ok<string, string>()
-            .Async()
-            .EffectAsync(
-                () => okResult = true,
-                _ => throw new ShouldAssertException("It shouldn't have executed this branch."));
-
-        okResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectAsyncWithErrorPlainAction()
-    {
-        var errorResult = false;
-
-        await new Exception("It's an error!")
-            .Error<string>()
-            .Async()
-            .EffectAsync(
-                _ => throw new ShouldAssertException("It shouldn't have been ok."),
-                () => errorResult = true);
-
-        errorResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectAsyncWithPlainActions()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        await new Exception("It's an error!")
-            .Error<string>()
-            .Async()
-            .EffectAsync(() => okResult = true, () => errorResult = true);
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeTrue();
-
-        okResult = false;
-        errorResult = false;
-
-        await "It's ok"
-            .Ok()
-            .Async()
-            .EffectAsync(() => okResult = true, () => errorResult = true);
-
-        okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectOkAsyncWhenOk()
-    {
-        var okResult = false;
-        var okContents = string.Empty;
-
-        await "it's okay"
-            .Ok()
-            .Async()
-            .EffectOkAsync(ok =>
-            {
-                okContents = ok;
-                okResult = true;
-            });
-
-        okResult.ShouldBeTrue();
-        okContents.ShouldBe("it's okay");
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectOkAsyncWhenOkNoInput()
-    {
-        var okResult = false;
-
-        await "it's okay"
-            .Ok()
-            .Async()
-            .EffectOkAsync(() => okResult = true);
-
-        okResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectOkAsyncWhenError()
-    {
-        var okResult = false;
-        var okContents = string.Empty;
-
-        await new Exception("It's an error")
-            .Error<string>()
-            .Async()
-            .EffectOkAsync(ok =>
-            {
-                okContents = ok;
-                okResult = true;
-            });
-
-        okResult.ShouldBeFalse();
-        okContents.ShouldBe(string.Empty);
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectOkAsyncWithFuncTask()
-    {
-        var okResult = false;
-
-        await Result.Ok(true)
-            .Async()
-            .EffectOkAsync(() => DoWork())
-            .TapAsync(output => output.ShouldBeOfType<Unit>())
-            .IgnoreAsync();
-
-        okResult.ShouldBeTrue();
-
-        okResult = false;
-
-        await "error"
-            .Exception<bool>()
-            .Async()
-            .EffectOkAsync(DoWork)
-            .TapAsync(output => output.ShouldBeOfType<Unit>())
-            .IgnoreAsync();
-
-        okResult.ShouldBeFalse();
-        return;
-
-        Task DoWork() => Effect(() => okResult = true).Pipe(Task.CompletedTask);
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectOkAsyncWhenErrorNoInput()
-    {
-        var okResult = false;
-
-        await new Exception("It's an error")
-            .Error<string>()
-            .Async()
-            .EffectOkAsync(() => okResult = true);
-
-        okResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectErrorAsyncWhenError()
-    {
-        var okResult = false;
-        var errorContents = string.Empty;
-        var errorResult = false;
-
-        await Result.Error<string>(new Exception("It's an error"))
-            .Async()
-            .EffectErrorAsync(err =>
-            {
-                errorContents = err.Message;
-                errorResult = true;
-            });
-
-        okResult.ShouldBeFalse();
-        errorContents.ShouldBe("It's an error");
-        errorResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectErrorAsyncWhenErrorNoInput()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        await Result.Error<string>(new Exception("It's an error"))
-            .Async()
-            .EffectErrorAsync(() => errorResult = true);
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectErrorAsyncWhenOk()
-    {
-        var okResult = false;
-        var errorContents = string.Empty;
-        var errorResult = false;
-
-        await Result.Ok<string, Exception>("it's okay")
-            .Async()
-            .EffectErrorAsync(err =>
-            {
-                errorContents = err.Message;
-                errorResult = true;
-            });
-
-        okResult.ShouldBeFalse();
-        errorContents.ShouldBe(string.Empty);
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectErrorAsyncWhenOkNoInput()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        await Result.Ok<string, Exception>("it's okay")
-            .Async()
-            .EffectErrorAsync(() => errorResult = true);
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public async Task ItShouldHandleEffectErrorAsyncWhenFuncTask()
-    {
-        var errorResult = false;
-
-        Task doWork() => Effect(() => errorResult = true).Pipe(Task.CompletedTask);
-
-        await Result.Exception<bool>("error")
-            .Async()
-            .EffectErrorAsync(() => doWork())
-            .TapAsync(output => output.ShouldBe(Unit.Default))
-            .IgnoreAsync();
-
-        errorResult.ShouldBeTrue();
-
-        errorResult = false;
-
-        await Result.Ok(true)
-            .Async()
-            .EffectErrorAsync(() => doWork())
-            .TapAsync(output => output.ShouldBe(Unit.Default))
-            .IgnoreAsync();
-
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public void ItShouldHandleEffectWithPlainOkAction()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        Result.Ok("value")
-            .Effect(() => okResult = true, error => errorResult = true)
-            .ShouldBeOfType<Unit>();
-
-        okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public void ItShouldHandleErrorEffectWithPlainOkAction()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        Result.Exception<string>("value")
-            .Effect(() => okResult = true, error => errorResult = true)
-            .ShouldBeOfType<Unit>();
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public void ItShouldHandleEffectWithPlainErrorAction()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        Result.Error<string>(new Exception("error"))
-            .Effect(ok => okResult = true, () => errorResult = true)
-            .ShouldBeOfType<Unit>();
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public void ItShouldHandleOkEffectWithPlainErrorAction()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        Result.Ok("value")
-            .Effect(ok => okResult = true, () => errorResult = true)
-            .ShouldBeOfType<Unit>();
-
-        okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
-    }
-
-    [TestMethod]
-    public void ItShouldHandleEffectWithPlainActions()
-    {
-        var okResult = false;
-        var errorResult = false;
-
-        Result.Ok("value")
-            .Effect(() => okResult = true, () => errorResult = true)
-            .ShouldBeOfType<Unit>();
-
-        okResult.ShouldBeTrue();
-        errorResult.ShouldBeFalse();
-
-        okResult = false;
-        errorResult = false;
-
-        Result.Error<string>(new Exception("error"))
-            .Effect(() => okResult = true, () => errorResult = true)
-            .ShouldBeOfType<Unit>();
-
-        okResult.ShouldBeFalse();
-        errorResult.ShouldBeTrue();
-    }
-
-    [TestMethod]
-    public void ItShouldCreateExceptionsWithMessages() =>
-        Result.Exception<int>("an error occurred")
-            .UnwrapError()
-            .ShouldBeOfType<Exception>();
-
-    [TestMethod]
-    public void ItShouldTapOffOfResult()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Result.Ok("value")
-            .Tap(ok => okResult = ok, err => errorResult = err.Message)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe("value");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("error")
-            .Tap(ok => okResult = ok, exn => errorResult = exn.Message)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public void ItShouldTapWithVariousActions()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Result.Ok("value")
-            .Tap(() => okResult = "new", err => errorResult = err.Message)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe("new");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("error")
-            .Tap(ok => okResult = ok, () => errorResult = "new error")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("new error");
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Ok("value")
-            .Tap(ok => okResult = ok, () => errorResult = "new error")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe("value");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("error")
-            .Tap(() => okResult = "new", exn => errorResult = exn.Message)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Ok("value")
-            .Tap(() => okResult = "new", () => errorResult = "new error")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe("new");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("error")
-            .Tap(() => okResult = "new", () => errorResult = "new error")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("new error");
-    }
-
-    [TestMethod]
-    public void ItShouldTapOk()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Result.Ok("something")
-            .TapOk(value => okResult = value)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe("something");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Ok("something")
-            .TapOk(() => okResult = "something new")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe("something new");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("something")
-            .TapOk(value => okResult = value)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("something")
-            .TapOk(() => okResult = "something new")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe(string.Empty);
-    }
-
-
-    [TestMethod]
-    public void ItShouldTapError()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Result.Exception<string>("something")
-            .TapError(value => errorResult = value.Message)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("something");
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Exception<string>("something")
-            .TapError(() => errorResult = "something new")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("something new");
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Ok("something")
-            .TapError(value => errorResult = value.Message)
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        Result.Ok("something")
-            .TapError(() => errorResult = "something new")
-            .ShouldBeOfType<Result<string, Exception>>();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe(string.Empty);
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithTwoActionsWithInput()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(ok => okResult = ok, exn => errorResult = exn.Message)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(ok => okResult = ok, exn => errorResult = exn.Message)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionTErrorAction()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(ok => okResult = ok, () => errorResult = "error")
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(ok => okResult = ok, () => errorResult = "error")
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionTErrorFuncTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doWork() => Effect(() => errorResult = "error").Pipe(Task.CompletedTask);
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(ok => okResult = ok, doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(ok => okResult = ok, doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionTErrorFuncErrorTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doWork(Exception input) => Effect(() => errorResult = input.Message).Pipe(Task.CompletedTask);
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(ok => okResult = ok, doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(ok => okResult = ok, doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionErrorActionT()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(() => okResult = "ok", exn => errorResult = exn.Message)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(() => okResult = "ok", exn => errorResult = exn.Message)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionErrorAction()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(() => okResult = "ok", () => errorResult = "error")
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(() => okResult = "ok", () => errorResult = "error")
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionErrorFuncTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doWork() => Effect(() => errorResult = "error").Pipe(Task.CompletedTask);
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(() => okResult = "ok", doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(() => okResult = "ok", doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkActionErrorFuncTTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doWork(Exception exn) => Effect(() => errorResult = exn.Message).Pipe(Task.CompletedTask);
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(() => okResult = "ok", doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(() => okResult = "ok", doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTaskErrorActionT()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(doWork, exn => errorResult = exn.Message)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(doWork, exn => errorResult = exn.Message)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTaskErrorAction()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(doWork, () => errorResult = "error")
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(doWork, () => errorResult = "error")
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTaskErrorFuncTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doOkWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
-        Task doErrorWork() => Effect(() => errorResult = "error").Pipe(Task.CompletedTask);
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTaskErrorFuncTTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doOkWork() => Effect(() => okResult = "ok").Pipe(Task.CompletedTask);
-        Task doErrorWork(Exception input) => Effect(() => errorResult = input.Message).Pipe(Task.CompletedTask);
-
-        await Result.Ok("value")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorActionT()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doOkWork(string input) => Effect(() => okResult = input).Pipe(Task.CompletedTask);
-        void doErrorWork(Exception input) => errorResult = input.Message;
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorAction()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doOkWork(string input) => Effect(() => okResult = input).Pipe(Task.CompletedTask);
-        void doErrorWork() => errorResult = "error";
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorFuncTask()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doOkWork(string input) => EffectAsync(() => okResult = input);
-        Task doErrorWork() => EffectAsync(() => errorResult = "error");
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapAsyncWithOkFuncTTaskErrorFuncTaskT()
-    {
-        var okResult = string.Empty;
-        var errorResult = string.Empty;
-
-        Task doOkWork(string input) => EffectAsync(() => okResult = input);
-        Task doErrorWork(Exception input) => EffectAsync(() => errorResult = input.Message);
-
-        await Result.Ok("ok")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-        errorResult.ShouldBe(string.Empty);
-
-        okResult = string.Empty;
-        errorResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapAsync(doOkWork, doErrorWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapOkAsyncWithActionT()
-    {
-        var okResult = string.Empty;
-
-        void doOkWork(string input) => okResult = input;
-
-        await Result.Ok("ok")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-
-        okResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapOkAsyncWithAction()
-    {
-        var okResult = string.Empty;
-
-        void doOkWork() => okResult = "ok";
-
-        await Result.Ok("value")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-
-        okResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapOkAsyncWithFuncTask()
-    {
-        var okResult = string.Empty;
-
-        Task doOkWork() => EffectAsync(() => okResult = "ok");
-
-        await Result.Ok("value")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-
-        okResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapOkAsyncWithFuncTTask()
-    {
-        var okResult = string.Empty;
-
-        Task doOkWork(string input) => EffectAsync(() => okResult = input);
-
-        await Result.Ok("ok")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe("ok");
-
-        okResult = string.Empty;
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapOkAsync(doOkWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        okResult.ShouldBe(string.Empty);
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapErrorAsyncWithActionT()
-    {
-        var errorResult = string.Empty;
-
-        void doWork(Exception exn) => errorResult = exn.Message;
-
-        await Result.Ok("ok")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe(string.Empty);
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapErrorAsyncWithAction()
-    {
-        var errorResult = string.Empty;
-
-        void doWork() => errorResult = "error";
-
-        await Result.Ok("ok")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe(string.Empty);
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapErrorAsyncWithFuncTask()
-    {
-        var errorResult = string.Empty;
-
-        Task doWork() => EffectAsync(() => errorResult = "error");
-
-        await Result.Ok("ok")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe(string.Empty);
-
-        await Result.Exception<string>("original error")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldTapErrorAsyncWithFuncTTask()
-    {
-        var errorResult = string.Empty;
-
-        Task doWork(Exception exn) => EffectAsync(() => errorResult = exn.Message);
-
-        await Result.Ok("ok")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe(string.Empty);
-
-        await Result.Exception<string>("error")
-            .Async()
-            .TapErrorAsync(doWork)
-            .TapAsync(result => result.ShouldBeOfType<Result<string, Exception>>())
-            .IgnoreAsync();
-
-        errorResult.ShouldBe("error");
-    }
-
-    [TestMethod]
-    public async Task ItShouldThrowWhenUnwrappingAsync()
-    {
-        static Task callback() => Result.Exception<bool>("error").Async().UnwrapAsync();
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(callback);
-    }
-
-    [TestMethod]
-    public async Task ItShouldNotThrowWhenUnwrappingAsync() =>
-        await Result.Ok(true)
-            .Async()
-            .UnwrapAsync()
-            .EffectAsync(result => result.ShouldBeTrue());
-
-    [TestMethod]
-    public async Task ItShouldThrowWhenUnwrappingErrorAsync()
-    {
-        static Task callback() => Result.Ok(true).Async().UnwrapErrorAsync();
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(callback);
-    }
-
-    [TestMethod]
-    public async Task ItShouldNotThrowExceptionWhenUnwrappingErrorAsync() =>
-        await Result.Exception<bool>("error message")
-            .Async()
-            .UnwrapErrorAsync()
-            .EffectAsync(output => output.Message.ShouldBe("error message"));
+            .ReduceAsync(failure => failure)
+            .EffectAsync(result => result.ShouldBe("failure message"));
 
 }

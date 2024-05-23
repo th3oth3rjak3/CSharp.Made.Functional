@@ -141,9 +141,9 @@ public sealed record Option<T>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
     public TResult Match<TResult>(Func<T, TResult> whenSome, Func<TResult> whenNone) =>
-        IsSome.Match(
-            () => whenSome(Unwrap()),
-            whenNone);
+        IsSome
+            ? whenSome(Unwrap())
+            : whenNone();
 
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
@@ -163,7 +163,9 @@ public sealed record Option<T>
     /// <param name="whenNone">The function to execute when none.</param>
     /// <returns>The result of the function performed on Some or None.</returns>
     public TResult Match<TResult>(Func<TResult> whenSome, Func<TResult> whenNone) =>
-        IsSome.Match(whenSome, whenNone);
+        IsSome
+            ? whenSome()
+            : whenNone();
 
     /// <summary>
     /// When an Option is Some, map the existing value to a new type with a provided function.
@@ -186,12 +188,9 @@ public sealed record Option<T>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
     public Option<TResult> Map<TResult>(Func<T, TResult> mapper) where TResult : notnull =>
-        IsSome.Match(
-            () =>
-                Unwrap()
-                    .Pipe(mapper)
-                    .Pipe(mapped => new Option<TResult>(mapped)),
-            () => new Option<TResult>());
+        IsSome
+            ? new Option<TResult>(mapper(Unwrap()))
+            : new Option<TResult>();
 
     /// <summary>
     /// When an Option is Some, perform a mapping function which generates a new value.
@@ -215,9 +214,9 @@ public sealed record Option<T>
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>A new option.</returns>
     public Option<TResult> Map<TResult>(Func<TResult> mapper) where TResult : notnull =>
-        IsSome.Match(
-            () => new Option<TResult>(mapper()),
-            () => new Option<TResult>());
+        IsSome
+            ? new Option<TResult>(mapper())
+            : new Option<TResult>();
 
     /// <summary>
     /// Convert a Some into a None when it doesn't match the provided predicate.
@@ -316,7 +315,7 @@ public sealed record Option<T>
             alternate);
 
     /// <summary>
-    /// Perform a side-effect on an option type and consume the option.
+    /// Perform a side effect on an option type and consume the option.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -352,7 +351,7 @@ public sealed record Option<T>
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -387,7 +386,7 @@ public sealed record Option<T>
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -409,7 +408,7 @@ public sealed record Option<T>
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -432,7 +431,7 @@ public sealed record Option<T>
     }
 
     /// <summary>
-    /// Perform a side-effect on an option type.
+    /// Perform a side effect on an option type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -462,7 +461,7 @@ public sealed record Option<T>
     /// // value is 123 since the input was Some.
     /// int value =
     ///     Some(123)
-    ///         // Tap performs side-effects, then returns the value that was input.
+    ///         // Tap performs side effects, then returns the value that was input.
     ///         // In this case, that means it returns Some(123) as an Option&lt;int&gt;
     ///         .Tap(
     ///             // Performed when the value is Some.
@@ -492,7 +491,7 @@ public sealed record Option<T>
     /// // value is 123 since the input was Some.
     /// int value =
     ///     Some(123)
-    ///         // Tap performs side-effects, then returns the value that was input.
+    ///         // Tap performs side effects, then returns the value that was input.
     ///         // In this case, that means it returns Some(123) as an Option&lt;int&gt;
     ///         .Tap(
     ///             // Performed when the value is Some.

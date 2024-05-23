@@ -23,9 +23,17 @@ public static partial class Prelude
     public static TResult Pipe<T, TResult>(this T input, Func<T, TResult> mapper) =>
         mapper(input);
 
-    // TODO: Examples
     /// <summary>
     /// Perform a series of actions on the input and return unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int input = 42;
+    /// string output = input.Pipe(() => "piped");
+    /// 
+    /// Assert.AreEqual(output, "piped");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
     /// <typeparam name="TOutput">The output type.</typeparam>
@@ -35,9 +43,20 @@ public static partial class Prelude
     public static TOutput Pipe<T, TOutput>(this T input, Func<TOutput> mapper) =>
         input.Pipe(_ => mapper());
 
-    // TODO: Examples
     /// <summary>
     /// Used to wrap an async function that transforms a Task of <typeparamref name="TInput"/> to <typeparamref name="TInput"/>.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int input = 42;
+    /// string output = 
+    ///     await input
+    ///         .Async()
+    ///         .PipeAsync(value => value.ToString().Async());
+    /// 
+    /// Assert.AreEqual(output, "42");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TInput">The input type.</typeparam>
     /// <typeparam name="TResult">The output type.</typeparam>
@@ -47,33 +66,78 @@ public static partial class Prelude
     public static async Task<TResult> PipeAsync<TInput, TResult>(this Task<TInput> input, Func<TInput, Task<TResult>> func) =>
         await func(await input);
 
-    // TODO: Examples
     /// <summary>
     /// Used to wrap an async mapping function that transforms 
     /// <typeparamref name="TInput"/> to <typeparamref name="TResult"/>.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int input = 42;
+    /// string output = 
+    ///     await input
+    ///         .Async()        
+    ///         .PipeAsync(value => value.ToString());
+    /// 
+    /// Assert.AreEqual(output, "42");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TInput">The input type.</typeparam>
     /// <typeparam name="TResult">The resulting type.</typeparam>
     /// <param name="input">The input to transform.</param>
-    /// <param name="func">The transformation function.</param>
+    /// <param name="mapper">The transformation function.</param>
     /// <returns>The result of the transformation function.</returns>
     public static async Task<TResult> PipeAsync<TInput, TResult>(
         this Task<TInput> input,
-        Func<TInput, TResult> func) =>
-            func(await input);
+        Func<TInput, TResult> mapper) =>
+            (await input).Pipe(mapper);
 
-    // TODO: Examples
     /// <summary>
     /// Used to wrap an async input that performs actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int input = 42;
+    /// string output = 
+    ///     await input
+    ///         .Async()
+    ///         .PipeAsync(() => "piped");
+    /// 
+    /// Assert.AreEqual(output, "piped");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="TInput">The type of the input.</typeparam>
     /// <typeparam name="TOutput">The type of the output.</typeparam>
-    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="input">Ignored input.</param>
     /// <param name="mapper">A mapping function that ignores the input from the pipeline.</param>
     /// <returns>An awaitable Unit.</returns>
     public static async Task<TOutput> PipeAsync<TInput, TOutput>(this Task<TInput> input, Func<TOutput> mapper) =>
-        await (await input)
-            .Pipe(_ => mapper())
-            .Async();
+        (await input).Pipe(mapper);
 
+    /// <summary>
+    /// Used to wrap an async input that performs actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// int input = 42;
+    /// string output = 
+    ///     await input
+    ///         .Async()
+    ///         .PipeAsync(() => "piped".Async());
+    /// 
+    /// Assert.AreEqual(output, "piped");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <typeparam name="TOutput">The type of the output.</typeparam>
+    /// <param name="input">Ignored input.</param>
+    /// <param name="mapper">A mapping function that ignores the input from the pipeline.</param>
+    /// <returns>An awaitable Unit.</returns>
+    public static async Task<TOutput> PipeAsync<TInput, TOutput>(this Task<TInput> input, Func<Task<TOutput>> mapper)
+    {
+        _ = await input;
+        return await mapper();
+    }
 }

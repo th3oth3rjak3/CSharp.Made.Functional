@@ -39,17 +39,13 @@ public static partial class Prelude
     /// <returns>A result that is Ok or an exception.</returns>
     public static Result<TResult, Exception> Try<TResult>(Func<TResult> toTry)
     {
-        Exception withInnerException = new Exception("message", new Exception("inner exception"));
-        Exception noInnerMessage = new Exception("message", null);
-
         try
         {
-            return toTry()
-                .Pipe(Result.Ok<TResult, Exception>);
+            return toTry().Pipe(Success);
         }
         catch (Exception ex)
         {
-            return ex.Error<TResult, Exception>();
+            return Failure<TResult>(ex);
         }
     }
 
@@ -66,12 +62,11 @@ public static partial class Prelude
     {
         try
         {
-            return toTry(input)
-                .Pipe(Result.Ok<TResult, Exception>);
+            return toTry(input).Pipe(Success);
         }
         catch (Exception ex)
         {
-            return Result.Error<TResult, Exception>(ex);
+            return Failure<TResult>(ex);
         }
     }
 
@@ -86,13 +81,11 @@ public static partial class Prelude
     {
         try
         {
-            return await toTry()
-                .PipeAsync(Result.Ok<TResult, Exception>);
+            return await toTry().PipeAsync(Success);
         }
         catch (Exception ex)
         {
-            return await ex.Async()
-                .PipeAsync(exn => exn.Error<TResult>());
+            return Failure<TResult>(ex);
         }
     }
 
@@ -111,13 +104,11 @@ public static partial class Prelude
         {
             return await input
                 .PipeAsync(toTry)
-                .PipeAsync(Result.Ok<TResult, Exception>);
+                .PipeAsync(Success);
         }
         catch (Exception ex)
         {
-            return await ex
-                .Pipe(exn => exn.Error<TResult>())
-                .Async();
+            return Failure<TResult>(ex);
         }
     }
 

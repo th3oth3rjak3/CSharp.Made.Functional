@@ -4,11 +4,11 @@ public static partial class Prelude
 {
     // TODO: Examples
     public static async Task<bool> IsOk<Ok, Error>(this Task<Result<Ok, Error>> result) =>
-        (await result).IsOk;
+        (await result).IsSuccess;
 
     // TODO: Examples
     public static async Task<bool> IsError<Ok, Error>(this Task<Result<Ok, Error>> result) =>
-        (await result).IsError;
+        (await result).IsFailure;
 
     // TODO: Examples
     /// <summary>
@@ -20,14 +20,14 @@ public static partial class Prelude
     /// <br /><br />
     /// In order to use this safely, it is recommended to first
     /// check to see if the Result is ok using 
-    /// <see cref="Result{Ok,Error}.IsOk"/> or <see cref="Result{Ok,Error}.IsError"/>.
+    /// <see cref="Result{Ok,Error}.IsSuccess"/> or <see cref="Result{Ok,Error}.IsFailure"/>.
     /// </summary>
     /// <returns>The inner value of the result.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the result was an error and was unwrapped as ok.</exception>
     public static async Task<Ok> UnwrapAsync<Ok, Error>(this Task<Result<Ok, Error>> result)
     {
         var theResult = await result;
-        if (theResult.IsError) throw new InvalidOperationException("Failed to unwrap a result as an ok type because it was an Error. When using this method, be sure to check if the value is Ok by using the IsOk method beforehand.");
+        if (theResult.IsFailure) throw new InvalidOperationException("Failed to unwrap a result as an ok type because it was an Error. When using this method, be sure to check if the value is Ok by using the IsOk method beforehand.");
         return theResult.Unwrap();
     }
 
@@ -41,14 +41,14 @@ public static partial class Prelude
     /// <br /><br />
     /// In order to use this safely, it is recommended to first
     /// check to see if the Result is an error using 
-    /// <see cref="Result{Ok,Error}.IsOk"/> or <see cref="Result{Ok,Error}.IsError"/>.
+    /// <see cref="Result{Ok,Error}.IsSuccess"/> or <see cref="Result{Ok,Error}.IsFailure"/>.
     /// </summary>
     /// <returns>The inner value of the result.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the result was an ok value and unwrapped as an error.</exception>
     public static async Task<Error> UnwrapErrorAsync<Ok, Error>(this Task<Result<Ok, Error>> result)
     {
         var theResult = await result;
-        if (theResult.IsOk) throw new InvalidOperationException("Failed to unwrap the result as an error type because it was Ok. When using this method, be sure to check if the value is Error by using the IsError method beforehand. ");
-        return theResult.UnwrapError();
+        if (theResult.IsSuccess) throw new InvalidOperationException("Failed to unwrap the result as an error type because it was Ok. When using this method, be sure to check if the value is Error by using the IsError method beforehand. ");
+        return theResult.UnwrapFailure();
     }
 }

@@ -24,8 +24,4 @@
     <ProjectReference Include="..\Functional\Functional.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="PreludeTests\Result\" />
-  </ItemGroup>
-
 </Project>

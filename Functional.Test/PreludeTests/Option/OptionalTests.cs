@@ -5,16 +5,6 @@
 public class OptionalTests
 {
     [TestMethod]
-    public void StaticSomeAndNoneMethodsShouldCreateOptions()
-    {
-        Some(42).IsSome.ShouldBeTrue();
-        Some("value").IsSome.ShouldBeTrue();
-
-        None<string>().IsNone.ShouldBeTrue();
-        None<int>().IsNone.ShouldBeTrue();
-    }
-
-    [TestMethod]
     public async Task ItShouldConvertNullableToOptions()
     {
         static string? maybeString(bool provideNull = false) =>
