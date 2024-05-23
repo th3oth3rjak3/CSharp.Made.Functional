@@ -673,13 +673,42 @@ public sealed record Result<TSuccess, TFailure>
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// Perform a side effect on a result type without consuming the result.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// string failureResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .Tap(
+    ///             () => successResult = "success", 
+    ///             failure => failureResult = failure.Message);
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// successResult = string.Empty;
+    /// failureResult = string.Empty;
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .Tap(
+    ///             () => successResult = "success",
+    ///             failure => failureResult = failure.Message);
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="onSuccess">An action to perform when the value is ok.</param>
-    /// <param name="onFailure">An action to perform when the value is an error.</param>
-    /// <returns>The input.</returns>
+    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> Tap(Action onSuccess, Action<TFailure> onFailure)
     {
         if (IsSuccess) onSuccess();
@@ -688,13 +717,42 @@ public sealed record Result<TSuccess, TFailure>
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// Perform a side effect on a result type without consuming the result.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// string failureResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .Tap(
+    ///             success => successResult = success, 
+    ///             () => failureResult = "fail");
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// successResult = string.Empty;
+    /// failureResult = string.Empty;
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .Tap(
+    ///             success => successResult = success,
+    ///             () => failureResult = "fail");
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="onSuccess">An action to perform when the value is ok.</param>
-    /// <param name="onFailure">An action to perform when the value is an error.</param>
-    /// <returns>The input.</returns>
+    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> Tap(Action<TSuccess> onSuccess, Action onFailure)
     {
         if (IsSuccess) onSuccess(Unwrap());
@@ -703,13 +761,42 @@ public sealed record Result<TSuccess, TFailure>
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the value while returning it. Perform a side effect with it when it's ok or an error.
+    /// Perform a side effect on a result type without consuming the result.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// string failureResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .Tap(
+    ///             () => successResult = "success", 
+    ///             () => failureResult = "fail");
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// successResult = string.Empty;
+    /// failureResult = string.Empty;
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .Tap(
+    ///             () => successResult = "success", 
+    ///             () => failureResult = "fail");
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="onSuccess">An action to perform when the value is ok.</param>
-    /// <param name="onFailure">An action to perform when the value is an error.</param>
-    /// <returns>The input.</returns>
+    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> Tap(Action onSuccess, Action onFailure)
     {
         if (IsSuccess) onSuccess();
@@ -718,67 +805,147 @@ public sealed record Result<TSuccess, TFailure>
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the result and perform an action when the result is Ok.
+    /// Perform a side effect on a result type without consuming the result when the result is Success.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .TapSuccess(success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// successResult = string.Empty;
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .TapSuccess(success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="whenOk">The action to perform when the value is ok.</param>
-    /// <returns>The input value.</returns>
-    public Result<TSuccess, TFailure> TapSuccess(params Action<TSuccess>[] whenOk)
+    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <returns>The input result.</returns>
+    public Result<TSuccess, TFailure> TapSuccess(params Action<TSuccess>[] onSuccess)
     {
         if (IsSuccess)
         {
             var contents = Unwrap();
-            whenOk.ToList().ForEach(action => action(contents));
+            onSuccess.ToList().ForEach(action => action(contents));
         }
 
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the result and perform an action when the result is Ok.
+    /// Perform a side effect on a result type without consuming the result when the result is Success.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .TapSuccess(() => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// successResult = string.Empty;
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .TapSuccess(() => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="whenOk">The action to perform when the value is ok.</param>
-    /// <returns>The input value.</returns>
-    public Result<TSuccess, TFailure> TapSuccess(params Action[] whenOk)
+    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <returns>The input result.</returns>
+    public Result<TSuccess, TFailure> TapSuccess(params Action[] onSuccess)
     {
         if (IsSuccess)
         {
-            whenOk.ToList().ForEach(action => action());
+            onSuccess.ToList().ForEach(action => action());
         }
 
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the result and perform an action when the result is Error.
+    /// Perform a side effect on a result type without consuming the result when the result is Failure.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string failureResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .TapFailure(exn => failureResult = exn.Message);
+    ///         
+    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .TapFailure(exn => failureResult = exn.Message);
+    ///         
+    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="whenError">The action to perform when the value is an error.</param>
-    /// <returns>The input value.</returns>
-    public Result<TSuccess, TFailure> TapFailure(params Action<TFailure>[] whenError)
+    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <returns>The input result.</returns>
+    public Result<TSuccess, TFailure> TapFailure(params Action<TFailure>[] onFailure)
     {
         if (IsFailure)
         {
             var contents = UnwrapFailure();
-            whenError.ToList().ForEach(action => action(contents));
+            onFailure.ToList().ForEach(action => action(contents));
         }
 
         return this;
     }
 
-    // TODO: Examples
     /// <summary>
-    /// Tap into the result and perform an action when the result is Error.
+    /// Perform a side effect on a result type without consuming the result when the result is Failure.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string failureResult = string.Empty;
+    /// 
+    /// Result&lt;string, Exception&gt; result = 
+    ///     new Result&lt;string, Exception&gt;("hello, world!")
+    ///         .TapFailure(() => failureResult = "fail");
+    ///         
+    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.IsTrue(result.IsSuccess);
+    /// 
+    /// result = 
+    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///         .TapFailure(() => failureResult = "fail");
+    ///         
+    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.IsTrue(result.IsFailure);
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="whenError">The action to perform when the value is an error.</param>
-    /// <returns>The input value.</returns>
-    public Result<TSuccess, TFailure> TapFailure(params Action[] whenError)
+    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <returns>The input result.</returns>
+    public Result<TSuccess, TFailure> TapFailure(params Action[] onFailure)
     {
         if (IsFailure)
         {
-            whenError.ToList().ForEach(action => action());
+            onFailure.ToList().ForEach(action => action());
         }
 
         return this;
