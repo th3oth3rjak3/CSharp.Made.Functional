@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.PreludeTests;
+﻿namespace Functional.Test.Prelude;
 
 [TestClass]
 public class CollectionTests
@@ -15,7 +15,7 @@ public class CollectionTests
     {
         var collection = Cons("1", "2");
         var items = Cons("3", "4");
-
+        
         collection.Append(items).Count().ShouldBe(4);
         collection.Count().ShouldBe(2);
 

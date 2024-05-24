@@ -8,7 +8,7 @@ public static partial class Prelude
     /// <summary>
     /// Return the default Unit.
     /// </summary>
-    public static Unit Unit() => Functional.Unit.Default;
+    public static Unit Unit() => new();
 
     /// <summary>
     /// Create a Task from an input.

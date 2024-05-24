@@ -1,4 +1,6 @@
-﻿namespace Functional.Test.PreludeTests.Option;
+﻿namespace Functional.Test.Prelude.Option;
+
+// TODO: Try to fix this test file.
 
 [ExcludeFromCodeCoverage]
 [TestClass]

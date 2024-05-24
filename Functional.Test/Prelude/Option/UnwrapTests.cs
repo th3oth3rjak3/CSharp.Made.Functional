@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.PreludeTests.Option;
+﻿namespace Functional.Test.Prelude.Option;
 [TestClass]
 public class UnwrapTests
 {

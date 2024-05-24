@@ -1,12 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Functional.Test.Exceptions;
+﻿namespace Functional.Test.Prelude;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
 public class ExceptionTests
 {
-    private const int oneMillion = 1_000_000;
+    private const int OneMillion = 1_000_000;
 
     [TestMethod]
     public void ItShouldGetInnerExceptionMessage() =>
@@ -23,29 +21,29 @@ public class ExceptionTests
 
     [TestMethod]
     public void TryShouldSucceed() =>
-        oneMillion
+        OneMillion
             .Try(num => num.ToString())
             .Match(ok => ok, exn => exn.Message)
-            .ShouldBe(oneMillion.ToString());
+            .ShouldBe(OneMillion.ToString());
 
     [TestMethod]
     public void TryShouldHandleFailures() =>
-        oneMillion
+        OneMillion
             .Try(_ => ItAlwaysThrows("It threw an exception"))
             .Match(ok => ok, exn => exn.Message)
             .ShouldBe("It threw an exception");
 
     [TestMethod]
     public async Task TryAsyncShouldSucceed() =>
-        await oneMillion
+        await OneMillion
             .Async()
             .TryAsync(num => num.ToString().Async())
             .MatchAsync(ok => ok, exn => exn.Message)
-            .TapAsync(str => str.ShouldBe(oneMillion.ToString()));
+            .TapAsync(str => str.ShouldBe(OneMillion.ToString()));
 
     [TestMethod]
     public async Task TryAsyncShouldCatch() =>
-        await oneMillion
+        await OneMillion
             .Async()
             .TryAsync(_ => ItAlwaysThrows("It threw an exception").Async())
             .MatchAsync(ok => ok, exn => exn.Message)
@@ -57,7 +55,7 @@ public class ExceptionTests
     [DataRow(1)]
     [TestMethod]
     public void ItShouldTryWithClosures(int someNumber) =>
-        Try(() => someNumber.ToString())
+        Try(someNumber.ToString)
             .Match(ok => ok, exn => exn.Message)
             .ShouldBe("1");
 

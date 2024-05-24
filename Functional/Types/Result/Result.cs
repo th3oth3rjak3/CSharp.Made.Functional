@@ -801,7 +801,6 @@ public sealed record Result<TSuccess, TFailure>
     {
         if (IsSuccess) onSuccess();
         if (IsFailure) onFailure();
-
         return this;
     }
 
@@ -834,12 +833,9 @@ public sealed record Result<TSuccess, TFailure>
     /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> TapSuccess(params Action<TSuccess>[] onSuccess)
     {
-        if (IsSuccess)
-        {
-            var contents = Unwrap();
-            onSuccess.ToList().ForEach(action => action(contents));
-        }
-
+        if (IsFailure) return this;
+        var contents = Unwrap();
+        onSuccess.ToList().ForEach(action => action(contents));
         return this;
     }
 
@@ -872,11 +868,8 @@ public sealed record Result<TSuccess, TFailure>
     /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> TapSuccess(params Action[] onSuccess)
     {
-        if (IsSuccess)
-        {
-            onSuccess.ToList().ForEach(action => action());
-        }
-
+        if (IsFailure) return this;
+        onSuccess.ToList().ForEach(action => action());
         return this;
     }
 
@@ -907,12 +900,9 @@ public sealed record Result<TSuccess, TFailure>
     /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> TapFailure(params Action<TFailure>[] onFailure)
     {
-        if (IsFailure)
-        {
-            var contents = UnwrapFailure();
-            onFailure.ToList().ForEach(action => action(contents));
-        }
-
+        if (IsSuccess) return this;
+        var contents = UnwrapFailure();
+        onFailure.ToList().ForEach(action => action(contents));
         return this;
     }
 
@@ -943,11 +933,8 @@ public sealed record Result<TSuccess, TFailure>
     /// <returns>The input result.</returns>
     public Result<TSuccess, TFailure> TapFailure(params Action[] onFailure)
     {
-        if (IsFailure)
-        {
-            onFailure.ToList().ForEach(action => action());
-        }
-
+        if (IsSuccess) return this;
+        onFailure.ToList().ForEach(action => action());
         return this;
     }
 }

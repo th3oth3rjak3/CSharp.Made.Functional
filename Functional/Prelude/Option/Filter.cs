@@ -193,7 +193,7 @@ public static partial class Prelude
         {
             if (option.IsNone) output.Add(option);
             else if (option.IsSome && await predicate(option.Unwrap())) output.Add(option);
-            else output.Add(new());
+            else output.Add(new Option<T>());
         }
 
         return output;

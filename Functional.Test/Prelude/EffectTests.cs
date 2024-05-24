@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.PreludeTests;
+﻿namespace Functional.Test.Prelude;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
@@ -52,7 +52,7 @@ public class EffectTests
         await "input"
             .Async()
             .EffectAsync(
-                input => PerformEffectAsync(input),
+                PerformEffectAsync,
                 input => PerformEffectAsync(input + "!"))
             .EffectAsync(unit => unit.ShouldBeOfType<Unit>());
 
@@ -104,12 +104,13 @@ public class EffectTests
     {
         var effectResult = false;
 
-        Task doWork() => Effect(() => effectResult = true).Async();
-
-        await EffectAsync(doWork)
+        await EffectAsync(DoWork)
             .TapAsync(output => output.ShouldBeOfType<Unit>())
             .IgnoreAsync();
 
         effectResult.ShouldBeTrue();
+        return;
+
+        Task DoWork() => Effect(() => effectResult = true).Async();
     }
 }

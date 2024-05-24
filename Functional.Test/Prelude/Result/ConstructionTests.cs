@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.PreludeTests.Result;
+﻿namespace Functional.Test.Prelude.Result;
 
 [ExcludeFromCodeCoverage]
 [TestClass]

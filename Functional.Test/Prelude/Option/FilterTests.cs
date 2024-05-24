@@ -1,9 +1,10 @@
-﻿namespace Functional.Test.PreludeTests.Option;
+﻿namespace Functional.Test.Prelude.Option;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
 public class FilterTests
 {
+    // TODO: Try to make these tests better.
     [TestMethod]
     public async Task OptionShouldFilterAsync()
     {

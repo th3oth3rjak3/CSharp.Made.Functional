@@ -1,12 +1,12 @@
-﻿namespace Functional.Test.PreludeTests;
+﻿namespace Functional.Test.Prelude;
 
 [TestClass]
 public class MatchTests
 {
-    private bool WhenTrue() => true;
-    private bool WhenFalse() => false;
-    private Task<bool> WhenTrueAsync() => Task.FromResult(true);
-    private Task<bool> WhenFalseAsync() => Task.FromResult(false);
+    private static bool WhenTrue() => true;
+    private static bool WhenFalse() => false;
+    private static Task<bool> WhenTrueAsync() => Task.FromResult(true);
+    private static Task<bool> WhenFalseAsync() => Task.FromResult(false);
 
     [TestMethod]
     public void ItShouldMatchConditionalExpressions()

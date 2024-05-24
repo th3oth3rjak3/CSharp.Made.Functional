@@ -1,15 +1,15 @@
-﻿namespace Functional.Test.PreludeTests.Option;
+﻿namespace Functional.Test.Prelude.Option;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
 public class MatchTests
 {
-    static string MatchSome() => "Some";
-    static Task<string> MatchSomeAsync() => MatchSome().Async();
-    static string MatchSomeInput(int input) => input.ToString();
-    static Task<string> MatchSomeInputAsync(int input) => MatchSomeInput(input).Async();
-    static string MatchNone() => "None";
-    static Task<string> MatchNoneAsync() => MatchNone().Async();
+    private static string MatchSome() => "Some";
+    private static Task<string> MatchSomeAsync() => MatchSome().Async();
+    private static string MatchSomeInput(int input) => input.ToString();
+    private static Task<string> MatchSomeInputAsync(int input) => MatchSomeInput(input).Async();
+    private static string MatchNone() => "None";
+    private static Task<string> MatchNoneAsync() => MatchNone().Async();
 
     [TestMethod]
     public async Task OptionShouldMatchAsync_1()

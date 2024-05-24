@@ -17,7 +17,7 @@ public static partial class Prelude
     /// <param name="success">The contents for the success case.</param>
     /// <returns>A new result.</returns>
     public static Result<TSuccess, TFailure> Success<TSuccess, TFailure>(TSuccess success) =>
-        new Result<TSuccess, TFailure>(success);
+        new(success);
 
     /// <summary>
     /// Create a new result that represents a Success.
@@ -33,7 +33,7 @@ public static partial class Prelude
     /// <param name="success">The contents for the success case.</param>
     /// <returns>A new result.</returns>
     public static Result<TSuccess, Exception> Success<TSuccess>(TSuccess success) =>
-        new Result<TSuccess, Exception>(success);
+        new(success);
 
     /// <summary>
     /// Create a new result that represents a Failure.
@@ -50,7 +50,7 @@ public static partial class Prelude
     /// <param name="failure">The contents for the failure case.</param>
     /// <returns>A new result.</returns>
     public static Result<TSuccess, TFailure> Failure<TSuccess, TFailure>(TFailure failure) =>
-        new Result<TSuccess, TFailure>(failure);
+        new(failure);
 
     /// <summary>
     /// Create a new result that represents a Failure.
@@ -66,5 +66,5 @@ public static partial class Prelude
     /// <param name="failure">The contents for the failure case.</param>
     /// <returns>A new result.</returns>
     public static Result<TSuccess, Exception> Failure<TSuccess>(Exception failure) =>
-        new Result<TSuccess, Exception>(failure);
+        new(failure);
 }

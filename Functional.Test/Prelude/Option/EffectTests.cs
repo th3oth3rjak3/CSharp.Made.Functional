@@ -1,15 +1,15 @@
-﻿namespace Functional.Test.PreludeTests.Option;
+﻿namespace Functional.Test.Prelude.Option;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
 public class EffectTests
 {
+    // TODO: Fix this test file.
     [TestMethod]
     public async Task OptionShouldPerformEffectsAsync()
     {
         var msg = "";
 
-        void someEffectWithInput(string input) => msg = input;
         void someEffectWithoutInput() => msg = "Some";
         Task someEffectWithInputAsTask(string input) => EffectAsync(() => msg = input);
         Task someEffectWithoutInputAsTask() => EffectAsync(() => msg = "Some");
@@ -20,7 +20,7 @@ public class EffectTests
         await Some("123")
             .Async()
             .EffectAsync(
-                someEffectWithInput,
+                SomeEffectWithInput,
                 noneEffect)
             .TapAsync(output => output.ShouldBeOfType<Unit>());
 
@@ -30,7 +30,7 @@ public class EffectTests
         await None<string>()
             .Async()
             .EffectAsync(
-                someEffectWithInput,
+                SomeEffectWithInput,
                 noneEffect)
             .TapAsync(output => output.ShouldBeOfType<Unit>());
 
@@ -40,7 +40,7 @@ public class EffectTests
         await Some("123")
             .Async()
             .EffectAsync(
-                someEffectWithInput,
+                SomeEffectWithInput,
                 noneEffectAsTask)
             .TapAsync(output => output.ShouldBeOfType<Unit>());
 
@@ -50,7 +50,7 @@ public class EffectTests
         await None<string>()
             .Async()
             .EffectAsync(
-                someEffectWithInput,
+                SomeEffectWithInput,
                 noneEffectAsTask)
             .TapAsync(output => output.ShouldBeOfType<Unit>());
 
@@ -175,6 +175,9 @@ public class EffectTests
             .TapAsync(output => output.ShouldBeOfType<Unit>());
 
         msg.ShouldBe("None");
+        return;
+
+        void SomeEffectWithInput(string input) => msg = input;
     }
 
     [TestMethod]

@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-
-namespace Functional.Test.Common;
+﻿namespace Functional.Test.Types;
 
 [ExcludeFromCodeCoverage]
 [TestClass]

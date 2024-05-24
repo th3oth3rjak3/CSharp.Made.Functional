@@ -1,4 +1,4 @@
-﻿namespace Functional.Test.Types.Results;
+﻿namespace Functional.Test.Types.Result;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
@@ -196,7 +196,8 @@ public class ResultTests
         Success(1)
             .Effect(
                 value => successResult = value.ToString(),
-                exn => failureResult = exn.Message);
+                exn => failureResult = exn.Message)
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("1");
         failureResult.ShouldBe(string.Empty);
@@ -206,7 +207,8 @@ public class ResultTests
         Failure<int>(new Exception("error"))
             .Effect(
                 value => successResult = value.ToString(),
-                exn => failureResult = exn.Message);
+                exn => failureResult = exn.Message)
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
         failureResult.ShouldBe("error");
@@ -229,7 +231,8 @@ public class ResultTests
         Success(1)
             .Effect(
                 () => successResult = "success",
-                exn => failureResult = exn.Message);
+                exn => failureResult = exn.Message)
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("success");
         failureResult.ShouldBe(string.Empty);
@@ -239,7 +242,8 @@ public class ResultTests
         Failure<int>(new Exception("error"))
             .Effect(
                 () => successResult = "success",
-                exn => failureResult = exn.Message);
+                exn => failureResult = exn.Message)
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
         failureResult.ShouldBe("error");
@@ -262,7 +266,8 @@ public class ResultTests
         Success(1)
             .Effect(
                 value => successResult = value.ToString(),
-                () => failureResult = "failure");
+                () => failureResult = "failure")
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("1");
         failureResult.ShouldBe(string.Empty);
@@ -272,7 +277,8 @@ public class ResultTests
         Failure<int>(new Exception("error"))
             .Effect(
                 value => successResult = value.ToString(),
-                () => failureResult = "failure");
+                () => failureResult = "failure")
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
         failureResult.ShouldBe("failure");
@@ -295,7 +301,8 @@ public class ResultTests
         Success(1)
             .Effect(
                 () => successResult = "success",
-                () => failureResult = "failure");
+                () => failureResult = "failure")
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("success");
         failureResult.ShouldBe(string.Empty);
@@ -305,7 +312,8 @@ public class ResultTests
         Failure<int>(new Exception("error"))
             .Effect(
                 () => successResult = "success",
-                () => failureResult = "failure");
+                () => failureResult = "failure")
+            .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
         failureResult.ShouldBe("failure");
@@ -326,22 +334,26 @@ public class ResultTests
         string result = string.Empty;
 
         Failure<int, string>("error")
-            .EffectSuccess(value => result = value.ToString());
+            .EffectSuccess(value => result = value.ToString())
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
         Failure<int, string>("error")
-            .EffectSuccess(() => result = "success");
+            .EffectSuccess(() => result = "success")
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
         Success(1)
-            .EffectSuccess(value => result = value.ToString());
+            .EffectSuccess(value => result = value.ToString())
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("1");
 
         Success(1)
-            .EffectSuccess(() => result = "success");
+            .EffectSuccess(() => result = "success")
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("success");
     }
@@ -352,22 +364,26 @@ public class ResultTests
         string result = string.Empty;
 
         Success(1)
-            .EffectFailure(value => result = value.Message);
+            .EffectFailure(value => result = value.Message)
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
         Success(1)
-            .EffectFailure(() => result = "failure");
+            .EffectFailure(() => result = "failure")
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
         Failure<int, string>("fail")
-            .EffectFailure(value => result = value);
+            .EffectFailure(value => result = value)
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("fail");
 
         Failure<int, string>("fail")
-            .EffectFailure(() => result = "failure");
+            .EffectFailure(() => result = "failure")
+            .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("failure");
     }
@@ -512,6 +528,74 @@ public class ResultTests
         }
     }
 
+    [TestMethod]
+    public void ResultShouldTapSuccess()
+    {
+        var result = string.Empty;
+        
+        Success(1)
+            .TapSuccess(value => result = value.ToString())
+            .AssertInstanceOfType(typeof(Result<int, Exception>));
+
+        result.ShouldBe("1");
+
+        result = string.Empty;
+
+        Failure<string, string>("error")
+            .TapSuccess(value => result = value.ToString())
+            .AssertInstanceOfType(typeof(Result<string, string>));
+        
+        result.ShouldBeEmpty();
+
+        Success(1)
+            .TapSuccess(() => result = "success")
+            .AssertInstanceOfType(typeof(Result<int, Exception>));
+
+        result.ShouldBe("success");
+
+        result = string.Empty;
+
+        Failure<string, string>("error")
+            .TapSuccess(() => result = "success")
+            .AssertInstanceOfType(typeof(Result<string, string>));
+
+        result.ShouldBeEmpty();
+    }
+
+    [TestMethod]
+    public void ResultShouldTapFailure()
+    {
+        var result = string.Empty;
+
+        Success(1)
+            .TapFailure(exn => result = exn.Message)
+            .AssertInstanceOfType(typeof(Result<int, Exception>));
+
+        result.ShouldBeEmpty();
+
+        Success(1)
+            .TapFailure(() => result = "failure")
+            .AssertInstanceOfType(typeof(Result<int, Exception>));
+
+        result.ShouldBeEmpty();
+
+        Failure<string, Exception>(new Exception("error"))
+            .TapFailure(exn => result = exn.Message)
+            .AssertInstanceOfType(typeof(Result<string, Exception>));
+
+        result.ShouldBe("error");
+
+        result = string.Empty;
+
+        Failure<string, Exception>(new Exception("error"))
+            .TapFailure(() => result = "failure")
+            .AssertInstanceOfType(typeof(Result<string, Exception>));
+
+        result.ShouldBe("failure");
+    }
+    
+    
+    
     [TestMethod]
     public void ItShouldReduceSuccesses() =>
         Success("success")
