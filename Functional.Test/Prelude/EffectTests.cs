@@ -51,10 +51,13 @@ public class EffectTests
     {
         await "input"
             .Async()
-            .EffectAsync(
+            .EffectAsync([
                 PerformEffectAsync,
-                input => PerformEffectAsync(input + "!"))
-            .EffectAsync(unit => unit.ShouldBeOfType<Unit>());
+                input => PerformEffectAsync(input + "!")])
+            .EffectAsync([
+                    unit => unit.ShouldBeOfType<Unit>(),
+                    unit => unit.ShouldBeOfType<Unit>()
+                ]);
 
         EffectResult.ShouldContain("input");
         EffectResult.ShouldContain("input!");
@@ -66,9 +69,11 @@ public class EffectTests
         await "ignored"
             .Async()
             .EffectAsync(
-                () => PerformEffect("1"),
-                () => PerformEffect("2"))
-            .EffectAsync(unit => unit.ShouldBeOfType<Unit>());
+                Cons(
+                    () => PerformEffect("1"),
+                    () => PerformEffect("2")
+                ))
+            .EffectAsync([unit => unit.ShouldBeOfType<Unit>()]);
 
         EffectResult.ShouldContain("1");
         EffectResult.ShouldContain("2");
@@ -80,8 +85,10 @@ public class EffectTests
         await "ignored input"
             .Async()
             .EffectAsync(
-                () => PerformEffectAsync("1"),
-                () => PerformEffectAsync("2"));
+                Cons(
+                    () => PerformEffectAsync("1"),
+                    () => PerformEffectAsync("2")
+                ));
 
         EffectResult.ShouldContain("1");
         EffectResult.ShouldContain("2");
@@ -104,7 +111,7 @@ public class EffectTests
     {
         var effectResult = false;
 
-        await EffectAsync(DoWork)
+        await EffectAsync(() => DoWork())
             .TapAsync(output => output.ShouldBeOfType<Unit>())
             .IgnoreAsync();
 

@@ -16,6 +16,19 @@ public class OptionTests
     }
 
     [TestMethod]
+    public void OptionShouldHaveAnImplicitOperator()
+    {
+        static Option<string> DoWork(int input)
+        {
+            if (input < 20) return input.ToString();
+            return None<string>();
+        }
+
+        DoWork(10).IsSome.ShouldBeTrue();
+        DoWork(30).IsNone.ShouldBeTrue();
+    }
+
+    [TestMethod]
     public void OptionShouldUnwrap()
     {
         var option = new Option<string>("some value");
@@ -290,4 +303,6 @@ public class OptionTests
         someResult.ShouldBe(string.Empty);
         noneResult.ShouldBe(string.Empty);
     }
+
+
 }

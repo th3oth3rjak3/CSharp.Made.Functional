@@ -19,6 +19,19 @@ public class ResultTests
     }
 
     [TestMethod]
+    public void ResultShouldHaveAnImplicitOperator()
+    {
+        static Result<string, Exception> DoWork(int input)
+        {
+            if (input < 20) return input.ToString();
+            return new Exception("input too large");
+        }
+
+        DoWork(10).IsSuccess.ShouldBeTrue();
+        DoWork(30).IsFailure.ShouldBeTrue();
+    }
+
+    [TestMethod]
     public void ResultShouldUnwrap()
     {
         new Result<string, Exception>("hello world")
@@ -532,7 +545,7 @@ public class ResultTests
     public void ResultShouldTapSuccess()
     {
         var result = string.Empty;
-        
+
         Success(1)
             .TapSuccess(value => result = value.ToString())
             .AssertInstanceOfType(typeof(Result<int, Exception>));
@@ -544,7 +557,7 @@ public class ResultTests
         Failure<string, string>("error")
             .TapSuccess(value => result = value.ToString())
             .AssertInstanceOfType(typeof(Result<string, string>));
-        
+
         result.ShouldBeEmpty();
 
         Success(1)
@@ -593,9 +606,9 @@ public class ResultTests
 
         result.ShouldBe("failure");
     }
-    
-    
-    
+
+
+
     [TestMethod]
     public void ItShouldReduceSuccesses() =>
         Success("success")

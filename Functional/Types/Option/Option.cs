@@ -62,6 +62,24 @@ public sealed record Option<T>
     public Option() { }
 
     /// <summary>
+    /// Implicitly create a new Option type from a returned value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; DoWork(int input)
+    /// {
+    ///     // We can directly return a string and it will be converted to an Option.
+    ///     if (input &lt; 20) return input.ToString();
+    ///     return None&lt;string&gt;();
+    /// }
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="input">The input to convert to an Option.</param>
+    public static implicit operator Option<T>(T? input) =>
+        new(input);
+
+    /// <summary>
     /// Determine if an Option is Some.
     /// <example>
     /// <br/><br/>Example:

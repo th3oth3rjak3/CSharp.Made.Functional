@@ -23,9 +23,9 @@ public class MapTests
         await None<int>()
             .Async()
             .MapAsync(mappingWithInput)
-            .EffectAsync(
+            .EffectAsync([
                 output => output.IsNone.ShouldBeTrue(),
-                output => output.AssertInstanceOfType(typeof(Option<string>)));
+                output => output.AssertInstanceOfType(typeof(Option<string>))]);
 
         await Some(42)
             .Async()
@@ -37,9 +37,9 @@ public class MapTests
         await None<int>()
             .Async()
             .MapAsync(mappingWithoutInput)
-            .EffectAsync(
+            .EffectAsync([
                 output => output.IsNone.ShouldBeTrue(),
-                output => output.AssertInstanceOfType(typeof(Option<string>)));
+                output => output.AssertInstanceOfType(typeof(Option<string>))]);
 
         await Some(42)
             .Async()
@@ -51,9 +51,9 @@ public class MapTests
         await None<int>()
             .Async()
             .MapAsync(mappingWithInputAsync)
-            .EffectAsync(
+            .EffectAsync([
                 output => output.IsNone.ShouldBeTrue(),
-                output => output.AssertInstanceOfType(typeof(Option<string>)));
+                output => output.AssertInstanceOfType(typeof(Option<string>))]);
 
         await Some(42)
             .Async()
@@ -65,9 +65,9 @@ public class MapTests
         await None<int>()
             .Async()
             .MapAsync(mappingWithoutInputAsync)
-            .EffectAsync(
+            .EffectAsync([
                 output => output.IsNone.ShouldBeTrue(),
-                output => output.AssertInstanceOfType(typeof(Option<string>)));
+                output => output.AssertInstanceOfType(typeof(Option<string>))]);
     }
 
     [TestMethod]

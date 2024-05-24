@@ -7,6 +7,12 @@ public static partial class Prelude
     /// Perform work on a previous result. When the result is Ok, 
     /// perform work on the result by providing a binding function.
     /// On Error, the previous result will be returned as the new result type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="Ok">The type of the input.</typeparam>
     /// <typeparam name="Output">The type of the result after performing 

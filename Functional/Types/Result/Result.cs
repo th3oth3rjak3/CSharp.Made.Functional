@@ -68,6 +68,42 @@ public sealed record Result<TSuccess, TFailure>
     }
 
     /// <summary>
+    /// Allow returns to implicitly be converted to result types.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; DoWork(int input)
+    /// {
+    ///     if (input &lt; 20) return input.ToString();
+    ///     
+    ///     return new Exception("Number too large");
+    /// }
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="success">The success to be converted into a Result.</param>
+    public static implicit operator Result<TSuccess, TFailure>(TSuccess success) =>
+        new(success);
+
+    /// <summary>
+    /// Allow returns to implicitly be converted to result types.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; DoWork(int input)
+    /// {
+    ///     if (input &lt; 20) return input.ToString();
+    ///     
+    ///     return new Exception("Number too large");
+    /// }
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="failure">The failure to be converted into a Result.</param>
+    public static implicit operator Result<TSuccess, TFailure>(TFailure failure) =>
+        new(failure);
+
+    /// <summary>
     /// Determine if the Result is Success.
     /// </summary>
     public bool IsSuccess => state == ResultState.Success;
