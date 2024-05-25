@@ -10,6 +10,9 @@ public static partial class Prelude
     /// </summary>
     public static Unit Unit() => new();
 
+    public static async Task<TOutput> PipeAsync<TOutput>(this Task<Unit> unit, TOutput other) =>
+        (await unit).Pipe(other);
+
     /// <summary>
     /// Create a Task from an input.
     /// <example>

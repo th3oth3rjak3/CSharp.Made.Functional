@@ -29,37 +29,33 @@ public static partial class Prelude
         return Unit();
     }
 
-    public static async Task<Unit> RunSequential<T>(
+    public static Task<Unit> RunSequential<T>(
         T input,
         IEnumerable<Action<T>> actions,
         CancellationToken cancellationToken = default)
     {
-        await Task.Factory.StartNew(() =>
+        var returnValue = Unit().Async();
+        foreach (var action in actions)
         {
-            foreach (var action in actions)
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                action(input);
-            }
-        }, cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return returnValue;
+            action(input);
+        }
 
-        return Unit();
+        return returnValue;
     }
 
-    public static async Task<Unit> RunSequential(
+    public static Task<Unit> RunSequential(
         IEnumerable<Action> actions,
         CancellationToken cancellationToken = default)
     {
-        await Task.Factory.StartNew(() =>
+        var returnValue = Unit().Async();
+        foreach (var action in actions)
         {
-            foreach (var action in actions)
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                action();
-            }
-        }, cancellationToken);
+            if (cancellationToken.IsCancellationRequested) return returnValue;
+            action();
+        }
 
-        return Unit();
+        return returnValue;
     }
 
     public static async Task<Unit> RunParallel<T>(
@@ -67,14 +63,27 @@ public static partial class Prelude
         IEnumerable<Func<T, Task>> actions,
         CancellationToken cancellationToken = default)
     {
-        await Parallel.ForEachAsync(
-            actions,
-            cancellationToken,
-            async (action, token) =>
-            {
-                if (token.IsCancellationRequested) return;
-                await action(input);
-            });
+        ParallelOptions options = new()
+        {
+            CancellationToken = cancellationToken, 
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
+
+        try
+        {
+            await Parallel.ForEachAsync(
+                actions,
+                options,
+                async (action, token) =>
+                {
+                    if (token.IsCancellationRequested) return;
+                    await action(input);
+                });
+        }
+        catch (OperationCanceledException _)
+        {
+            return Unit();
+        }
 
         return Unit();
     }
@@ -83,14 +92,27 @@ public static partial class Prelude
         IEnumerable<Func<Task>> actions,
         CancellationToken cancellationToken = default)
     {
-        await Parallel.ForEachAsync(
-            actions,
-            cancellationToken,
-            async (action, token) =>
-            {
-                if (token.IsCancellationRequested) return;
-                await action();
-            });
+        ParallelOptions options = new()
+        {
+            CancellationToken = cancellationToken, 
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
+
+        try
+        {
+            await Parallel.ForEachAsync(
+                actions,
+                options,
+                async (action, token) =>
+                {
+                    if (token.IsCancellationRequested) return;
+                    await action();
+                });
+        }
+        catch (OperationCanceledException _)
+        {
+            return Unit();
+        }
 
         return Unit();
     }
@@ -100,16 +122,30 @@ public static partial class Prelude
         IEnumerable<Action<T>> actions,
         CancellationToken cancellationToken = default)
     {
-        await Parallel.ForEachAsync(
-            actions,
-            cancellationToken,
-            async (action, token) =>
-            {
-                if (!cancellationToken.IsCancellationRequested)
+        ParallelOptions options = new()
+        {
+            CancellationToken = cancellationToken, 
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
+
+        try
+        {
+            await Parallel.ForEachAsync(
+                actions,
+                options,
+                (action, token) =>
                 {
-                    await Task.Run(() => action(input), cancellationToken);
-                }
-            });
+                    if (!token.IsCancellationRequested)
+                    {
+                        action(input);
+                    }
+                    return ValueTask.CompletedTask;
+                });
+        }
+        catch (OperationCanceledException _)
+        {
+            return Unit();
+        }
 
         return Unit();
     }
@@ -118,16 +154,31 @@ public static partial class Prelude
         IEnumerable<Action> actions,
         CancellationToken cancellationToken = default)
     {
-        await Parallel.ForEachAsync(
-            actions,
-            cancellationToken,
-            async (action, token) =>
-            {
-                if (!cancellationToken.IsCancellationRequested)
+        ParallelOptions options = new()
+        {
+            CancellationToken = cancellationToken, 
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
+
+        try
+        {
+            await Parallel.ForEachAsync(
+                actions,
+                options,
+                (action, token) =>
                 {
-                    await Task.Run(() => action(), cancellationToken);
-                }
-            });
+                    if (!token.IsCancellationRequested)
+                    {
+                        action();
+                    }
+
+                    return ValueTask.CompletedTask;
+                });
+        }
+        catch (OperationCanceledException _)
+        {
+            return Unit();
+        }
 
         return Unit();
     }

@@ -16,7 +16,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="Ok">The type of the input.</typeparam>
     /// <typeparam name="Output">The type of the result after performing 
-    /// the onSuccess function.</typeparam>
+    /// the onOk function.</typeparam>
     /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
     /// <param name="result">The previous result to bind.</param>
     /// <param name="binder">The function to perform when the 
@@ -28,7 +28,7 @@ public static partial class Prelude
     {
         var awaited = await result;
 
-        if (awaited.IsFailure) return Failure<Output, Error>(awaited.UnwrapFailure());
+        if (awaited.IsError) return Error<Output, Error>(awaited.UnwrapError());
 
         var contents = awaited.Unwrap();
 
@@ -55,7 +55,7 @@ public static partial class Prelude
     {
         var awaited = await result;
 
-        if (awaited.IsFailure) return Failure<Output, Error>(awaited.UnwrapFailure());
+        if (awaited.IsError) return Error<Output, Error>(awaited.UnwrapError());
 
         var contents = awaited.Unwrap();
 

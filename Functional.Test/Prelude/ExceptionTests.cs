@@ -27,7 +27,7 @@ public class ExceptionTests
             .ShouldBe(OneMillion.ToString());
 
     [TestMethod]
-    public void TryShouldHandleFailures() =>
+    public void TryShouldHandleErrors() =>
         OneMillion
             .Try(_ => ItAlwaysThrows("It threw an exception"))
             .Match(ok => ok, exn => exn.Message)

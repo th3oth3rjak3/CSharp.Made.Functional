@@ -1,21 +1,21 @@
 ﻿namespace Functional;
 
 /// <summary>
-/// A class which represents a success or a failure. 
+/// A class which represents a success or failure. 
 /// This is the primary way to return error types from a function
 /// rather than throwing exceptions.
 /// </summary>
-/// <typeparam name="TSuccess">The type of the inner object when Success.</typeparam>
-/// <typeparam name="TFailure">The type of the inner object when Failure.</typeparam>
-public sealed record Result<TSuccess, TFailure>
+/// <typeparam name="TOk">The type of the inner object when Ok.</typeparam>
+/// <typeparam name="TError">The type of the inner object when Error.</typeparam>
+public sealed record Result<TOk, TError>
 {
     /// <summary>
     /// The internal state of the Result.
     /// </summary>
     private enum ResultState
     {
-        Success,
-        Failure,
+        Ok,
+        Error,
     }
 
     /// <summary>
@@ -24,14 +24,14 @@ public sealed record Result<TSuccess, TFailure>
     private readonly ResultState state = default!;
 
     /// <summary>
-    /// The contents of the result when the result is Success.
+    /// The contents of the result when the result is Ok.
     /// </summary>
-    private readonly TSuccess successContents = default!;
+    private readonly TOk okContents;
 
     /// <summary>
-    /// The contents of the result when the result is Failure.
+    /// The contents of the result when the result is Error.
     /// </summary>
-    private readonly TFailure failureContents;
+    private readonly TError errorContents;
 
     /// <summary>
     /// Construct a new Result.
@@ -42,12 +42,12 @@ public sealed record Result<TSuccess, TFailure>
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="success">An instance of the value for when the Result is Success.</param>
-    public Result(TSuccess success)
+    /// <param name="ok">An instance of the value for when the Result is Ok.</param>
+    public Result(TOk ok)
     {
-        successContents = success;
-        failureContents = default!;
-        state = ResultState.Success;
+        okContents = ok;
+        errorContents = default!;
+        state = ResultState.Ok;
     }
 
     /// <summary>
@@ -55,16 +55,16 @@ public sealed record Result<TSuccess, TFailure>
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; result = new Result&lt;string, Exception&gt;(new Exception("failure"));
+    /// Result&lt;string, Exception&gt; result = new Result&lt;string, Exception&gt;(new Exception("Error"));
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="failure">An instance of the value for when the Result is Failure.</param>
-    public Result(TFailure failure)
+    /// <param name="error">An instance of the value for when the Result is Error.</param>
+    public Result(TError error)
     {
-        successContents = default!;
-        failureContents = failure;
-        state = ResultState.Failure;
+        okContents = default!;
+        errorContents = error;
+        state = ResultState.Error;
     }
 
     /// <summary>
@@ -81,9 +81,9 @@ public sealed record Result<TSuccess, TFailure>
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="success">The success to be converted into a Result.</param>
-    public static implicit operator Result<TSuccess, TFailure>(TSuccess success) =>
-        new(success);
+    /// <param name="ok">The value to be converted into a Result.</param>
+    public static implicit operator Result<TOk, TError>(TOk ok) =>
+        new(ok);
 
     /// <summary>
     /// Allow returns to implicitly be converted to result types.
@@ -99,29 +99,29 @@ public sealed record Result<TSuccess, TFailure>
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="failure">The failure to be converted into a Result.</param>
-    public static implicit operator Result<TSuccess, TFailure>(TFailure failure) =>
-        new(failure);
+    /// <param name="error">The Error to be converted into a Result.</param>
+    public static implicit operator Result<TOk, TError>(TError error) =>
+        new(error);
 
     /// <summary>
-    /// Determine if the Result is Success.
+    /// Determine if the Result is Ok.
     /// </summary>
-    public bool IsSuccess => state == ResultState.Success;
+    public bool IsOk => state == ResultState.Ok;
 
     /// <summary>
-    /// Determine if the Result is Failure.
+    /// Determine if the Result is Error.
     /// </summary>
-    public bool IsFailure => state == ResultState.Failure;
+    public bool IsError => state == ResultState.Error;
 
     /// <summary>
-    /// Unwrap the success contents from the result when it is known to be Success. 
-    /// This will throw an exception if the inner contents are a Failure. 
+    /// Unwrap the success contents from the result when it is known to be Ok. 
+    /// This will throw an exception if the inner contents are an Error. 
     /// Be sure to check the inner type before unwrapping.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; result = Failure&lt;string&gt;(new Exception("something bad happened"));
-    /// if (result.IsSuccess)
+    /// Result&lt;string, Exception&gt; result = Error&lt;string&gt;(new Exception("something bad happened"));
+    /// if (result.IsOk)
     /// {
     ///     // Do something with the contents here.
     ///     string contents = result.Unwrap();
@@ -130,265 +130,265 @@ public sealed record Result<TSuccess, TFailure>
     /// </example>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the result was Failure and was unwrapped as Success.</exception>
-    public TSuccess Unwrap()
+    /// <exception cref="InvalidOperationException">Thrown when the result was Error and was unwrapped as Ok.</exception>
+    public TOk Unwrap()
     {
-        if (IsSuccess) return successContents;
+        if (IsOk) return okContents;
 
-        throw new InvalidOperationException("Tried to unwrap Success when it was Failure.");
+        throw new InvalidOperationException("Tried to unwrap Ok when it was Error.");
     }
 
     /// <summary>
-    /// Unwrap the failure contents from the result when it is known to be a Failure. 
-    /// This will throw an InvalidOperationException if the inner contents are a Success. 
+    /// Unwrap the Error contents from the result when it is known to be an Error. 
+    /// This will throw an InvalidOperationException if the inner contents are an Ok. 
     /// Be sure to check the inner type before unwrapping.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; result = Success("successful!");
-    /// if (result.IsFailure)
+    /// Result&lt;string, Exception&gt; result = Ok("successful!");
+    /// if (result.IsError)
     /// {
     ///     // Do something with the contents here.
-    ///     string errorContents = result.UnwrapFailure().Message;
+    ///     string errorContents = result.UnwrapError().Message;
     /// }
     /// </code>
     /// </example>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the result was Success and was unwrapped as Failure.</exception>
-    public TFailure UnwrapFailure()
+    /// <exception cref="InvalidOperationException">Thrown when the result was Ok and was unwrapped as Error.</exception>
+    public TError UnwrapError()
     {
-        if (IsFailure) return failureContents;
+        if (IsError) return errorContents;
 
-        throw new InvalidOperationException("Tried to unwrap Failure when it was Success.");
+        throw new InvalidOperationException("Tried to unwrap Error when it was Ok.");
     }
 
     /// <summary>
-    /// Match the result to a Success or Failure and perform some function on either case.
+    /// Match the result to a Ok or Error and perform some function on either case.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// int value = Success&lt;int, int&gt;(1).Match(value => value + 1, err => err - 1);
+    /// int value = Ok&lt;int, int&gt;(1).Match(value => value + 1, err => err - 1);
     /// Assert.AreEqual(value, 2);
     /// 
-    /// value = Failure&lt;int, int&gt;(0).Match(value => value + 1, err => err - 1);
+    /// value = Error&lt;int, int&gt;(0).Match(value => value + 1, err => err - 1);
     /// Assert.AreEqual(value, -1);
     /// </code>
     /// </example>
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
-    /// <param name="whenSuccess">Perform some function on the Success result.</param>
-    /// <param name="whenFailure">Perform some function on the Failure result.</param>
+    /// <param name="onOk">Perform some function on the Ok result.</param>
+    /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TSuccess, TResult> whenSuccess, Func<TFailure, TResult> whenFailure) =>
-        IsSuccess
-            ? whenSuccess(Unwrap())
-            : whenFailure(UnwrapFailure());
+    public TResult Match<TResult>(Func<TOk, TResult> onOk, Func<TError, TResult> onError) =>
+        IsOk
+            ? onOk(Unwrap())
+            : onError(UnwrapError());
 
     /// <summary>
-    /// Match the result to a Success or Failure and perform some function on either case.
+    /// Match the result to a Ok or Error and perform some function on either case.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// int value = Success&lt;int, int&gt;(1).Match(() => 42, err => err - 1);
+    /// int value = Ok&lt;int, int&gt;(1).Match(() => 42, err => err - 1);
     /// Assert.AreEqual(value, 42);
     /// 
-    /// value = Failure&lt;int, int&gt;(0).Match(() => 42, err => err - 1);
+    /// value = Error&lt;int, int&gt;(0).Match(() => 42, err => err - 1);
     /// Assert.AreEqual(value, -1);
     /// </code>
     /// </example>
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
-    /// <param name="whenSuccess">Perform some function on the Success result.</param>
-    /// <param name="whenFailure">Perform some function on the Failure result.</param>
+    /// <param name="onOk">Perform some function on the Ok result.</param>
+    /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TResult> whenSuccess, Func<TFailure, TResult> whenFailure) =>
-        IsSuccess
-            ? whenSuccess()
-            : whenFailure(UnwrapFailure());
+    public TResult Match<TResult>(Func<TResult> onOk, Func<TError, TResult> onError) =>
+        IsOk
+            ? onOk()
+            : onError(UnwrapError());
 
     /// <summary>
-    /// Match the result to a Success or Failure and perform some function on either case.
+    /// Match the result to a Ok or Error and perform some function on either case.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// int value = Success&lt;int, int&gt;(1).Match(value => value + 1, () => -1);
+    /// int value = Ok&lt;int, int&gt;(1).Match(value => value + 1, () => -1);
     /// Assert.AreEqual(value, 2);
     /// 
-    /// value = Failure&lt;int, int&gt;(0).Match(value => value + 1, () => -1);
+    /// value = Error&lt;int, int&gt;(0).Match(value => value + 1, () => -1);
     /// Assert.AreEqual(value, -1);
     /// </code>
     /// </example>
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
-    /// <param name="whenSuccess">Perform some function on the Success result.</param>
-    /// <param name="whenFailure">Perform some function on the Failure result.</param>
+    /// <param name="onOk">Perform some function on the Ok result.</param>
+    /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TSuccess, TResult> whenSuccess, Func<TResult> whenFailure) =>
-        IsSuccess
-            ? whenSuccess(Unwrap())
-            : whenFailure();
+    public TResult Match<TResult>(Func<TOk, TResult> onOk, Func<TResult> onError) =>
+        IsOk
+            ? onOk(Unwrap())
+            : onError();
 
     /// <summary>
-    /// Match the result to a Success or Failure and perform some function on either case.
+    /// Match the result to Ok or Error and perform some function on either case.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// int value = Success&lt;int, int&gt;(1).Match(() => 42, () => -1);
+    /// int value = Ok&lt;int, int&gt;(1).Match(() => 42, () => -1);
     /// Assert.AreEqual(value, 42);
     /// 
-    /// value = Failure&lt;int, int&gt;(0).Match(() => 42, () => -1);
+    /// value = Error&lt;int, int&gt;(0).Match(() => 42, () => -1);
     /// Assert.AreEqual(value, -1);
     /// </code>
     /// </example>
     /// </summary>
     /// <typeparam name="TResult">The output type.</typeparam>
-    /// <param name="whenSuccess">Perform some function on the Success result.</param>
-    /// <param name="whenFailure">Perform some function on the Failure result.</param>
+    /// <param name="onOk">Perform some function on the Ok result.</param>
+    /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TResult> whenSuccess, Func<TResult> whenFailure) =>
-        IsSuccess
-            ? whenSuccess()
-            : whenFailure();
+    public TResult Match<TResult>(Func<TResult> onOk, Func<TResult> onError) =>
+        IsOk
+            ? onOk()
+            : onError();
 
     /// <summary>
-    /// Map a Success result from a previous operation to a new result.
+    /// Map an Ok result from a previous operation to a new result.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; mapped = Success(42).Map(value => value.ToString());
+    /// Result&lt;string, Exception&gt; mapped = Ok(42).Map(value => value.ToString());
     /// Assert.AreEqual(mapped.Unwrap(), "42");
     /// </code>
     /// </example>
     /// </summary>
-    /// <typeparam name="TMappedSuccess">The type of the converted input.</typeparam>
+    /// <typeparam name="TMappedOk">The type of the converted input.</typeparam>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public Result<TMappedSuccess, TFailure> Map<TMappedSuccess>(Func<TSuccess, TMappedSuccess> mapper) =>
-        IsSuccess
-            ? new Result<TMappedSuccess, TFailure>(mapper(Unwrap()))
-            : new Result<TMappedSuccess, TFailure>(UnwrapFailure());
+    public Result<TMappedOk, TError> Map<TMappedOk>(Func<TOk, TMappedOk> mapper) =>
+        IsOk
+            ? new Result<TMappedOk, TError>(mapper(Unwrap()))
+            : new Result<TMappedOk, TError>(UnwrapError());
 
     /// <summary>
-    /// Map a Success result from a previous operation to a new result.
+    /// Map an Ok result from a previous operation to a new result.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; mapped = Success(42).Map(() => "some alternate value");
+    /// Result&lt;string, Exception&gt; mapped = Ok(42).Map(() => "some alternate value");
     /// Assert.AreEqual(mapped.Unwrap(), "some alternate value");
     /// </code>
     /// </example>
     /// </summary>
-    /// <typeparam name="TMappedSuccess">The type of the converted input.</typeparam>
+    /// <typeparam name="TMappedOk">The type of the converted input.</typeparam>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public Result<TMappedSuccess, TFailure> Map<TMappedSuccess>(Func<TMappedSuccess> mapper) =>
-        IsSuccess
-            ? new Result<TMappedSuccess, TFailure>(mapper())
-            : new Result<TMappedSuccess, TFailure>(UnwrapFailure());
+    public Result<TMappedOk, TError> Map<TMappedOk>(Func<TMappedOk> mapper) =>
+        IsOk
+            ? new Result<TMappedOk, TError>(mapper())
+            : new Result<TMappedOk, TError>(UnwrapError());
 
     /// <summary>
-    /// Map a result with one failure type to another.
+    /// Map a result with one Error type to another.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; mapped = Failure&lt;int, string&gt;("error").MapFailure(msg => new Exception(msg));
-    /// Assert.AreEqual(mapped.UnwrapFailure().Message, "error");
+    /// Result&lt;string, Exception&gt; mapped = Error&lt;int, string&gt;("error").MapError(msg => new Exception(msg));
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "error");
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="failureMapper">A function to transform one failure to another.</param>
-    /// <typeparam name="TMappedFailure">The type for the new failure.</typeparam>
-    /// <returns>A result with a mapped failure.</returns>
-    public Result<TSuccess, TMappedFailure> MapFailure<TMappedFailure>(Func<TFailure, TMappedFailure> failureMapper) =>
-        IsSuccess
-            ? new Result<TSuccess, TMappedFailure>(Unwrap())
-            : new Result<TSuccess, TMappedFailure>(failureMapper(UnwrapFailure()));
+    /// <param name="errorMapper">A function to transform one Error to another.</param>
+    /// <typeparam name="TMappedError">The type for the new Error.</typeparam>
+    /// <returns>A result with a mapped Error.</returns>
+    public Result<TOk, TMappedError> MapError<TMappedError>(Func<TError, TMappedError> errorMapper) =>
+        IsOk
+            ? new Result<TOk, TMappedError>(Unwrap())
+            : new Result<TOk, TMappedError>(errorMapper(UnwrapError()));
 
     /// <summary>
-    /// Map a result with one failure type to another.
+    /// Map a result with one Error type to another.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;string, Exception&gt; mapped = Failure&lt;int, string&gt;("error").MapFailure(() => new Exception("unknown error occurred"));
-    /// Assert.AreEqual(mapped.UnwrapFailure().Message, "unknown error occurred");
+    /// Result&lt;string, Exception&gt; mapped = Error&lt;int, string&gt;("error").MapError(() => new Exception("unknown error occurred"));
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "unknown error occurred");
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="failureMapper">A function to transform one failure to another.</param>
-    /// <typeparam name="TMappedFailure">The type for the new failure.</typeparam>
-    /// <returns>A result with a mapped failure.</returns>
-    public Result<TSuccess, TMappedFailure> MapFailure<TMappedFailure>(Func<TMappedFailure> failureMapper) =>
-        IsSuccess
-            ? new Result<TSuccess, TMappedFailure>(Unwrap())
-            : new Result<TSuccess, TMappedFailure>(failureMapper());
+    /// <param name="errorMapper">A function to transform one Error to another.</param>
+    /// <typeparam name="TMappedError">The type for the new Error.</typeparam>
+    /// <returns>A result with a mapped Error.</returns>
+    public Result<TOk, TMappedError> MapError<TMappedError>(Func<TMappedError> errorMapper) =>
+        IsOk
+            ? new Result<TOk, TMappedError>(Unwrap())
+            : new Result<TOk, TMappedError>(errorMapper());
 
     /// <summary>
-    /// Perform work on a previous result. When the result is Success,
+    /// Perform work on a previous result. When the result is Ok,
     /// perform work on the result by providing a function.
-    /// On failure, the previous failure will be returned as the new result type.
+    /// On Error, the previous Error will be returned as the new result type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// Result&lt;int, string&gt; bindingFunction(int input) => 
     ///     input &gt; 10 
-    ///         ? Success&lt;int, string&gt;(input)
-    ///         : Failure&lt;int, string&gt;("the value was too low");
+    ///         ? Ok&lt;int, string&gt;(input)
+    ///         : Error&lt;int, string&gt;("the value was too low");
     ///         
-    /// var result = Success&lt;int, string&gt;(42).Bind(bindingFunction);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// var result = Ok&lt;int, string&gt;(42).Bind(bindingFunction);
+    /// Assert.IsTrue(result.IsOk);
     /// Assert.AreEqual(result.Unwrap(), 42);
     /// 
-    /// result = Success&lt;int, string&gt;(5).Bind(bindingFunction);
-    /// Assert.IsTrue(result.IsFailure);
-    /// Assert.AreEqual(result.UnwrapFailure(), "the value was too low");
+    /// result = Ok&lt;int, string&gt;(5).Bind(bindingFunction);
+    /// Assert.IsTrue(result.IsError);
+    /// Assert.AreEqual(result.UnwrapError(), "the value was too low");
     ///     
-    /// result = Failure("failure happened before binding").Bind(bindingFunction);
-    /// Assert.IsTrue(result.IsFailure);
-    /// Assert.AreEqual(result.UnwrapFailure(), "failure happened before binding");
+    /// result = Error("Error happened before binding").Bind(bindingFunction);
+    /// Assert.IsTrue(result.IsError);
+    /// Assert.AreEqual(result.UnwrapError(), "Error happened before binding");
     /// </code>
     /// </example>
     /// </summary>
-    /// <typeparam name="TMappedSuccess">The type of the result after performing 
+    /// <typeparam name="TMappedOk">The type of the result after performing 
     /// the binding function.</typeparam>
     /// <param name="binder">The function to perform when the 
-    /// previous result is Success.</param>
+    /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public Result<TMappedSuccess, TFailure> Bind<TMappedSuccess>(Func<TSuccess, Result<TMappedSuccess, TFailure>> binder) =>
-        IsSuccess
+    public Result<TMappedOk, TError> Bind<TMappedOk>(Func<TOk, Result<TMappedOk, TError>> binder) =>
+        IsOk
             ? binder(Unwrap())
-            : new Result<TMappedSuccess, TFailure>(UnwrapFailure());
+            : new Result<TMappedOk, TError>(UnwrapError());
 
     /// <summary>
-    /// Perform work on a previous result. When the result is Success,
+    /// Perform work on a previous result. When the result is Ok,
     /// perform work on the result by providing a function.
-    /// On failure, the previous failure will be returned as the new result type.
+    /// On Error, the previous Error will be returned as the new result type.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// Result&lt;int, string&gt; bindingFunction() => 
     ///     new Random().Next(100) &gt; 10 
-    ///         ? Success&lt;int, string&gt;(input)
-    ///         : Failure&lt;int, string&gt;("the value was too low");
+    ///         ? Ok&lt;int, string&gt;(input)
+    ///         : Error&lt;int, string&gt;("the value was too low");
     ///         
-    /// // This may be success or failure depending on the Random number generator.
-    /// var result = Success&lt;int, string&gt;(42).Bind(bindingFunction);
+    /// // This may be success or Error depending on the Random number generator.
+    /// var result = Ok&lt;int, string&gt;(42).Bind(bindingFunction);
     ///     
-    /// result = Failure("failure happened before binding").Bind(bindingFunction);
-    /// Assert.IsTrue(result.IsFailure);
-    /// Assert.AreEqual(result.UnwrapFailure(), "failure happened before binding");
+    /// result = Error("Error happened before binding").Bind(bindingFunction);
+    /// Assert.IsTrue(result.IsError);
+    /// Assert.AreEqual(result.UnwrapError(), "Error happened before binding");
     /// </code>
     /// </example>
     /// </summary>
-    /// <typeparam name="TMappedSuccess">The type of the result after performing 
+    /// <typeparam name="TMappedOk">The type of the result after performing 
     /// the binding function.</typeparam>
     /// <param name="binder">The function to perform when the 
-    /// previous result is Success.</param>
+    /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public Result<TMappedSuccess, TFailure> Bind<TMappedSuccess>(Func<Result<TMappedSuccess, TFailure>> binder) =>
-        IsSuccess
+    public Result<TMappedOk, TError> Bind<TMappedOk>(Func<Result<TMappedOk, TError>> binder) =>
+        IsOk
             ? binder()
-            : new Result<TMappedSuccess, TFailure>(UnwrapFailure());
+            : new Result<TMappedOk, TError>(UnwrapError());
 
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
@@ -396,36 +396,36 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Effect(
     ///         success => successResult = success, 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Effect(
     ///         success => successResult = success,
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action<TSuccess> onSuccess, Action<TFailure> onFailure)
+    public Unit Effect(Action<TOk> onOk, Action<TError> onError)
     {
-        if (IsSuccess) onSuccess(Unwrap());
-        if (IsFailure) onFailure(UnwrapFailure());
+        if (IsOk) onOk(Unwrap());
+        if (IsError) onError(UnwrapError());
         return Unit.Default;
     }
 
@@ -435,36 +435,36 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Effect(
     ///         () => successResult = "success", 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Effect(
     ///         () => successResult = "success",
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action onSuccess, Action<TFailure> onFailure)
+    public Unit Effect(Action onOk, Action<TError> onError)
     {
-        if (IsSuccess) onSuccess();
-        if (IsFailure) onFailure(UnwrapFailure());
+        if (IsOk) onOk();
+        if (IsError) onError(UnwrapError());
 
         return Unit.Default;
     }
@@ -475,36 +475,36 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Effect(
     ///         success => successResult = success, 
-    ///         () => failureResult = "failure");
+    ///         () => ErrorResult = "Error");
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Effect(
     ///         success => successResult = success,
-    ///         () => failureResult = "failure");
+    ///         () => ErrorResult = "Error");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure");
+    /// Assert.AreEqual(ErrorResult, "Error");
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action<TSuccess> onSuccess, Action onFailure)
+    public Unit Effect(Action<TOk> onOk, Action onError)
     {
-        if (IsSuccess) onSuccess(Unwrap());
-        if (IsFailure) onFailure();
+        if (IsOk) onOk(Unwrap());
+        if (IsError) onError();
 
         return Unit.Default;
     }
@@ -515,153 +515,153 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Effect(
     ///         () => successResult = "success", 
-    ///         () => failureResult = "failure");
+    ///         () => ErrorResult = "Error");
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Effect(
     ///         () => successResult = "success", 
-    ///         () => failureResult = "failure");
+    ///         () => ErrorResult = "Error");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure");
+    /// Assert.AreEqual(ErrorResult, "Error");
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action onSuccess, Action onFailure)
+    public Unit Effect(Action onOk, Action onError)
     {
-        if (IsSuccess) onSuccess();
-        if (IsFailure) onFailure();
+        if (IsOk) onOk();
+        if (IsError) onError();
 
         return Unit.Default;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///     .EffectSuccess(success => successResult = success);
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .EffectOk(success => successResult = success);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
-    ///     .EffectSuccess(success => successResult = success);
+    ///     .EffectOk(success => successResult = success);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
     /// 
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>Unit.</returns>
-    public Unit EffectSuccess(Action<TSuccess> onSuccess)
+    public Unit EffectOk(params Action<TOk>[] onOk)
     {
-        if (IsSuccess) onSuccess(Unwrap());
-
+        if (IsError) return Unit.Default;
+        var contents = Unwrap();
+        onOk.ToList().ForEach(action => action(contents));
         return Unit.Default;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///     .EffectSuccess(() => successResult = "success");
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .EffectOk(() => successResult = "success");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
-    ///     .EffectSuccess(() => successResult = "success");
+    ///     .EffectOk(() => successResult = "success");
     ///         
     /// Assert.AreEqual(successResult, "success");
     /// 
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>Unit.</returns>
-    public Unit EffectSuccess(Action onSuccess)
+    public Unit EffectOk(params Action[] onOk)
     {
-        if (IsSuccess) onSuccess();
-
+        if (IsOk) onOk.ToList().ForEach(action => action());
         return Unit.Default;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Failure.
+    /// Perform a side effect on a result type and consume the result when the result is Error.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
-    ///     .EffectFailure(failure => failureResult = failure.Message);
+    ///     .EffectError(Error => ErrorResult = Error.Message);
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///     .EffectFailure(failure => failureResult = failure.Message);
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .EffectError(Error => ErrorResult = Error.Message);
     ///         
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// 
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit EffectFailure(Action<TFailure> onFailure)
+    public Unit EffectError(params Action<TError>[] onError)
     {
-        if (IsFailure) onFailure(UnwrapFailure());
-
+        if (IsOk) return Unit.Default;
+        var contents = UnwrapError();
+        onError.ToList().ForEach(action => action(contents));
         return Unit.Default;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Failure.
+    /// Perform a side effect on a result type and consume the result when the result is Error.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// new Result&lt;string, Exception&gt;("hello, world!")
-    ///     .EffectFailure(() => failureResult = "error");
+    ///     .EffectError(() => ErrorResult = "error");
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
-    /// new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///     .EffectFailure(() => failureResult = "error"));
+    /// new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .EffectError(() => ErrorResult = "error"));
     ///         
-    /// Assert.AreEqual(failureResult, "error");
+    /// Assert.AreEqual(ErrorResult, "error");
     /// 
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit EffectFailure(Action onFailure)
+    public Unit EffectError(params Action[] onError)
     {
-        if (IsFailure) onFailure();
-
+        if (IsError) onError.ToList().ForEach(action => action());
         return Unit.Default;
     }
 
@@ -671,40 +671,40 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
     ///         .Tap(
     ///             success => successResult = success, 
-    ///             failure => failureResult = failure.Message);
+    ///             Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///         .Tap(
     ///             success => successResult = success,
-    ///             failure => failureResult = failure.Message);
+    ///             Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> Tap(Action<TSuccess> onSuccess, Action<TFailure> onFailure)
+    public Result<TOk, TError> Tap(Action<TOk> onOk, Action<TError> onError)
     {
-        if (IsSuccess) onSuccess(Unwrap());
-        if (IsFailure) onFailure(UnwrapFailure());
+        if (IsOk) onOk(Unwrap());
+        if (IsError) onError(UnwrapError());
 
         return this;
     }
@@ -715,40 +715,40 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
     ///         .Tap(
     ///             () => successResult = "success", 
-    ///             failure => failureResult = failure.Message);
+    ///             Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///         .Tap(
     ///             () => successResult = "success",
-    ///             failure => failureResult = failure.Message);
+    ///             Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> Tap(Action onSuccess, Action<TFailure> onFailure)
+    public Result<TOk, TError> Tap(Action onOk, Action<TError> onError)
     {
-        if (IsSuccess) onSuccess();
-        if (IsFailure) onFailure(UnwrapFailure());
+        if (IsOk) onOk();
+        if (IsError) onError(UnwrapError());
 
         return this;
     }
@@ -759,40 +759,40 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
     ///         .Tap(
     ///             success => successResult = success, 
-    ///             () => failureResult = "fail");
+    ///             () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///         .Tap(
     ///             success => successResult = success,
-    ///             () => failureResult = "fail");
+    ///             () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> Tap(Action<TSuccess> onSuccess, Action onFailure)
+    public Result<TOk, TError> Tap(Action<TOk> onOk, Action onError)
     {
-        if (IsSuccess) onSuccess(Unwrap());
-        if (IsFailure) onFailure();
+        if (IsOk) onOk(Unwrap());
+        if (IsError) onError();
 
         return this;
     }
@@ -803,45 +803,45 @@ public sealed record Result<TSuccess, TFailure>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
     ///         .Tap(
     ///             () => successResult = "success", 
-    ///             () => failureResult = "fail");
+    ///             () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///         .Tap(
     ///             () => successResult = "success", 
-    ///             () => failureResult = "fail");
+    ///             () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> Tap(Action onSuccess, Action onFailure)
+    public Result<TOk, TError> Tap(Action onOk, Action onError)
     {
-        if (IsSuccess) onSuccess();
-        if (IsFailure) onFailure();
+        if (IsOk) onOk();
+        if (IsError) onError();
         return this;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type without consuming the result when the result is Success.
+    /// Perform a side effect on a result type without consuming the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -849,34 +849,34 @@ public sealed record Result<TSuccess, TFailure>
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
-    ///         .TapSuccess(success => successResult = success);
+    ///         .TapOk(success => successResult = success);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// successResult = string.Empty;
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///         .TapSuccess(success => successResult = success);
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///         .TapOk(success => successResult = success);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> TapSuccess(params Action<TSuccess>[] onSuccess)
+    public Result<TOk, TError> TapOk(params Action<TOk>[] onOk)
     {
-        if (IsFailure) return this;
+        if (IsError) return this;
         var contents = Unwrap();
-        onSuccess.ToList().ForEach(action => action(contents));
+        onOk.ToList().ForEach(action => action(contents));
         return this;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type without consuming the result when the result is Success.
+    /// Perform a side effect on a result type without consuming the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -884,93 +884,93 @@ public sealed record Result<TSuccess, TFailure>
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
-    ///         .TapSuccess(() => successResult = "success");
+    ///         .TapOk(() => successResult = "success");
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// successResult = string.Empty;
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///         .TapSuccess(() => successResult = "success");
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///         .TapOk(() => successResult = "success");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> TapSuccess(params Action[] onSuccess)
+    public Result<TOk, TError> TapOk(params Action[] onOk)
     {
-        if (IsFailure) return this;
-        onSuccess.ToList().ForEach(action => action());
+        if (IsError) return this;
+        onOk.ToList().ForEach(action => action());
         return this;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type without consuming the result when the result is Failure.
+    /// Perform a side effect on a result type without consuming the result when the result is Error.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
-    ///         .TapFailure(exn => failureResult = exn.Message);
+    ///         .TapError(exn => ErrorResult = exn.Message);
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///         .TapFailure(exn => failureResult = exn.Message);
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///         .TapError(exn => ErrorResult = exn.Message);
     ///         
-    /// Assert.AreEqual(failureResult, "failure!");
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> TapFailure(params Action<TFailure>[] onFailure)
+    public Result<TOk, TError> TapError(params Action<TError>[] onError)
     {
-        if (IsSuccess) return this;
-        var contents = UnwrapFailure();
-        onFailure.ToList().ForEach(action => action(contents));
+        if (IsOk) return this;
+        var contents = UnwrapError();
+        onError.ToList().ForEach(action => action(contents));
         return this;
     }
 
     /// <summary>
-    /// Perform a side effect on a result type without consuming the result when the result is Failure.
+    /// Perform a side effect on a result type without consuming the result when the result is Error.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// Result&lt;string, Exception&gt; result = 
     ///     new Result&lt;string, Exception&gt;("hello, world!")
-    ///         .TapFailure(() => failureResult = "fail");
+    ///         .TapError(() => ErrorResult = "fail");
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
-    /// Assert.IsTrue(result.IsSuccess);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    /// Assert.IsTrue(result.IsOk);
     /// 
     /// result = 
-    ///     new Result&lt;string, Exception&gt;(new Exception("failure!"))
-    ///         .TapFailure(() => failureResult = "fail");
+    ///     new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///         .TapError(() => ErrorResult = "fail");
     ///         
-    /// Assert.AreEqual(failureResult, "fail");
-    /// Assert.IsTrue(result.IsFailure);
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// Assert.IsTrue(result.IsError);
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TSuccess, TFailure> TapFailure(params Action[] onFailure)
+    public Result<TOk, TError> TapError(params Action[] onError)
     {
-        if (IsSuccess) return this;
-        onFailure.ToList().ForEach(action => action());
+        if (IsOk) return this;
+        onError.ToList().ForEach(action => action());
         return this;
     }
 }

@@ -8,43 +8,43 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success, 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success,
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Action<TSuccess> onSuccess, 
-        Action<TFailure> onFailure) =>
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        Action<TOk> onOk, 
+        Action<TError> onError) =>
             (await result)
-                .Effect(onSuccess, onFailure);
+                .Effect(onOk, onError);
 
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
@@ -52,43 +52,43 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success, 
-    ///         () => failureResult = "failure");
+    ///         () => ErrorResult = "Error");
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success, 
-    ///         () => failureResult = "fail");
+    ///         () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Action<TSuccess> onSuccess, 
-        Action onFailure) =>
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        Action<TOk> onOk, 
+        Action onError) =>
             (await result)
-                .Effect(onSuccess, onFailure);
+                .Effect(onOk, onError);
 
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
@@ -96,45 +96,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success, 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success,
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Action<TSuccess> onSuccess,
-        Func<TFailure, Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Action<TOk> onOk,
+        Func<TError, Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) onSuccess(theResult.Unwrap());
-        if (theResult.IsFailure) await onFailure(theResult.UnwrapFailure());
+        if (theResult.IsOk) onOk(theResult.Unwrap());
+        if (theResult.IsError) await onError(theResult.UnwrapError());
         return Unit();
     }
 
@@ -144,45 +144,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success, 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => successResult = success,
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Action<TSuccess> onSuccess,
-        Func<Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Action<TOk> onOk,
+        Func<Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) onSuccess(theResult.Unwrap());
-        if (theResult.IsFailure) await onFailure();
+        if (theResult.IsOk) onOk(theResult.Unwrap());
+        if (theResult.IsError) await onError();
         return Unit();
     }
     
@@ -192,43 +192,43 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Action onSuccess, 
-        Action<TFailure> onFailure) =>
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        Action onOk, 
+        Action<TError> onError) =>
             (await result)
-                .Effect(onSuccess, onFailure);
+                .Effect(onOk, onError);
     
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
@@ -236,43 +236,43 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         () => failureResult = "fail");
+    ///         () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         () => failureResult = "fail");
+    ///         () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Action onSuccess, 
-        Action onFailure) =>
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        Action onOk, 
+        Action onError) =>
             (await result)
-                .Effect(onSuccess, onFailure);
+                .Effect(onOk, onError);
     
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
@@ -280,45 +280,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Action onSuccess,
-        Func<TFailure, Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Action onOk,
+        Func<TError, Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) onSuccess();
-        if (theResult.IsFailure) await onFailure(theResult.UnwrapFailure());
+        if (theResult.IsOk) onOk();
+        if (theResult.IsError) await onError(theResult.UnwrapError());
         return Unit();
     }
 
@@ -328,45 +328,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => successResult = "success", 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Action onSuccess,
-        Func<Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Action onOk,
+        Func<Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) onSuccess();
-        if (theResult.IsFailure) await onFailure();
+        if (theResult.IsOk) onOk();
+        if (theResult.IsError) await onError();
         return Unit();
     }
 
@@ -376,45 +376,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         failure => failureResult = failure.Message);
+    ///         Error => ErrorResult = Error.Message);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<TSuccess, Task> onSuccess,
-        Action<TFailure> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<TOk, Task> onOk,
+        Action<TError> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess(theResult.Unwrap());
-        if (theResult.IsFailure) onFailure(theResult.UnwrapFailure());
+        if (theResult.IsOk) await onOk(theResult.Unwrap());
+        if (theResult.IsError) onError(theResult.UnwrapError());
         return Unit();
     }
 
@@ -424,45 +424,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         () => failureResult = "fail");
+    ///         () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         () => failureResult = "fail");
+    ///         () => ErrorResult = "fail");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<TSuccess, Task> onSuccess,
-        Action onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<TOk, Task> onOk,
+        Action onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess(theResult.Unwrap());
-        if (theResult.IsFailure) onFailure();
+        if (theResult.IsOk) await onOk(theResult.Unwrap());
+        if (theResult.IsError) onError();
         return Unit();
     }
 
@@ -472,45 +472,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<TSuccess, Task> onSuccess,
-        Func<TFailure, Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<TOk, Task> onOk,
+        Func<TError, Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess(theResult.Unwrap());
-        if (theResult.IsFailure) await onFailure(theResult.UnwrapFailure());
+        if (theResult.IsOk) await onOk(theResult.Unwrap());
+        if (theResult.IsError) await onError(theResult.UnwrapError());
         return Unit();
     }
 
@@ -520,45 +520,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         success => Task.Run(() => successResult = success), 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<TSuccess, Task> onSuccess,
-        Func<Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<TOk, Task> onOk,
+        Func<Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess(theResult.Unwrap());
-        if (theResult.IsFailure) await onFailure();
+        if (theResult.IsOk) await onOk(theResult.Unwrap());
+        if (theResult.IsError) await onError();
         return Unit();
     }
 
@@ -568,45 +568,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         failure => failureResult = failure.Message));
+    ///         Error => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         failure => failureResult = failure.Message));
+    ///         Error => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<Task> onSuccess,
-        Action<TFailure> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<Task> onOk,
+        Action<TError> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess();
-        if (theResult.IsFailure) onFailure(theResult.UnwrapFailure());
+        if (theResult.IsOk) await onOk();
+        if (theResult.IsError) onError(theResult.UnwrapError());
         return Unit();
     }
 
@@ -616,45 +616,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         () => failureResult = "fail"));
+    ///         () => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         () => failureResult = "fail"));
+    ///         () => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<Task> onSuccess,
-        Action onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<Task> onOk,
+        Action onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess();
-        if (theResult.IsFailure) onFailure();
+        if (theResult.IsOk) await onOk();
+        if (theResult.IsError) onError();
         return Unit();
     }
 
@@ -664,45 +664,45 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         failure => Task.Run(() => failureResult = failure.Message));
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<Task> onSuccess,
-        Func<TFailure, Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<Task> onOk,
+        Func<TError, Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess();
-        if (theResult.IsFailure) await onFailure(theResult.UnwrapFailure());
+        if (theResult.IsOk) await onOk();
+        if (theResult.IsError) await onError(theResult.UnwrapError());
         return Unit();
     }
 
@@ -712,64 +712,64 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, "success");
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     /// 
     /// successResult = string.Empty;
-    /// failureResult = string.Empty;
+    /// ErrorResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
     ///     .EffectAsync(
     ///         () => Task.Run(() => successResult = "success"), 
-    ///         () => Task.Run(() => failureResult = "fail"));
+    ///         () => Task.Run(() => ErrorResult = "fail"));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect with.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<Task> onSuccess,
-        Func<Task> onFailure)
+    public static async Task<Unit> EffectAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        Func<Task> onOk,
+        Func<Task> onError)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess();
-        if (theResult.IsFailure) await onFailure();
+        if (theResult.IsOk) await onOk();
+        if (theResult.IsError) await onError();
         return Unit();
     }
     
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectSuccessAsync(success => successResult = success);
+    ///     .EffectOkAsync(success => successResult = success);
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectSuccessAsync(success => successResult = success);
+    ///     .EffectOkAsync(success => successResult = success);
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
     /// 
@@ -777,32 +777,32 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSuccessAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Action<TSuccess> onSuccess) =>
+    public static async Task<Unit> EffectOkAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        params Action<TOk>[] onOk) =>
             (await result)
-                .EffectSuccess(onSuccess);
+                .EffectOk(onOk);
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectSuccessAsync(() => successResult = "success");
+    ///     .EffectOkAsync(() => successResult = "success");
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectSuccessAsync(() => successResult = "success");
+    ///     .EffectOkAsync(() => successResult = "success");
     ///         
     /// Assert.AreEqual(successResult, "success");
     /// 
@@ -810,32 +810,32 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSuccessAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Action onSuccess) =>
+    public static async Task<Unit> EffectOkAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        params Action[] onOk) =>
             (await result)
-                .EffectSuccess(onSuccess);
+                .EffectOk(onOk);
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectSuccessAsync(success => Task.Run(() => successResult = success));
+    ///     .EffectOkAsync(success => Task.Run(() => successResult = success));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectSuccessAsync(success => Task.Run(() => successResult = success));
+    ///     .EffectOkAsync(success => Task.Run(() => successResult = success));
     ///         
     /// Assert.AreEqual(successResult, "hello, world!");
     /// 
@@ -843,35 +843,36 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSuccessAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<TSuccess, Task> onSuccess)
+    public static async Task<Unit> EffectOkAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        params Func<TOk, Task>[] onOk)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess(theResult.Unwrap());
-        return Unit();
+        return theResult.IsOk
+            ? await RunSequential(theResult.Unwrap(), onOk)
+            : Unit();
     }
     
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
     /// string successResult = string.Empty;
     /// 
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectSuccessAsync(() => Task.Run(() => successResult = "success"));
+    ///     .EffectOkAsync(() => Task.Run(() => successResult = "success"));
     ///         
     /// Assert.AreEqual(successResult, string.Empty);
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectSuccessAsync(() => Task.Run(() => successResult = "success"));
+    ///     .EffectOkAsync(() => Task.Run(() => successResult = "success"));
     ///         
     /// Assert.AreEqual(successResult, "success");
     /// 
@@ -879,151 +880,153 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onSuccess">Perform this action when the value is Success.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSuccessAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Func<Task> onSuccess)
+    public static async Task<Unit> EffectOkAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        params Func<Task>[] onOk)
     {
         var theResult = await result;
-        if (theResult.IsSuccess) await onSuccess();
-
-        return Unit();
+        return theResult.IsOk
+            ? await RunSequential(onOk)
+            : Unit();
     }
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectFailureAsync(failure => failureResult = failure.Message);
+    ///     .EffectErrorAsync(Error => ErrorResult = Error.Message);
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     ///
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectFailureAsync(failure => failureResult = failure.Message);
+    ///     .EffectErrorAsync(Error => ErrorResult = Error.Message);
     ///         
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectFailureAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Action<TFailure> onFailure) =>
+    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        params Action<TError>[] onError) =>
             (await result)
-                .EffectFailure(onFailure);
+                .EffectError(onError);
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectFailureAsync(() => failureResult = "fail");
+    ///     .EffectErrorAsync(() => ErrorResult = "fail");
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     ///
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectFailureAsync(() => failureResult = "fail");
+    ///     .EffectErrorAsync(() => ErrorResult = "fail");
     ///         
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectFailureAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Action onFailure) =>
+    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        params Action[] onError) =>
             (await result)
-                .EffectFailure(onFailure);
+                .EffectError(onError);
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectFailureAsync(() => Task.Run(() => failureResult = "fail"));
+    ///     .EffectErrorAsync(() => Task.Run(() => ErrorResult = "fail"));
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     ///
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectFailureAsync(() => Task.Run(() => failureResult = "fail"));
+    ///     .EffectErrorAsync(() => Task.Run(() => ErrorResult = "fail"));
     ///         
-    /// Assert.AreEqual(failureResult, "fail");
+    /// Assert.AreEqual(ErrorResult, "fail");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectFailureAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result, 
-        Func<Task> onFailure)
+    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result, 
+        params Func<Task>[] onError)
     {
         var theResult = await result;
-        if (theResult.IsFailure) await onFailure();
-        return Unit();
+        return theResult.IsError
+            ? await RunSequential(onError)
+            : Unit();
     }
 
     /// <summary>
-    /// Perform a side effect on a result type and consume the result when the result is Success.
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// string failureResult = string.Empty;
+    /// string ErrorResult = string.Empty;
     /// 
     /// await new Result&lt;string, Exception&gt;("hello, world!")
     ///     .Async()
-    ///     .EffectFailureAsync(failure => Task.Run(() => failureResult = failure.Message));
+    ///     .EffectErrorAsync(Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
-    /// Assert.AreEqual(failureResult, string.Empty);
+    /// Assert.AreEqual(ErrorResult, string.Empty);
     ///
-    /// await new Result&lt;string, Exception&gt;(new Exception("failure!"))
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
     ///     .Async()
-    ///     .EffectFailureAsync(failure => Task.Run(() => failureResult = failure.Message));
+    ///     .EffectErrorAsync(Error => Task.Run(() => ErrorResult = Error.Message));
     ///         
-    /// Assert.AreEqual(failureResult, "failure!");
+    /// Assert.AreEqual(ErrorResult, "Error!");
     /// </code>
     /// </example>
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
-    /// <param name="onFailure">Perform this action when the value is Failure.</param>
-    /// <typeparam name="TSuccess">The type when the result is Success.</typeparam>
-    /// <typeparam name="TFailure">The type when the result is Failure.</typeparam>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
+    /// <typeparam name="TError">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectFailureAsync<TSuccess, TFailure>(
-        this Task<Result<TSuccess, TFailure>> result,
-        Func<TFailure, Task> onFailure)
+    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
+        this Task<Result<TOk, TError>> result,
+        params Func<TError, Task>[] onError)
     {
         var theResult = await result;
-        if (theResult.IsFailure) await onFailure(theResult.UnwrapFailure());
-        return Unit();
+        return theResult.IsError
+            ? await RunSequential(theResult.UnwrapError(), onError)
+            : Unit();
     }
 }

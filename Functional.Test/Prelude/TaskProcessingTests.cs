@@ -17,7 +17,8 @@ public class TaskProcessingTests
         var tokenSource = new CancellationTokenSource();
 
 
-        await RunSequential(1, actions, tokenSource.Token);
+        await RunSequential(1, actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(2);
         values[0].ShouldBe(1);
@@ -38,7 +39,8 @@ public class TaskProcessingTests
         var tokenSource = new CancellationTokenSource();
 
 
-        await RunSequential(actions, tokenSource.Token);
+        await RunSequential(actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(2);
         values[0].ShouldBe(1);
@@ -60,7 +62,8 @@ public class TaskProcessingTests
         var tokenSource = new CancellationTokenSource();
 
 
-        await RunSequential(1, actions, tokenSource.Token);
+        await RunSequential(1, actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(2);
         values[0].ShouldBe(1);
@@ -81,7 +84,8 @@ public class TaskProcessingTests
         var tokenSource = new CancellationTokenSource();
 
 
-        await RunSequential(actions, tokenSource.Token);
+        await RunSequential(actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(2);
         values[0].ShouldBe(1);
@@ -111,7 +115,8 @@ public class TaskProcessingTests
             }
         ];
 
-        await RunSequential(1, actions, tokenSource.Token);
+        await RunSequential(1, actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(1);
         values[0].ShouldBe(1);
@@ -139,7 +144,8 @@ public class TaskProcessingTests
             }
         ];
 
-        await RunSequential(actions, tokenSource.Token);
+        await RunSequential(actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(1);
         values[0].ShouldBe(1);
@@ -167,7 +173,8 @@ public class TaskProcessingTests
             }
         ];
 
-        await RunSequential(1, actions, tokenSource.Token);
+        await RunSequential(1, actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(1);
         values[0].ShouldBe(1);
@@ -194,7 +201,8 @@ public class TaskProcessingTests
             }
         ];
 
-        await RunSequential(actions, tokenSource.Token);
+        await RunSequential(actions, tokenSource.Token)
+            .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(1);
         values[0].ShouldBe(1);

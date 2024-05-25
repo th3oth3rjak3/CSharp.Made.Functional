@@ -5,30 +5,30 @@
 public class ConstructionTests
 {
     [TestMethod]
-    public void ItShouldConstructSuccesses()
+    public void ItShouldConstrucTOkes()
     {
-        Success<string, int>("success")
+        Ok<string, int>("success")
             .AssertInstanceOfType(typeof(Result<string, int>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
 
-        Success("success")
+        Ok("success")
             .AssertInstanceOfType(typeof(Result<string, Exception>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
     }
 
     [TestMethod]
-    public void ItShouldConstructFailures()
+    public void ItShouldConstrucTErrors()
     {
-        Failure<string, int>(-1)
+        Error<string, int>(-1)
             .AssertInstanceOfType(typeof(Result<string, int>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
-        Failure<string>(new Exception("failure!"))
+        Error<string>(new Exception("Error!"))
             .AssertInstanceOfType(typeof(Result<string, Exception>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
     }
 }

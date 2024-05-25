@@ -9,12 +9,12 @@ public class ResultTests
     {
         new Result<string, Exception>("hello world")
             .AssertInstanceOfType(typeof(Result<string, Exception>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
 
-        new Result<string, Exception>(new Exception("failure"))
+        new Result<string, Exception>(new Exception("Error"))
             .AssertInstanceOfType(typeof(Result<string, Exception>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
     }
 
@@ -27,8 +27,8 @@ public class ResultTests
             return new Exception("input too large");
         }
 
-        DoWork(10).IsSuccess.ShouldBeTrue();
-        DoWork(30).IsFailure.ShouldBeTrue();
+        DoWork(10).IsOk.ShouldBeTrue();
+        DoWork(30).IsError.ShouldBeTrue();
     }
 
     [TestMethod]
@@ -39,51 +39,51 @@ public class ResultTests
             .ShouldBe("hello world");
 
         Assert.ThrowsException<InvalidOperationException>(() =>
-            new Result<string, Exception>(new Exception("failure"))
+            new Result<string, Exception>(new Exception("Error"))
                 .Unwrap());
 
-        new Result<string, Exception>(new Exception("failure"))
-            .UnwrapFailure()
+        new Result<string, Exception>(new Exception("Error"))
+            .UnwrapError()
             .Message
-            .ShouldBe("failure");
+            .ShouldBe("Error");
 
         Assert.ThrowsException<InvalidOperationException>(() =>
             new Result<string, Exception>("success")
-                .UnwrapFailure());
+                .UnwrapError());
     }
 
     [TestMethod]
     public void ResultShouldMatch()
     {
-        Success(1)
+        Ok(1)
             .Match(value => value, _ => -1)
             .ShouldBe(1);
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Match(value => value, _ => -1)
             .ShouldBe(-1);
 
-        Success(1)
+        Ok(1)
             .Match(() => 2, _ => -1)
             .ShouldBe(2);
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Match(() => 2, _ => -1)
             .ShouldBe(-1);
 
-        Success(1)
+        Ok(1)
             .Match(value => value, () => -1)
             .ShouldBe(1);
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Match(value => value, () => -1)
             .ShouldBe(-1);
 
-        Success(1)
+        Ok(1)
             .Match(() => 1, () => -1)
             .ShouldBe(1);
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Match(() => 1, () => -1)
             .ShouldBe(-1);
     }
@@ -91,55 +91,55 @@ public class ResultTests
     [TestMethod]
     public void ResultShouldMapSuccesses()
     {
-        Success(1)
+        Ok(1)
             .Map(value => value.ToString())
             .Unwrap()
             .ShouldBe("1");
 
-        Success(1)
+        Ok(1)
             .Map(() => "something")
             .Unwrap()
             .ShouldBe("something");
 
-        Failure<int, string>("fail")
+        Error<int, string>("fail")
             .Map(value => value.ToString())
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
-        Failure<int, string>("fail")
+        Error<int, string>("fail")
             .Map(() => "something")
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
     }
 
     [TestMethod]
-    public void ResultShouldMapFailures()
+    public void ResultShouldMapErrors()
     {
-        Success<int, string>(1)
-            .MapFailure(err => new Exception(err))
+        Ok<int, string>(1)
+            .MapError(err => new Exception(err))
             .AssertInstanceOfType(typeof(Result<int, Exception>))
             .Unwrap()
             .ShouldBe(1);
 
-        Success<int, string>(1)
-            .MapFailure(() => new Exception("something else"))
+        Ok<int, string>(1)
+            .MapError(() => new Exception("something else"))
             .AssertInstanceOfType(typeof(Result<int, Exception>))
             .Unwrap()
             .ShouldBe(1);
 
-        Failure<int, string>("failure")
-            .MapFailure(err => new Exception(err))
+        Error<int, string>("Error")
+            .MapError(err => new Exception(err))
             .AssertInstanceOfType(typeof(Result<int, Exception>))
-            .UnwrapFailure()
+            .UnwrapError()
             .Message
-            .ShouldBe("failure");
+            .ShouldBe("Error");
 
-        Failure<int, string>("ignored")
-            .MapFailure(() => new Exception("expected"))
+        Error<int, string>("ignored")
+            .MapError(() => new Exception("expected"))
             .AssertInstanceOfType(typeof(Result<int, Exception>))
-            .UnwrapFailure()
+            .UnwrapError()
             .Message
             .ShouldBe("expected");
     }
@@ -147,56 +147,56 @@ public class ResultTests
     [TestMethod]
     public void ResultShouldBindToSuccesses()
     {
-        Success<int, string>(1)
-            .Bind(value => Success<string, string>(value.ToString()))
+        Ok<int, string>(1)
+            .Bind(value => Ok<string, string>(value.ToString()))
             .AssertInstanceOfType(typeof(Result<string, string>))
             .Unwrap()
             .ShouldBe("1");
 
-        Success<int, string>(1)
-            .Bind(() => Success<string, string>("new value"))
+        Ok<int, string>(1)
+            .Bind(() => Ok<string, string>("new value"))
             .AssertInstanceOfType(typeof(Result<string, string>))
             .Unwrap()
             .ShouldBe("new value");
 
-        Failure<int, string>("failure")
-            .Bind(value => Success<string, string>(value.ToString()))
+        Error<int, string>("Error")
+            .Bind(value => Ok<string, string>(value.ToString()))
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
-        Failure<int, string>("failure")
-            .Bind(() => Success<string, string>("new value"))
+        Error<int, string>("Error")
+            .Bind(() => Ok<string, string>("new value"))
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
     }
 
     [TestMethod]
-    public void ResultShouldBindToFailures()
+    public void ResultShouldBindToErrors()
     {
-        Success<int, string>(1)
-            .Bind(value => Failure<string, string>("failure!"))
+        Ok<int, string>(1)
+            .Bind(value => Error<string, string>("Error!"))
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .UnwrapFailure()
-            .ShouldBe("failure!");
+            .UnwrapError()
+            .ShouldBe("Error!");
 
-        Success<int, string>(1)
-            .Bind(() => Failure<string, string>("failure!"))
+        Ok<int, string>(1)
+            .Bind(() => Error<string, string>("Error!"))
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .UnwrapFailure()
-            .ShouldBe("failure!");
+            .UnwrapError()
+            .ShouldBe("Error!");
 
-        Failure<int, string>("original")
-            .Bind(value => Failure<string, string>("ignored"))
+        Error<int, string>("original")
+            .Bind(value => Error<string, string>("ignored"))
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .UnwrapFailure()
+            .UnwrapError()
             .ShouldBe("original");
 
-        Failure<int, string>("original")
-            .Bind(() => Failure<string, string>("ignored"))
+        Error<int, string>("original")
+            .Bind(() => Error<string, string>("ignored"))
             .AssertInstanceOfType(typeof(Result<string, string>))
-            .UnwrapFailure()
+            .UnwrapError()
             .ShouldBe("original");
     }
 
@@ -204,34 +204,34 @@ public class ResultTests
     public void ResultShouldPerformEffects_1()
     {
         var successResult = string.Empty;
-        var failureResult = string.Empty;
+        var ErrorResult = string.Empty;
 
-        Success(1)
+        Ok(1)
             .Effect(
                 value => successResult = value.ToString(),
-                exn => failureResult = exn.Message)
+                exn => ErrorResult = exn.Message)
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("1");
-        failureResult.ShouldBe(string.Empty);
+        ErrorResult.ShouldBe(string.Empty);
 
         Reset();
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Effect(
                 value => successResult = value.ToString(),
-                exn => failureResult = exn.Message)
+                exn => ErrorResult = exn.Message)
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
-        failureResult.ShouldBe("error");
+        ErrorResult.ShouldBe("error");
 
         return;
 
         void Reset()
         {
             successResult = string.Empty;
-            failureResult = string.Empty;
+            ErrorResult = string.Empty;
         }
     }
 
@@ -239,34 +239,34 @@ public class ResultTests
     public void ResultShouldPerformEffects_2()
     {
         var successResult = string.Empty;
-        var failureResult = string.Empty;
+        var ErrorResult = string.Empty;
 
-        Success(1)
+        Ok(1)
             .Effect(
                 () => successResult = "success",
-                exn => failureResult = exn.Message)
+                exn => ErrorResult = exn.Message)
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("success");
-        failureResult.ShouldBe(string.Empty);
+        ErrorResult.ShouldBe(string.Empty);
 
         Reset();
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Effect(
                 () => successResult = "success",
-                exn => failureResult = exn.Message)
+                exn => ErrorResult = exn.Message)
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
-        failureResult.ShouldBe("error");
+        ErrorResult.ShouldBe("error");
 
         return;
 
         void Reset()
         {
             successResult = string.Empty;
-            failureResult = string.Empty;
+            ErrorResult = string.Empty;
         }
     }
 
@@ -274,34 +274,34 @@ public class ResultTests
     public void ResultShouldPerformEffects_3()
     {
         var successResult = string.Empty;
-        var failureResult = string.Empty;
+        var ErrorResult = string.Empty;
 
-        Success(1)
+        Ok(1)
             .Effect(
                 value => successResult = value.ToString(),
-                () => failureResult = "failure")
+                () => ErrorResult = "Error")
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("1");
-        failureResult.ShouldBe(string.Empty);
+        ErrorResult.ShouldBe(string.Empty);
 
         Reset();
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Effect(
                 value => successResult = value.ToString(),
-                () => failureResult = "failure")
+                () => ErrorResult = "Error")
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
-        failureResult.ShouldBe("failure");
+        ErrorResult.ShouldBe("Error");
 
         return;
 
         void Reset()
         {
             successResult = string.Empty;
-            failureResult = string.Empty;
+            ErrorResult = string.Empty;
         }
     }
 
@@ -309,27 +309,27 @@ public class ResultTests
     public void ResultShouldPerformEffects_4()
     {
         var successResult = string.Empty;
-        var failureResult = string.Empty;
+        var ErrorResult = string.Empty;
 
-        Success(1)
+        Ok(1)
             .Effect(
                 () => successResult = "success",
-                () => failureResult = "failure")
+                () => ErrorResult = "Error")
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe("success");
-        failureResult.ShouldBe(string.Empty);
+        ErrorResult.ShouldBe(string.Empty);
 
         Reset();
 
-        Failure<int>(new Exception("error"))
+        Error<int>(new Exception("error"))
             .Effect(
                 () => successResult = "success",
-                () => failureResult = "failure")
+                () => ErrorResult = "Error")
             .AssertInstanceOfType(typeof(Unit));
 
         successResult.ShouldBe(string.Empty);
-        failureResult.ShouldBe("failure");
+        ErrorResult.ShouldBe("Error");
 
 
         return;
@@ -337,102 +337,102 @@ public class ResultTests
         void Reset()
         {
             successResult = string.Empty;
-            failureResult = string.Empty;
+            ErrorResult = string.Empty;
         }
     }
 
     [TestMethod]
-    public void ResultShouldPerformEffectSuccess()
+    public void ResultShouldPerformEffecTOk()
     {
         string result = string.Empty;
 
-        Failure<int, string>("error")
-            .EffectSuccess(value => result = value.ToString())
+        Error<int, string>("error")
+            .EffectOk(value => result = value.ToString())
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
-        Failure<int, string>("error")
-            .EffectSuccess(() => result = "success")
+        Error<int, string>("error")
+            .EffectOk(() => result = "success")
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
-        Success(1)
-            .EffectSuccess(value => result = value.ToString())
+        Ok(1)
+            .EffectOk(value => result = value.ToString())
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("1");
 
-        Success(1)
-            .EffectSuccess(() => result = "success")
+        Ok(1)
+            .EffectOk(() => result = "success")
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("success");
     }
 
     [TestMethod]
-    public void ResultShouldPerformEffectFailure()
+    public void ResultShouldPerformEffecTError()
     {
         string result = string.Empty;
 
-        Success(1)
-            .EffectFailure(value => result = value.Message)
+        Ok(1)
+            .EffectError(value => result = value.Message)
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
-        Success(1)
-            .EffectFailure(() => result = "failure")
+        Ok(1)
+            .EffectError(() => result = "Error")
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBeEmpty();
 
-        Failure<int, string>("fail")
-            .EffectFailure(value => result = value)
+        Error<int, string>("fail")
+            .EffectError(value => result = value)
             .AssertInstanceOfType(typeof(Unit));
 
         result.ShouldBe("fail");
 
-        Failure<int, string>("fail")
-            .EffectFailure(() => result = "failure")
+        Error<int, string>("fail")
+            .EffectError(() => result = "Error")
             .AssertInstanceOfType(typeof(Unit));
 
-        result.ShouldBe("failure");
+        result.ShouldBe("Error");
     }
 
     [TestMethod]
     public void ResultShouldTap_1()
     {
         var success = string.Empty;
-        var failure = string.Empty;
+        var Error = string.Empty;
 
-        Success(1)
-            .Tap(value => success = value.ToString(), err => failure = err.Message)
+        Ok(1)
+            .Tap(value => success = value.ToString(), err => Error = err.Message)
             .AssertInstanceOfType(typeof(Result<int, Exception>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
 
         success.ShouldBe("1");
-        failure.ShouldBeEmpty();
+        Error.ShouldBeEmpty();
 
         Reset();
 
-        Failure<int, string>("error")
-            .Tap(value => success = value.ToString(), err => failure = err)
+        Error<int, string>("error")
+            .Tap(value => success = value.ToString(), err => Error = err)
             .AssertInstanceOfType(typeof(Result<int, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
         success.ShouldBeEmpty();
-        failure.ShouldBe("error");
+        Error.ShouldBe("error");
 
         return;
 
         void Reset()
         {
             success = string.Empty;
-            failure = string.Empty;
+            Error = string.Empty;
         }
     }
 
@@ -440,34 +440,34 @@ public class ResultTests
     public void ResultShouldTap_2()
     {
         var success = string.Empty;
-        var failure = string.Empty;
+        var Error = string.Empty;
 
-        Success(1)
-            .Tap(() => success = "success", err => failure = err.Message)
+        Ok(1)
+            .Tap(() => success = "success", err => Error = err.Message)
             .AssertInstanceOfType(typeof(Result<int, Exception>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
 
         success.ShouldBe("success");
-        failure.ShouldBeEmpty();
+        Error.ShouldBeEmpty();
 
         Reset();
 
-        Failure<int, string>("error")
-            .Tap(() => success = "success", err => failure = err)
+        Error<int, string>("error")
+            .Tap(() => success = "success", err => Error = err)
             .AssertInstanceOfType(typeof(Result<int, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
         success.ShouldBeEmpty();
-        failure.ShouldBe("error");
+        Error.ShouldBe("error");
 
         return;
 
         void Reset()
         {
             success = string.Empty;
-            failure = string.Empty;
+            Error = string.Empty;
         }
     }
 
@@ -475,34 +475,34 @@ public class ResultTests
     public void ResultShouldTap_3()
     {
         var success = string.Empty;
-        var failure = string.Empty;
+        var Error = string.Empty;
 
-        Success(1)
-            .Tap(value => success = value.ToString(), () => failure = "failure")
+        Ok(1)
+            .Tap(value => success = value.ToString(), () => Error = "Error")
             .AssertInstanceOfType(typeof(Result<int, Exception>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
 
         success.ShouldBe("1");
-        failure.ShouldBeEmpty();
+        Error.ShouldBeEmpty();
 
         Reset();
 
-        Failure<int, string>("error")
-            .Tap(value => success = value.ToString(), () => failure = "failure")
+        Error<int, string>("error")
+            .Tap(value => success = value.ToString(), () => Error = "Error")
             .AssertInstanceOfType(typeof(Result<int, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
         success.ShouldBeEmpty();
-        failure.ShouldBe("failure");
+        Error.ShouldBe("Error");
 
         return;
 
         void Reset()
         {
             success = string.Empty;
-            failure = string.Empty;
+            Error = string.Empty;
         }
     }
 
@@ -510,34 +510,34 @@ public class ResultTests
     public void ResultShouldTap_4()
     {
         var success = string.Empty;
-        var failure = string.Empty;
+        var Error = string.Empty;
 
-        Success(1)
-            .Tap(() => success = "success", () => failure = "failure")
+        Ok(1)
+            .Tap(() => success = "success", () => Error = "Error")
             .AssertInstanceOfType(typeof(Result<int, Exception>))
-            .IsSuccess
+            .IsOk
             .ShouldBeTrue();
 
         success.ShouldBe("success");
-        failure.ShouldBeEmpty();
+        Error.ShouldBeEmpty();
 
         Reset();
 
-        Failure<int, string>("error")
-            .Tap(() => success = "success", () => failure = "failure")
+        Error<int, string>("error")
+            .Tap(() => success = "success", () => Error = "Error")
             .AssertInstanceOfType(typeof(Result<int, string>))
-            .IsFailure
+            .IsError
             .ShouldBeTrue();
 
         success.ShouldBeEmpty();
-        failure.ShouldBe("failure");
+        Error.ShouldBe("Error");
 
         return;
 
         void Reset()
         {
             success = string.Empty;
-            failure = string.Empty;
+            Error = string.Empty;
         }
     }
 
@@ -546,145 +546,145 @@ public class ResultTests
     {
         var result = string.Empty;
 
-        Success(1)
-            .TapSuccess(value => result = value.ToString())
+        Ok(1)
+            .TapOk(value => result = value.ToString())
             .AssertInstanceOfType(typeof(Result<int, Exception>));
 
         result.ShouldBe("1");
 
         result = string.Empty;
 
-        Failure<string, string>("error")
-            .TapSuccess(value => result = value.ToString())
+        Error<string, string>("error")
+            .TapOk(value => result = value.ToString())
             .AssertInstanceOfType(typeof(Result<string, string>));
 
         result.ShouldBeEmpty();
 
-        Success(1)
-            .TapSuccess(() => result = "success")
+        Ok(1)
+            .TapOk(() => result = "success")
             .AssertInstanceOfType(typeof(Result<int, Exception>));
 
         result.ShouldBe("success");
 
         result = string.Empty;
 
-        Failure<string, string>("error")
-            .TapSuccess(() => result = "success")
+        Error<string, string>("error")
+            .TapOk(() => result = "success")
             .AssertInstanceOfType(typeof(Result<string, string>));
 
         result.ShouldBeEmpty();
     }
 
     [TestMethod]
-    public void ResultShouldTapFailure()
+    public void ResultShouldTapError()
     {
         var result = string.Empty;
 
-        Success(1)
-            .TapFailure(exn => result = exn.Message)
+        Ok(1)
+            .TapError(exn => result = exn.Message)
             .AssertInstanceOfType(typeof(Result<int, Exception>));
 
         result.ShouldBeEmpty();
 
-        Success(1)
-            .TapFailure(() => result = "failure")
+        Ok(1)
+            .TapError(() => result = "Error")
             .AssertInstanceOfType(typeof(Result<int, Exception>));
 
         result.ShouldBeEmpty();
 
-        Failure<string, Exception>(new Exception("error"))
-            .TapFailure(exn => result = exn.Message)
+        Error<string, Exception>(new Exception("error"))
+            .TapError(exn => result = exn.Message)
             .AssertInstanceOfType(typeof(Result<string, Exception>));
 
         result.ShouldBe("error");
 
         result = string.Empty;
 
-        Failure<string, Exception>(new Exception("error"))
-            .TapFailure(() => result = "failure")
+        Error<string, Exception>(new Exception("error"))
+            .TapError(() => result = "Error")
             .AssertInstanceOfType(typeof(Result<string, Exception>));
 
-        result.ShouldBe("failure");
+        result.ShouldBe("Error");
     }
 
 
 
     [TestMethod]
     public void ItShouldReduceSuccesses() =>
-        Success("success")
-            .Reduce("failure")
+        Ok("success")
+            .Reduce("Error")
             .ShouldBe("success");
 
     [TestMethod]
     public void ItShouldReduceSuccessWithFunctions() =>
-        Success("success")
+        Ok("success")
             .Reduce(() => "something else")
             .ShouldBe("success");
 
     [TestMethod]
-    public void ItShouldReduceSuccessWithFunctionsAndFailureResults() =>
-        Success("success")
-            .Reduce(failure => failure.Message)
+    public void ItShouldReduceSuccessWithFunctionsAndErrorResults() =>
+        Ok("success")
+            .Reduce(Error => Error.Message)
             .ShouldBe("success");
 
     [TestMethod]
-    public void ItShouldReduceFailures() =>
-        Failure<string, string>("failure message")
+    public void ItShouldReduceErrors() =>
+        Error<string, string>("Error message")
             .Reduce("another message")
             .ShouldBe("another message");
 
     [TestMethod]
-    public void ItShouldReduceFailuresWithFunctions() =>
-        Failure<string, string>("failure message")
+    public void ItShouldReduceErrorsWithFunctions() =>
+        Error<string, string>("Error message")
             .Reduce(() => "something else")
             .ShouldBe("something else");
 
     [TestMethod]
-    public void ItShouldReduceFailuresWithFunctionsAndFailureResults() =>
-        Failure<string, string>("failure message")
-            .Reduce(failure => failure)
-            .ShouldBe("failure message");
+    public void ItShouldReduceErrorsWithFunctionsAndErrorResults() =>
+        Error<string, string>("Error message")
+            .Reduce(Error => Error)
+            .ShouldBe("Error message");
 
     [TestMethod]
     public Task ItShouldReduceSuccessesAsync() =>
-        Success("success")
+        Ok("success")
             .Async()
             .ReduceAsync("alternate")
             .EffectAsync(result => result.ShouldBe("success"));
 
     [TestMethod]
     public Task ItShouldReduceSuccessWithFunctionsAsync() =>
-        Success("success")
+        Ok("success")
             .Async()
             .ReduceAsync(() => "alternate")
             .EffectAsync(result => result.ShouldBe("success"));
 
     [TestMethod]
-    public Task ItShouldReduceSuccessWithFunctionsAsyncFailure() =>
-        Success("success")
+    public Task ItShouldReduceSuccessWithFunctionsAsyncError() =>
+        Ok("success")
             .Async()
             .ReduceAsync(exn => exn.Message)
             .EffectAsync(result => result.ShouldBe("success"));
 
     [TestMethod]
-    public Task ItShouldReduceFailuresAsync() =>
-        Failure<string, string>("failure message")
+    public Task ItShouldReduceErrorsAsync() =>
+        Error<string, string>("Error message")
             .Async()
             .ReduceAsync("alternate")
             .EffectAsync(result => result.ShouldBe("alternate"));
 
     [TestMethod]
-    public Task ItShouldReduceFailuresWithFunctionsAsync() =>
-        Failure<string, string>("failure message")
+    public Task ItShouldReduceErrorsWithFunctionsAsync() =>
+        Error<string, string>("Error message")
             .Async()
             .ReduceAsync(() => "alternate")
             .EffectAsync(result => result.ShouldBe("alternate"));
 
     [TestMethod]
-    public Task ItShouldReduceFailuresWithFunctionsAsyncFailure() =>
-        Failure<string, string>("failure message")
+    public Task ItShouldReduceErrorsWithFunctionsAsyncError() =>
+        Error<string, string>("Error message")
             .Async()
-            .ReduceAsync(failure => failure)
-            .EffectAsync(result => result.ShouldBe("failure message"));
+            .ReduceAsync(Error => Error)
+            .EffectAsync(result => result.ShouldBe("Error message"));
 
 }

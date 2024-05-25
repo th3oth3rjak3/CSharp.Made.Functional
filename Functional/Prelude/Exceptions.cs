@@ -41,11 +41,11 @@ public static partial class Prelude
     {
         try
         {
-            return toTry().Pipe(Success);
+            return toTry().Pipe(Ok);
         }
         catch (Exception ex)
         {
-            return Failure<TResult>(ex);
+            return Error<TResult>(ex);
         }
     }
 
@@ -62,11 +62,11 @@ public static partial class Prelude
     {
         try
         {
-            return toTry(input).Pipe(Success);
+            return toTry(input).Pipe(Ok);
         }
         catch (Exception ex)
         {
-            return Failure<TResult>(ex);
+            return Error<TResult>(ex);
         }
     }
 
@@ -81,11 +81,11 @@ public static partial class Prelude
     {
         try
         {
-            return await toTry().PipeAsync(Success);
+            return await toTry().PipeAsync(Ok);
         }
         catch (Exception ex)
         {
-            return Failure<TResult>(ex);
+            return Error<TResult>(ex);
         }
     }
 
@@ -104,11 +104,11 @@ public static partial class Prelude
         {
             return await input
                 .PipeAsync(toTry)
-                .PipeAsync(Success);
+                .PipeAsync(Ok);
         }
         catch (Exception ex)
         {
-            return Failure<TResult>(ex);
+            return Error<TResult>(ex);
         }
     }
 

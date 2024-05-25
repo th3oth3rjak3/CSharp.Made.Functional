@@ -5,572 +5,572 @@
 public class EffectTests
 {
     private string SuccessResult { get; set; } = string.Empty;
-    private string FailureResult { get; set; } = string.Empty;
+    private string ErrorResult { get; set; } = string.Empty;
     
     [TestInitialize]
     public void Reset()
     {
         SuccessResult = string.Empty;
-        FailureResult = string.Empty;
+        ErrorResult = string.Empty;
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_1()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                failure => FailureResult = failure.Message)
+                Error => ErrorResult = Error.Message)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                failure => FailureResult = failure)
+                Error => ErrorResult = Error)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_2()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_3()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                failure => Task.Run(() => FailureResult = failure.Message))
+                Error => Task.Run(() => ErrorResult = Error.Message))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                failure => Task.Run(() => FailureResult = failure))
+                Error => Task.Run(() => ErrorResult = Error))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_4()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => SuccessResult = success.ToString(),
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_5()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_6()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                failure => FailureResult = failure.Message)
+                Error => ErrorResult = Error.Message)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                failure => FailureResult = failure)
+                Error => ErrorResult = Error)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_7()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                failure => Task.Run(() => FailureResult = failure.Message))
+                Error => Task.Run(() => ErrorResult = Error.Message))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                failure => Task.Run(() => FailureResult = failure))
+                Error => Task.Run(() => ErrorResult = Error))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_8()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => SuccessResult = "success",
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_9()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                failure => FailureResult = failure.Message)
+                Error => ErrorResult = Error.Message)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                failure => FailureResult = failure)
+                Error => ErrorResult = Error)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_10()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_11()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                failure => Task.Run(() => FailureResult = failure.Message))
+                Error => Task.Run(() => ErrorResult = Error.Message))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                failure => Task.Run(() => FailureResult = failure))
+                Error => Task.Run(() => ErrorResult = Error))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_12()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("1");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 success => Task.Run(() => SuccessResult = success.ToString()),
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_13()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                failure => FailureResult = failure.Message)
+                Error => ErrorResult = Error.Message)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                failure => FailureResult = failure)
+                Error => ErrorResult = Error)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_14()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                () => FailureResult = "fail")
+                () => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_15()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                failure => Task.Run(() => FailureResult = failure.Message))
+                Error => Task.Run(() => ErrorResult = Error.Message))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                failure => Task.Run(() => FailureResult = failure))
+                Error => Task.Run(() => ErrorResult = Error))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
     public async Task ResultShouldPerformEffectsAsync_16()
     {
-        await Success(1)
+        await Ok(1)
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBe("success");
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
 
         Reset();
 
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
             .EffectAsync(
                 () => Task.Run(() => SuccessResult = "success"),
-                () => Task.Run(() => FailureResult = "fail"))
+                () => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBeEmpty();
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
 
     [TestMethod]
-    public async Task ResultShouldPerformEffectSuccess_1()
+    public async Task ResultShouldPerformEffecTOk_1()
     {
-        await Failure<int, string>("failure")
+        await Error<int, string>("Error")
             .Async()
-            .EffectSuccessAsync(success => SuccessResult = success.ToString())
+            .EffectOkAsync(success => SuccessResult = success.ToString())
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBeEmpty();
 
-        await Success(1)
+        await Ok(1)
             .Async()
-            .EffectSuccessAsync(success => SuccessResult = success.ToString())
+            .EffectOkAsync(success => SuccessResult = success.ToString())
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBe("1");
     }
     
     [TestMethod]
-    public async Task ResultShouldPerformEffectSuccess_2()
+    public async Task ResultShouldPerformEffecTOk_2()
     {
-        await Failure<int, string>("failure")
+        await Error<int, string>("Error")
             .Async()
-            .EffectSuccessAsync(() => SuccessResult = "success")
+            .EffectOkAsync(() => SuccessResult = "success")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBeEmpty();
 
-        await Success(1)
+        await Ok(1)
             .Async()
-            .EffectSuccessAsync(() => SuccessResult = "success")
+            .EffectOkAsync(() => SuccessResult = "success")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBe("success");
     }
     
     [TestMethod]
-    public async Task ResultShouldPerformEffectSuccess_3()
+    public async Task ResultShouldPerformEffecTOk_3()
     {
-        await Failure<int, string>("failure")
+        await Error<int, string>("Error")
             .Async()
-            .EffectSuccessAsync(success => Task.Run(() => SuccessResult = success.ToString()))
+            .EffectOkAsync(success => Task.Run(() => SuccessResult = success.ToString()))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBeEmpty();
 
-        await Success(1)
+        await Ok(1)
             .Async()
-            .EffectSuccessAsync(success => Task.Run(() => SuccessResult = success.ToString()))
+            .EffectOkAsync(success => Task.Run(() => SuccessResult = success.ToString()))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBe("1");
     }
     
     [TestMethod]
-    public async Task ResultShouldPerformEffectSuccess_4()
+    public async Task ResultShouldPerformEffecTOk_4()
     {
-        await Failure<int, string>("failure")
+        await Error<int, string>("Error")
             .Async()
-            .EffectSuccessAsync(() => Task.Run(() => SuccessResult = "success"))
+            .EffectOkAsync(() => Task.Run(() => SuccessResult = "success"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
 
         SuccessResult.ShouldBeEmpty();
 
-        await Success(1)
+        await Ok(1)
             .Async()
-            .EffectSuccessAsync(() => Task.Run(() => SuccessResult = "success"))
+            .EffectOkAsync(() => Task.Run(() => SuccessResult = "success"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
         SuccessResult.ShouldBe("success");
     }
 
     [TestMethod]
-    public async Task ResultShouldPerformEffectFailure_1()
+    public async Task ResultShouldPerformEffecTError_1()
     {
-        await Success<int, string>(1)
+        await Ok<int, string>(1)
             .Async()
-            .EffectFailureAsync(failure => FailureResult = failure)
+            .EffectErrorAsync(Error => ErrorResult = Error)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
         
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
-            .EffectFailureAsync(failure => FailureResult = failure)
+            .EffectErrorAsync(Error => ErrorResult = Error)
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
-    public async Task ResultShouldPerformEffectFailure_2()
+    public async Task ResultShouldPerformEffecTError_2()
     {
-        await Success<int, string>(1)
+        await Ok<int, string>(1)
             .Async()
-            .EffectFailureAsync(() => FailureResult = "fail")
+            .EffectErrorAsync(() => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
         
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
-            .EffectFailureAsync(() => FailureResult = "fail")
+            .EffectErrorAsync(() => ErrorResult = "fail")
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
     
     [TestMethod]
-    public async Task ResultShouldPerformEffectFailure_3()
+    public async Task ResultShouldPerformEffecTError_3()
     {
-        await Success<int, string>(1)
+        await Ok<int, string>(1)
             .Async()
-            .EffectFailureAsync(failure => Task.Run(() => FailureResult = failure))
+            .EffectErrorAsync(Error => Task.Run(() => ErrorResult = Error))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
         
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
-            .EffectFailureAsync(failure => Task.Run(() => FailureResult = failure))
+            .EffectErrorAsync(Error => Task.Run(() => ErrorResult = Error))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBe("failure!");
+        ErrorResult.ShouldBe("Error!");
     }
     
     [TestMethod]
-    public async Task ResultShouldPerformEffectFailure_4()
+    public async Task ResultShouldPerformEffecTError_4()
     {
-        await Success<int, string>(1)
+        await Ok<int, string>(1)
             .Async()
-            .EffectFailureAsync(() => Task.Run(() => FailureResult = "fail"))
+            .EffectErrorAsync(() => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBeEmpty();
+        ErrorResult.ShouldBeEmpty();
         
-        await Failure<int, string>("failure!")
+        await Error<int, string>("Error!")
             .Async()
-            .EffectFailureAsync(() => Task.Run(() => FailureResult = "fail"))
+            .EffectErrorAsync(() => Task.Run(() => ErrorResult = "fail"))
             .EffectAsync(output => output.AssertInstanceOfType(typeof(Unit)));
         
-        FailureResult.ShouldBe("fail");
+        ErrorResult.ShouldBe("fail");
     }
 }

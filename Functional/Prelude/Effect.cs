@@ -1,4 +1,6 @@
-﻿using Functional.Types;
+﻿using System.Security.AccessControl;
+
+using Functional.Types;
 
 namespace Functional;
 public static partial class Prelude
@@ -24,8 +26,11 @@ public static partial class Prelude
     /// <param name="input">The input value.</param>
     /// <param name="actions">Actions to perform on the input value.</param>
     /// <returns>Unit.</returns>
-    public static Unit Effect<T>(this T input, params Action<T>[] actions) =>
-        input.Tap(actions).Pipe(_ => Unit());
+    public static Unit Effect<T>(this T input, params Action<T>[] actions)
+    {
+        actions.ToList().ForEach(action => action(input));
+        return Unit();
+    }
 
     /// <summary>
     /// Perform effects ignoring the input value.
@@ -45,11 +50,14 @@ public static partial class Prelude
     /// </example>
     /// </summary>
     /// <typeparam name="T">The input type.</typeparam>
-    /// <param name="input">The ignored input.</param>
+    /// <param name="_">The ignored input.</param>
     /// <param name="actions">Actions to perform.</param>
     /// <returns>Unit.</returns>
-    public static Unit Effect<T>(this T input, params Action[] actions) =>
-        input.Tap(actions).Pipe(_ => Unit());
+    public static Unit Effect<T>(this T _, params Action[] actions)
+    {
+        actions.ToList().ForEach(action => action());
+        return Unit();
+    }
 
     /// <summary>
     /// Perform an effect that returns unit.
@@ -68,11 +76,11 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="action">An action to perform.</param>
+    /// <param name="actions">Actions to perform.</param>
     /// <returns>Unit.</returns>
-    public static Unit Effect(Action action)
+    public static Unit Effect(params Action[] actions)
     {
-        action();
+        actions.ToList().ForEach(action => action());
         return Unit();
     }
 
@@ -99,30 +107,33 @@ public static partial class Prelude
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        IEnumerable<Action<T>> actions,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(input =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential(input, actions, cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel(input, actions, cancellationToken),
-                    _ => Unit().Async()
-                });
+        params Action<T>[] actions) =>
+            await input.PipeAsync(value => RunSequential(value, actions));
 
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        Action<T> action,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-        await input.PipeAsync(input =>
-            processingOrder switch
-            {
-                ProcessingOrder.Sequential => RunSequential(input, [action], cancellationToken),
-                ProcessingOrder.Parallel => RunParallel(input, [action], cancellationToken),
-                _ => Unit().Async()
-            });
+        ProcessingOrder processingOrder,
+        params Action<T>[] actions) =>
+            await input.PipeAsync(value => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(value, actions) 
+                    : RunSequential(value, actions));
 
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        CancellationToken cancellationToken,
+        params Action<T>[] actions) =>
+            await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
+
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<T>[] actions) =>
+            await input.PipeAsync(value => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(value, actions, cancellationToken) 
+                    : RunSequential(value, actions, cancellationToken));
 
 
     /// <summary>
@@ -149,29 +160,33 @@ public static partial class Prelude
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        IEnumerable<Action> actions,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(() =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential(actions, cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel(actions, cancellationToken),
-                    _ => Unit().Async()
-                });
+        params Action[] actions) =>
+            await input.PipeAsync(() => RunSequential(actions));
 
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        Action action,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(() =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential([action], cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel([action], cancellationToken),
-                    _ => Unit().Async()
-                });
+        ProcessingOrder processingOrder,
+        params Action[] actions) =>
+        await input.PipeAsync(() => 
+            processingOrder == ProcessingOrder.Parallel 
+                ? RunParallel(actions) 
+                : RunSequential(actions));
+
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        CancellationToken cancellationToken,
+        params Action[] actions) =>
+            await input.PipeAsync(() => RunSequential(actions, cancellationToken));
+
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] actions) =>
+            await input.PipeAsync(() => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(actions, cancellationToken) 
+                    : RunSequential(actions, cancellationToken));
 
     /// <summary>
     /// Perform effects on the input value.
@@ -196,29 +211,33 @@ public static partial class Prelude
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        IEnumerable<Func<T, Task>> actions,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(input =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential(input, actions, cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel(input, actions, cancellationToken),
-                    _ => Unit().Async()
-                });
+        params Func<T, Task>[] actions) =>
+            await input.PipeAsync(value => RunSequential(value, actions));
 
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        Func<T, Task> action,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(input =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential(input, [action], cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel(input, [action], cancellationToken),
-                    _ => Unit().Async()
-                });
+        ProcessingOrder processingOrder,
+        params Func<T, Task>[] actions) =>
+            await input.PipeAsync(value => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(value, actions) 
+                    : RunSequential(value, actions));
+
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        CancellationToken cancellationToken,
+        params Func<T, Task>[] actions) =>
+            await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
+
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<T, Task>[] actions) =>
+            await input.PipeAsync(value => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(value, actions, cancellationToken) 
+                    : RunSequential(value, actions, cancellationToken));
 
     /// <summary>
     /// Perform effects ignoring the input value.
@@ -242,40 +261,33 @@ public static partial class Prelude
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        IEnumerable<Func<Task>> actions,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(() =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential(actions, cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel(actions, cancellationToken),
-                    _ => Unit().Async()
-                });
+        params Func<Task>[] actions) =>
+            await input.PipeAsync(() => RunSequential(actions));
 
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
-        Func<Task> action,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await input.PipeAsync(() =>
-                processingOrder switch
-                {
-                    ProcessingOrder.Sequential => RunSequential([action], cancellationToken),
-                    ProcessingOrder.Parallel => RunParallel([action], cancellationToken),
-                    _ => Unit().Async()
-                });
+        ProcessingOrder processingOrder,
+        params Func<Task>[] actions) =>
+            await input.PipeAsync(() => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(actions) 
+                    : RunSequential(actions));
 
-    public static async Task<Unit> EffectAsync(
-        IEnumerable<Action> actions,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await (processingOrder switch
-            {
-                ProcessingOrder.Sequential => RunSequential(actions, cancellationToken),
-                ProcessingOrder.Parallel => RunParallel(actions, cancellationToken),
-                _ => Unit().Async()
-            });
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        CancellationToken cancellationToken,
+        params Func<Task>[] actions) =>
+            await input.PipeAsync(() => RunSequential(actions, cancellationToken));
+
+    public static async Task<Unit> EffectAsync<T>(
+        this Task<T> input,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] actions) =>
+            await input.PipeAsync(() => 
+                processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(actions, cancellationToken) 
+                    : RunSequential(actions, cancellationToken));
 
     /// <summary>
     /// Perform an effect which returns unit.
@@ -290,15 +302,28 @@ public static partial class Prelude
     /// <param name="action">An action to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
-        Action action,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await (processingOrder switch
-            {
-                ProcessingOrder.Sequential => RunSequential([action], cancellationToken),
-                ProcessingOrder.Parallel => RunParallel([action], cancellationToken),
-                _ => Unit().Async()
-            });
+        params Action[] actions) =>
+            await RunSequential(actions);
+
+    public static async Task<Unit> EffectAsync(
+        ProcessingOrder processingOrder,
+        params Action[] actions) =>
+            await (processingOrder == ProcessingOrder.Parallel 
+                    ? RunParallel(actions) 
+                    : RunSequential(actions));
+
+    public static async Task<Unit> EffectAsync(
+        CancellationToken cancellationToken,
+        params Action[] actions) =>
+            await RunSequential(actions, cancellationToken);
+
+    public static async Task<Unit> EffectAsync(
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] actions) =>
+        await (processingOrder == ProcessingOrder.Parallel 
+                ? RunParallel(actions, cancellationToken) 
+                : RunSequential(actions, cancellationToken));
 
     /// <summary>
     /// Perform an effect which returns unit.
@@ -314,37 +339,27 @@ public static partial class Prelude
     /// <param name="actions">Actions to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
-        IEnumerable<Func<Task>> actions,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await (processingOrder switch
-            {
-                ProcessingOrder.Sequential => RunSequential(actions, cancellationToken),
-                ProcessingOrder.Parallel => RunParallel(actions, cancellationToken),
-                _ => Unit().Async()
-            });
+        params Func<Task>[] actions) =>
+            await RunSequential(actions);
 
-    /// <summary>
-    /// Perform an effect which returns unit.
-    /// <example>
-    /// <br/><br/>Example:
-    /// <code>
-    /// Task doWork() => Effect(() => Console.WriteLine("doing work")).Async();
-    /// 
-    /// await EffectAsync(doWork);
-    /// </code>
-    /// </example>
-    /// </summary>
-    /// <param name="action">Action to perform.</param>
-    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
-        Func<Task> action,
-        ProcessingOrder processingOrder = ProcessingOrder.Sequential,
-        CancellationToken cancellationToken = default) =>
-            await (processingOrder switch
-            {
-                ProcessingOrder.Sequential => RunSequential([action], cancellationToken),
-                ProcessingOrder.Parallel => RunParallel([action], cancellationToken),
-                _ => Unit().Async()
-            });
+        ProcessingOrder processingOrder,
+        params Func<Task>[] actions) =>
+        await (processingOrder == ProcessingOrder.Parallel 
+                ? RunParallel(actions) 
+                : RunSequential(actions));
+
+    public static async Task<Unit> EffectAsync(
+        CancellationToken cancellationToken,
+        params Func<Task>[] actions) =>
+            await RunSequential(actions, cancellationToken);
+
+    public static async Task<Unit> EffectAsync(
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] actions) =>
+        await (processingOrder == ProcessingOrder.Parallel 
+                ? RunParallel(actions, cancellationToken) 
+                : RunSequential(actions, cancellationToken));
+
 }

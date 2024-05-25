@@ -16,66 +16,66 @@ public class BindTests
     [TestMethod]
     public async Task ItShouldBindAsync_1()
     {
-        await Success(10)
+        await Ok(10)
             .Async()
             .BindAsync(BindingFunction)
             .EffectAsync(output =>
             {
                 output.AssertInstanceOfType(typeof(Result<int, Exception>));
-                output.IsSuccess.ShouldBeTrue();
+                output.IsOk.ShouldBeTrue();
             });
 
-        await Success(30)
+        await Ok(30)
             .Async()
             .BindAsync(BindingFunction)
             .EffectAsync(output =>
             {
                 output.AssertInstanceOfType(typeof(Result<int, Exception>));
-                output.IsSuccess.ShouldBeFalse();
-                output.UnwrapFailure().Message.ShouldBe("Value too high");
+                output.IsOk.ShouldBeFalse();
+                output.UnwrapError().Message.ShouldBe("Value too high");
             });
 
-        await Failure<int>(new Exception("Initial failure"))
+        await Error<int>(new Exception("Initial Error"))
             .Async()
             .BindAsync(BindingFunction)
             .EffectAsync(output =>
             {
                 output.AssertInstanceOfType(typeof(Result<int, Exception>));
-                output.IsFailure.ShouldBeTrue();
-                output.UnwrapFailure().Message.ShouldBe("Initial failure");
+                output.IsError.ShouldBeTrue();
+                output.UnwrapError().Message.ShouldBe("Initial Error");
             });
     }
 
     [TestMethod]
     public async Task ItShouldBindAsync_2()
     {
-        await Success(10)
+        await Ok(10)
             .Async()
             .BindAsync(BindingFunctionAsync)
             .EffectAsync(output =>
             {
                 output.AssertInstanceOfType(typeof(Result<int, Exception>));
-                output.IsSuccess.ShouldBeTrue();
+                output.IsOk.ShouldBeTrue();
             });
 
-        await Success(30)
+        await Ok(30)
             .Async()
             .BindAsync(BindingFunctionAsync)
             .EffectAsync(output =>
             {
                 output.AssertInstanceOfType(typeof(Result<int, Exception>));
-                output.IsSuccess.ShouldBeFalse();
-                output.UnwrapFailure().Message.ShouldBe("Value too high");
+                output.IsOk.ShouldBeFalse();
+                output.UnwrapError().Message.ShouldBe("Value too high");
             });
 
-        await Failure<int>(new Exception("Initial failure"))
+        await Error<int>(new Exception("Initial Error"))
             .Async()
             .BindAsync(BindingFunctionAsync)
             .EffectAsync(output =>
             {
                 output.AssertInstanceOfType(typeof(Result<int, Exception>));
-                output.IsFailure.ShouldBeTrue();
-                output.UnwrapFailure().Message.ShouldBe("Initial failure");
+                output.IsError.ShouldBeTrue();
+                output.UnwrapError().Message.ShouldBe("Initial Error");
             });
     }
 }
