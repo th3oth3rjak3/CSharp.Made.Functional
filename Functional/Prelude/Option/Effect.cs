@@ -354,9 +354,9 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Action<T> doWhenSome) where T : notnull =>
+    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Action<T>[] doWhenSome) where T : notnull =>
         (await optional)
-            .Effect(doWhenSome, () => { });
+            .EffectSome(doWhenSome);
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is Some.
@@ -381,9 +381,10 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Action doWhenSome) where T : notnull =>
-        (await optional)
-            .Effect(_ => doWhenSome(), () => { });
+    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Action[] doWhenSome)
+        where T : notnull =>
+            (await optional)
+                .EffectSome(doWhenSome);
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is Some.
@@ -412,15 +413,12 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Func<T, Task> doWhenSome) where T : notnull
+    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Func<T, Task>[] doWhenSome) where T : notnull
     {
         var option = await optional;
-        if (option.IsSome)
-        {
-            await doWhenSome(option.Unwrap()!);
-        }
-
-        return Unit();
+        return option.IsSome
+            ? await RunSequential(option.Unwrap(), doWhenSome)
+            : Unit();
     }
 
     /// <summary>
@@ -450,15 +448,12 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, Func<Task> doWhenSome) where T : notnull
+    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Func<Task>[] doWhenSome) where T : notnull
     {
         var option = await optional;
-        if (option.IsSome)
-        {
-            await doWhenSome();
-        }
-
-        return Unit();
+        return option.IsSome
+            ? await RunSequential(doWhenSome)
+            : Unit();
     }
 
     /// <summary>
@@ -485,9 +480,10 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, Action doWhenNone) where T : notnull =>
-        (await optional)
-            .Effect(_ => { }, doWhenNone);
+    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, params Action[] doWhenNone)
+        where T : notnull =>
+            (await optional)
+                .EffectNone(doWhenNone);
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is None.
@@ -517,11 +513,11 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, Func<Task> doWhenNone) where T : notnull
+    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, params Func<Task>[] doWhenNone) where T : notnull
     {
         var option = await optional;
-        if (option.IsNone) await doWhenNone();
-
-        return Unit();
+        return option.IsNone
+            ? await RunSequential(doWhenNone)
+            : Unit();
     }
 }

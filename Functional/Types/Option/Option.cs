@@ -277,7 +277,7 @@ public sealed record Option<T>
     }
 
     /// <summary>
-    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// Extract the contents of an Option when Some. Otherwise, return the alternate value when None.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -305,7 +305,7 @@ public sealed record Option<T>
             () => alternate);
 
     /// <summary>
-    /// Extract the contents of an Option when Some. Otherwise return the alternate value when None.
+    /// Extract the contents of an Option when Some. Otherwise, return the alternate value when None.
     /// <example>
     /// <br/><br/>Example:
     /// <code>
@@ -419,9 +419,11 @@ public sealed record Option<T>
     /// </example>
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
-    public Unit EffectSome(Action<T> doWhenSome)
+    public Unit EffectSome(params Action<T>[] doWhenSome)
     {
-        if (IsSome) doWhenSome(Unwrap());
+        if (IsNone) return Unit.Default;
+        var value = Unwrap();
+        doWhenSome.ToList().ForEach(action => action(value));
         return new Unit();
     }
 
@@ -442,9 +444,9 @@ public sealed record Option<T>
     /// </example>
     /// </summary>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
-    public Unit EffectSome(Action doWhenSome)
+    public Unit EffectSome(params Action[] doWhenSome)
     {
-        if (IsSome) doWhenSome();
+        if (IsSome) doWhenSome.ToList().ForEach(action => action());
         return new Unit();
     }
 
@@ -465,9 +467,9 @@ public sealed record Option<T>
     /// </example>
     /// </summary>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
-    public Unit EffectNone(Action doWhenNone)
+    public Unit EffectNone(params Action[] doWhenNone)
     {
-        if (IsNone) doWhenNone();
+        if (IsNone) doWhenNone.ToList().ForEach(action => action());
         return new Unit();
     }
 
@@ -558,10 +560,8 @@ public sealed record Option<T>
     public Option<T> TapSome(params Action<T>[] whenSome)
     {
         if (IsNone) return this;
-
         var unwrapped = Unwrap();
         whenSome.ToList().ForEach(action => action(unwrapped));
-
         return this;
     }
 
