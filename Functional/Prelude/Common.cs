@@ -10,6 +10,13 @@ public static partial class Prelude
     /// </summary>
     public static Unit Unit() => new();
 
+    /// <summary>
+    /// Provide an alternative value to unit
+    /// </summary>
+    /// <typeparam name="TOutput">Alternative value type</typeparam>
+    /// <param name="unit">The async unit to await.</param>
+    /// <param name="other">Alternative value</param>
+    /// <returns>Alternative value</returns>
     public static async Task<TOutput> PipeAsync<TOutput>(this Task<Unit> unit, TOutput other) =>
         (await unit).Pipe(other);
 

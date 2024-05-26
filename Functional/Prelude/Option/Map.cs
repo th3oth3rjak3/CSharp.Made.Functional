@@ -179,7 +179,7 @@ public static partial class Prelude
     /// <param name="mapper">A mapping function to convert the contents of a Some.</param>
     /// <returns>The mapped collection.</returns>
     public static IEnumerable<Option<TResult>> Map<T, TResult>(this IEnumerable<Option<T>> collection, Func<TResult> mapper) where T : notnull where TResult : notnull =>
-        collection.Select(option => option.Map(_ => mapper()));
+        collection.Select(option => option.Map(mapper));
 
     /// <summary>
     /// Map a collection of options using a mapping function when an option is Some.

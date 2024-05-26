@@ -66,7 +66,7 @@ public class ExceptionTests
             .Match(ok => ok, exn => exn.Message)
             .ShouldBe("Something bad happened.");
 
-    public static string AlwaysThrows(int number) =>
+    private static string AlwaysThrows(int number) =>
         throw new Exception("Something bad happened.");
 
     [TestMethod]
@@ -81,4 +81,100 @@ public class ExceptionTests
             .MatchAsync(ok => ok, exn => exn.Message)
             .TapAsync(msg => msg.ShouldBe("success"));
 
+    [TestMethod]
+    public void ItShouldTryWithAction()
+    {
+        var output = string.Empty;
+        Try(ItThrows)
+            .Effect(
+                _ => throw new ShouldAssertException("it should have been error"),
+                err => err.Message.ShouldBe("error"));
+
+        output.ShouldBeEmpty();
+
+        Try(ItDoesntThrow)
+            .Effect(
+                ok => ok.ShouldBe(Unit()),
+                _ => throw new ShouldAssertException("it should have been ok"));
+
+        output.ShouldBe("success");
+        
+        return;
+        void ItThrows() => throw new Exception("error");
+        void ItDoesntThrow() => output = "success";
+    }
+
+    [TestMethod]
+    public void ItShouldTryWithActionT()
+    {
+        var output = string.Empty;
+        "input"
+            .Try(ItThrows)
+            .Effect(
+                _ => throw new ShouldAssertException("it should have been error"),
+                err => err.Message.ShouldBe("error"));
+
+        output.ShouldBeEmpty();
+        
+        "input"
+            .Try(ItDoesntThrow)
+            .Effect(
+                ok => ok.ShouldBe(Unit()),
+                _ => throw new ShouldAssertException("it should have been ok"));
+
+        output.ShouldBe("input");
+        
+        return;
+        void ItThrows(string input) => throw new Exception("error");
+        void ItDoesntThrow(string input) => output = input;
+    }
+
+    [TestMethod]
+    public async Task TryAsyncShouldWorkWithActions()
+    {
+        await TryAsync(ItThrows)
+            .EffectAsync(
+                ok => throw new ShouldAssertException("it should have been error"),
+                err => err.Message.ShouldBe("error"));
+
+        var output = string.Empty;
+
+        await TryAsync(ItDoesntThrow)
+            .EffectAsync(
+                ok => ok.ShouldBe(Unit()),
+                err => throw new ShouldAssertException("It should have been ok"));
+        
+        output.ShouldBe("success");
+
+        return;
+
+        void ItThrows() => throw new Exception("error");
+        void ItDoesntThrow() => output = "success";
+    }
+
+    [TestMethod]
+    public async Task TryAsyncShouldWorkWithActionT()
+    {
+        var output = string.Empty;
+
+        await "input"
+            .Async()
+            .TryAsync(ItThrows)
+            .EffectAsync(
+                ok => throw new ShouldAssertException("It should have been error"),
+                err => err.Message.ShouldBe("error"));
+
+        await "input"
+            .Async()
+            .TryAsync(ItDoesntThrow)
+            .EffectAsync(
+                ok => ok.ShouldBe(Unit()),
+                err => throw new ShouldAssertException("it should have been ok"));
+
+        output.ShouldBe("input");
+
+        return;
+        void ItThrows(string input) => throw new Exception("error");
+        void ItDoesntThrow(string input) => output = input;
+    }
 }

@@ -4,74 +4,102 @@
 [TestClass]
 public class TapTests
 {
+    private readonly List<string> effects = [];
 
-    /// <summary>
-    /// A test object to mock data mutation behavior.
-    /// </summary>
-    private class TestObject
+    [TestInitialize]
+    public void Reset() => effects.Clear();
+
+    [TestMethod]
+    public void ItShouldTapInputs_1()
     {
-        internal int Value { get; set; }
+        "input"
+            .Tap(
+                i => effects.Add(i),
+                i => effects.Add(i + "!"))
+            .AssertInstanceOfType(typeof(string))
+            .ShouldBe("input");
 
-        internal void AddOne() => Value++;
-
-        internal Task<int> AddOneAsync()
-        {
-            AddOne();
-            return Value.Async();
-        }
+        effects.Count.ShouldBe(2);
+        effects[0].ShouldBe("input");
+        effects[1].ShouldBe("input!");
     }
-
-    /// <summary>
-    /// A test record to verify behavior mapping with records.
-    /// </summary>
-    /// <param name="Value">The value to store.</param>
-    private record TestRecord(int Value);
-
+    
     [TestMethod]
-    public void ItShouldTapResults() =>
-        new TestObject { Value = 1 }
-            .Tap(objToChange => objToChange.Value = 2)
-            .ShouldBeEquivalentTo(new TestObject() { Value = 2 });
-
-    [TestMethod]
-    public void ItShouldTapResultsWithOldValues() =>
-        new TestRecord(1)
-            .Tap(objToChange => (objToChange with { Value = 2 }).Ignore())
-            .ShouldBe(new TestRecord(1));
-
-    [TestMethod]
-    public async Task ItShouldAllowActionsPassedToTapAsync() =>
-        await new TestObject { Value = 1 }
-            .Async()
-            .TapAsync(obj => obj.AddOne())
-            .TapAsync(obj => obj.Value.ShouldBe(2));
-
-    [TestMethod]
-    public async Task ItShouldAllowTaskMappersToBePassedToTapAsync() =>
-        await new TestObject { Value = 1 }
-            .Async()
-            .PipeAsync(obj => obj.AddOneAsync())
-            .TapAsync(Task.FromResult)
-            .TapAsync(number => number.ShouldBe(2));
-
-    [TestMethod]
-    public void ItShouldTapWithNonReturningActions()
+    public void ItShouldTapInputs_2()
     {
-        var result1 = false;
-        var result2 = false;
+        "input"
+            .Tap(
+                () => effects.Add("effect"),
+                () => effects.Add("effect!"))
+            .AssertInstanceOfType(typeof(string))
+            .ShouldBe("input");
 
-        "string"
-            .Tap(() => result1 = true, () => result2 = true)
-            .Tap(value => value.ShouldBe("string"));
-
-        result1.ShouldBeTrue();
-        result2.ShouldBeTrue();
+        effects.Count.ShouldBe(2);
+        effects[0].ShouldBe("effect");
+        effects[1].ShouldBe("effect!");
     }
-
+    
     [TestMethod]
-    public async Task ItShouldTapAsync() =>
-    await new List<int> { 1 }
-        .Async()
-        .TapAsync(lst => lst.Add(2))
-        .TapAsync(lst => lst.ShouldBeEquivalentTo(new List<int> { 1, 2 }));
+    public async Task ItShouldTapInputsAsync_1()
+    {
+        await "input"
+            .Async()
+            .TapAsync(
+                i => effects.Add(i),
+                i => effects.Add(i + "!"))
+            .AssertInstanceOfType(typeof(Task<string>))
+            .EffectAsync(output => output.ShouldBe("input"));
+
+        effects.Count.ShouldBe(2);
+        effects[0].ShouldBe("input");
+        effects[1].ShouldBe("input!");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldTapInputsAsync_2()
+    {
+        await "input"
+            .Async()
+            .TapAsync(
+                () => effects.Add("effect"),
+                () => effects.Add("effect!"))
+            .AssertInstanceOfType(typeof(Task<string>))
+            .EffectAsync(output => output.ShouldBe("input"));
+
+        effects.Count.ShouldBe(2);
+        effects[0].ShouldBe("effect");
+        effects[1].ShouldBe("effect!");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldTapInputsAsync_3()
+    {
+        await "input"
+            .Async()
+            .TapAsync(
+                i => EffectAsync(() => effects.Add(i)),
+                i => EffectAsync(() => effects.Add(i + "!")))
+            .AssertInstanceOfType(typeof(Task<string>))
+            .EffectAsync(output => output.ShouldBe("input"));
+
+        effects.Count.ShouldBe(2);
+        effects[0].ShouldBe("input");
+        effects[1].ShouldBe("input!");
+    }
+    
+    [TestMethod]
+    public async Task ItShouldTapInputsAsync_4()
+    {
+        await "input"
+            .Async()
+            .TapAsync(
+                () => EffectAsync(() => effects.Add("effect")),
+                () => EffectAsync(() => effects.Add("effect!")))
+            .AssertInstanceOfType(typeof(Task<string>))
+            .EffectAsync(output => output.ShouldBe("input"));
+
+        effects.Count.ShouldBe(2);
+        effects[0].ShouldBe("effect");
+        effects[1].ShouldBe("effect!");
+    }
 }

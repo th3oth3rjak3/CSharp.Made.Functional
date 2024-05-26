@@ -2,6 +2,8 @@
 
 public static partial class Prelude
 {
+    // TODO: documentation
+    // TODO: examples
     public static async Task<Unit> RunSequential<T>(
         T input,
         IEnumerable<Func<T, Task>> actions,
@@ -16,6 +18,8 @@ public static partial class Prelude
         return Unit();
     }
 
+    // TODO: documentation
+    // TODO: examples
     public static async Task<Unit> RunSequential(
         IEnumerable<Func<Task>> actions,
         CancellationToken cancellationToken = default)
@@ -29,12 +33,14 @@ public static partial class Prelude
         return Unit();
     }
 
-    public static Task<Unit> RunSequential<T>(
+    // TODO: documentation
+    // TODO: examples
+    public static Unit RunSequential<T>(
         T input,
         IEnumerable<Action<T>> actions,
         CancellationToken cancellationToken = default)
     {
-        var returnValue = Unit().Async();
+        var returnValue = Unit();
         foreach (var action in actions)
         {
             if (cancellationToken.IsCancellationRequested) return returnValue;
@@ -44,20 +50,24 @@ public static partial class Prelude
         return returnValue;
     }
 
+    // TODO: documentation
+    // TODO: examples
     public static Task<Unit> RunSequential(
         IEnumerable<Action> actions,
         CancellationToken cancellationToken = default)
     {
-        var returnValue = Unit().Async();
         foreach (var action in actions)
         {
-            if (cancellationToken.IsCancellationRequested) return returnValue;
+            if (cancellationToken.IsCancellationRequested) return Unit().Async();
             action();
         }
 
-        return returnValue;
+        return Unit().Async();
     }
 
+    // TODO: documentation
+    // TODO: examples
+    // todo: tests
     public static async Task<Unit> RunParallel<T>(
         T input,
         IEnumerable<Func<T, Task>> actions,
@@ -65,7 +75,7 @@ public static partial class Prelude
     {
         ParallelOptions options = new()
         {
-            CancellationToken = cancellationToken, 
+            CancellationToken = cancellationToken,
             MaxDegreeOfParallelism = Environment.ProcessorCount
         };
 
@@ -80,7 +90,7 @@ public static partial class Prelude
                     await action(input);
                 });
         }
-        catch (OperationCanceledException _)
+        catch (OperationCanceledException)
         {
             return Unit();
         }
@@ -88,13 +98,16 @@ public static partial class Prelude
         return Unit();
     }
 
+    // TODO: documentation
+    // TODO: examples
+    // todo: tests
     public static async Task<Unit> RunParallel(
         IEnumerable<Func<Task>> actions,
         CancellationToken cancellationToken = default)
     {
         ParallelOptions options = new()
         {
-            CancellationToken = cancellationToken, 
+            CancellationToken = cancellationToken,
             MaxDegreeOfParallelism = Environment.ProcessorCount
         };
 
@@ -117,6 +130,9 @@ public static partial class Prelude
         return Unit();
     }
 
+    // TODO: documentation
+    // TODO: examples
+    // todo: tests
     public static async Task<Unit> RunParallel<T>(
         T input,
         IEnumerable<Action<T>> actions,
@@ -124,7 +140,7 @@ public static partial class Prelude
     {
         ParallelOptions options = new()
         {
-            CancellationToken = cancellationToken, 
+            CancellationToken = cancellationToken,
             MaxDegreeOfParallelism = Environment.ProcessorCount
         };
 
@@ -150,13 +166,16 @@ public static partial class Prelude
         return Unit();
     }
 
+    // todo: tests
+    // TODO: documentation
+    // TODO: examples
     public static async Task<Unit> RunParallel(
         IEnumerable<Action> actions,
         CancellationToken cancellationToken = default)
     {
         ParallelOptions options = new()
         {
-            CancellationToken = cancellationToken, 
+            CancellationToken = cancellationToken,
             MaxDegreeOfParallelism = Environment.ProcessorCount
         };
 

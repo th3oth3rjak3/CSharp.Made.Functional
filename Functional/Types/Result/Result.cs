@@ -5,9 +5,9 @@
 /// This is the primary way to return error types from a function
 /// rather than throwing exceptions.
 /// </summary>
-/// <typeparam name="TOk">The type of the inner object when Ok.</typeparam>
-/// <typeparam name="TError">The type of the inner object when Error.</typeparam>
-public sealed record Result<TOk, TError>
+/// <typeparam name="Ok">The type of the inner object when Ok.</typeparam>
+/// <typeparam name="Error">The type of the inner object when Error.</typeparam>
+public sealed record Result<Ok, Error>
 {
     /// <summary>
     /// The internal state of the Result.
@@ -26,12 +26,12 @@ public sealed record Result<TOk, TError>
     /// <summary>
     /// The contents of the result when the result is Ok.
     /// </summary>
-    private readonly TOk okContents;
+    private readonly Ok okContents;
 
     /// <summary>
     /// The contents of the result when the result is Error.
     /// </summary>
-    private readonly TError errorContents;
+    private readonly Error errorContents;
 
     /// <summary>
     /// Construct a new Result.
@@ -43,7 +43,7 @@ public sealed record Result<TOk, TError>
     /// </example>
     /// </summary>
     /// <param name="ok">An instance of the value for when the Result is Ok.</param>
-    public Result(TOk ok)
+    public Result(Ok ok)
     {
         okContents = ok;
         errorContents = default!;
@@ -60,7 +60,7 @@ public sealed record Result<TOk, TError>
     /// </example>
     /// </summary>
     /// <param name="error">An instance of the value for when the Result is Error.</param>
-    public Result(TError error)
+    public Result(Error error)
     {
         okContents = default!;
         errorContents = error;
@@ -82,7 +82,7 @@ public sealed record Result<TOk, TError>
     /// </example>
     /// </summary>
     /// <param name="ok">The value to be converted into a Result.</param>
-    public static implicit operator Result<TOk, TError>(TOk ok) =>
+    public static implicit operator Result<Ok, Error>(Ok ok) =>
         new(ok);
 
     /// <summary>
@@ -100,7 +100,7 @@ public sealed record Result<TOk, TError>
     /// </example>
     /// </summary>
     /// <param name="error">The Error to be converted into a Result.</param>
-    public static implicit operator Result<TOk, TError>(TError error) =>
+    public static implicit operator Result<Ok, Error>(Error error) =>
         new(error);
 
     /// <summary>
@@ -131,7 +131,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the result was Error and was unwrapped as Ok.</exception>
-    public TOk Unwrap()
+    public Ok Unwrap()
     {
         if (IsOk) return okContents;
 
@@ -156,7 +156,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the result was Ok and was unwrapped as Error.</exception>
-    public TError UnwrapError()
+    public Error UnwrapError()
     {
         if (IsError) return errorContents;
 
@@ -180,7 +180,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform some function on the Ok result.</param>
     /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TOk, TResult> onOk, Func<TError, TResult> onError) =>
+    public TResult Match<TResult>(Func<Ok, TResult> onOk, Func<Error, TResult> onError) =>
         IsOk
             ? onOk(Unwrap())
             : onError(UnwrapError());
@@ -202,7 +202,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform some function on the Ok result.</param>
     /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TResult> onOk, Func<TError, TResult> onError) =>
+    public TResult Match<TResult>(Func<TResult> onOk, Func<Error, TResult> onError) =>
         IsOk
             ? onOk()
             : onError(UnwrapError());
@@ -224,7 +224,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform some function on the Ok result.</param>
     /// <param name="onError">Perform some function on the Error result.</param>
     /// <returns>The result of executing the appropriate mapping function.</returns>
-    public TResult Match<TResult>(Func<TOk, TResult> onOk, Func<TResult> onError) =>
+    public TResult Match<TResult>(Func<Ok, TResult> onOk, Func<TResult> onError) =>
         IsOk
             ? onOk(Unwrap())
             : onError();
@@ -264,10 +264,10 @@ public sealed record Result<TOk, TError>
     /// <typeparam name="TMappedOk">The type of the converted input.</typeparam>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public Result<TMappedOk, TError> Map<TMappedOk>(Func<TOk, TMappedOk> mapper) =>
+    public Result<TMappedOk, Error> Map<TMappedOk>(Func<Ok, TMappedOk> mapper) =>
         IsOk
-            ? new Result<TMappedOk, TError>(mapper(Unwrap()))
-            : new Result<TMappedOk, TError>(UnwrapError());
+            ? new Result<TMappedOk, Error>(mapper(Unwrap()))
+            : new Result<TMappedOk, Error>(UnwrapError());
 
     /// <summary>
     /// Map an Ok result from a previous operation to a new result.
@@ -282,10 +282,10 @@ public sealed record Result<TOk, TError>
     /// <typeparam name="TMappedOk">The type of the converted input.</typeparam>
     /// <param name="mapper">A mapping function to convert the contents of the old result to the new contents.</param>
     /// <returns>A new result after the mapping operation has taken place.</returns>
-    public Result<TMappedOk, TError> Map<TMappedOk>(Func<TMappedOk> mapper) =>
+    public Result<TMappedOk, Error> Map<TMappedOk>(Func<TMappedOk> mapper) =>
         IsOk
-            ? new Result<TMappedOk, TError>(mapper())
-            : new Result<TMappedOk, TError>(UnwrapError());
+            ? new Result<TMappedOk, Error>(mapper())
+            : new Result<TMappedOk, Error>(UnwrapError());
 
     /// <summary>
     /// Map a result with one Error type to another.
@@ -300,10 +300,10 @@ public sealed record Result<TOk, TError>
     /// <param name="errorMapper">A function to transform one Error to another.</param>
     /// <typeparam name="TMappedError">The type for the new Error.</typeparam>
     /// <returns>A result with a mapped Error.</returns>
-    public Result<TOk, TMappedError> MapError<TMappedError>(Func<TError, TMappedError> errorMapper) =>
+    public Result<Ok, TMappedError> MapError<TMappedError>(Func<Error, TMappedError> errorMapper) =>
         IsOk
-            ? new Result<TOk, TMappedError>(Unwrap())
-            : new Result<TOk, TMappedError>(errorMapper(UnwrapError()));
+            ? new Result<Ok, TMappedError>(Unwrap())
+            : new Result<Ok, TMappedError>(errorMapper(UnwrapError()));
 
     /// <summary>
     /// Map a result with one Error type to another.
@@ -318,11 +318,85 @@ public sealed record Result<TOk, TError>
     /// <param name="errorMapper">A function to transform one Error to another.</param>
     /// <typeparam name="TMappedError">The type for the new Error.</typeparam>
     /// <returns>A result with a mapped Error.</returns>
-    public Result<TOk, TMappedError> MapError<TMappedError>(Func<TMappedError> errorMapper) =>
+    public Result<Ok, TMappedError> MapError<TMappedError>(Func<TMappedError> errorMapper) =>
         IsOk
-            ? new Result<TOk, TMappedError>(Unwrap())
-            : new Result<TOk, TMappedError>(errorMapper());
+            ? new Result<Ok, TMappedError>(Unwrap())
+            : new Result<Ok, TMappedError>(errorMapper());
+    
+    /// <summary>
+    /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Ok(42)
+    ///     .Reduce(0)
+    ///     .Effect(output => Assert.AreEqual(output, 42));
+    ///
+    /// Error&lt;int&gt;("error")
+    ///     .Reduce(0)
+    ///     .Effect(output => Assert.AreEqual(output, 0);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="alternate">An alternate value.</param>
+    /// <returns>When success, the contents, otherwise the alternate.</returns>
+    public Ok Reduce(Ok alternate) => 
+        IsOk 
+            ? Unwrap() 
+            : alternate;
 
+    /// <summary>
+    /// When the result is Ok, return its contents, 
+    /// otherwise execute the function to produce an alternate value discarding the error.
+    /// This method is good for when the alternate function might be 
+    /// computationally expensive.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Ok(42)
+    ///     .Reduce(() => 0)
+    ///     .Effect(output => Assert.AreEqual(output, 42));
+    ///
+    /// Error&lt;int&gt;("error")
+    ///     .Reduce(() => 0)
+    ///     .Effect(output => Assert.AreEqual(output, 0));
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="alternate">A function that takes no inputs, but produces an
+    /// alternate value.</param>
+    /// <returns>When Ok, the contents, otherwise the return value of
+    /// the alternate function.</returns>
+    public Ok Reduce(Func<Ok> alternate) =>
+        IsOk
+            ? Unwrap()
+            : alternate();
+
+    /// <summary>
+    /// When the result is Ok, return its contents, 
+    /// otherwise execute the function to produce an alternate value using the error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Ok&lt;string, Exception&gt;("hello, world")
+    ///     .Reduce(err => err.Message)
+    ///     .Effect(output => Assert.AreEqual(output, "hello, world"));
+    ///
+    /// Error&lt;string, Exception&gt;(new Exception("error"))
+    ///     .Reduce(err => err.Message)
+    ///     .Effect(output => Assert.AreEqual(output, "error"));
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="alternate">A function which uses an Error 
+    /// result to return an alternate.</param>
+    /// <returns>When Ok, the contents, otherwise the return
+    /// value of the alternate.</returns>
+    public Ok Reduce(Func<Error, Ok> alternate) =>
+        IsOk
+            ? Unwrap()
+            : alternate(UnwrapError());
+    
     /// <summary>
     /// Perform work on a previous result. When the result is Ok,
     /// perform work on the result by providing a function.
@@ -354,10 +428,10 @@ public sealed record Result<TOk, TError>
     /// <param name="binder">The function to perform when the 
     /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public Result<TMappedOk, TError> Bind<TMappedOk>(Func<TOk, Result<TMappedOk, TError>> binder) =>
+    public Result<TMappedOk, Error> Bind<TMappedOk>(Func<Ok, Result<TMappedOk, Error>> binder) =>
         IsOk
             ? binder(Unwrap())
-            : new Result<TMappedOk, TError>(UnwrapError());
+            : new Result<TMappedOk, Error>(UnwrapError());
 
     /// <summary>
     /// Perform work on a previous result. When the result is Ok,
@@ -385,10 +459,10 @@ public sealed record Result<TOk, TError>
     /// <param name="binder">The function to perform when the 
     /// previous result is Ok.</param>
     /// <returns>The result of the bind operation.</returns>
-    public Result<TMappedOk, TError> Bind<TMappedOk>(Func<Result<TMappedOk, TError>> binder) =>
+    public Result<TMappedOk, Error> Bind<TMappedOk>(Func<Result<TMappedOk, Error>> binder) =>
         IsOk
             ? binder()
-            : new Result<TMappedOk, TError>(UnwrapError());
+            : new Result<TMappedOk, Error>(UnwrapError());
 
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
@@ -422,7 +496,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action<TOk> onOk, Action<TError> onError)
+    public Unit Effect(Action<Ok> onOk, Action<Error> onError)
     {
         if (IsOk) onOk(Unwrap());
         if (IsError) onError(UnwrapError());
@@ -461,7 +535,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action onOk, Action<TError> onError)
+    public Unit Effect(Action onOk, Action<Error> onError)
     {
         if (IsOk) onOk();
         if (IsError) onError(UnwrapError());
@@ -501,7 +575,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action<TOk> onOk, Action onError)
+    public Unit Effect(Action<Ok> onOk, Action onError)
     {
         if (IsOk) onOk(Unwrap());
         if (IsError) onError();
@@ -571,7 +645,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>Unit.</returns>
-    public Unit EffectOk(params Action<TOk>[] onOk)
+    public Unit EffectOk(params Action<Ok>[] onOk)
     {
         if (IsError) return Unit.Default;
         var contents = Unwrap();
@@ -629,7 +703,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>Unit.</returns>
-    public Unit EffectError(params Action<TError>[] onError)
+    public Unit EffectError(params Action<Error>[] onError)
     {
         if (IsOk) return Unit.Default;
         var contents = UnwrapError();
@@ -701,7 +775,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> Tap(Action<TOk> onOk, Action<TError> onError)
+    public Result<Ok, Error> Tap(Action<Ok> onOk, Action<Error> onError)
     {
         if (IsOk) onOk(Unwrap());
         if (IsError) onError(UnwrapError());
@@ -745,7 +819,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> Tap(Action onOk, Action<TError> onError)
+    public Result<Ok, Error> Tap(Action onOk, Action<Error> onError)
     {
         if (IsOk) onOk();
         if (IsError) onError(UnwrapError());
@@ -789,7 +863,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> Tap(Action<TOk> onOk, Action onError)
+    public Result<Ok, Error> Tap(Action<Ok> onOk, Action onError)
     {
         if (IsOk) onOk(Unwrap());
         if (IsError) onError();
@@ -833,7 +907,7 @@ public sealed record Result<TOk, TError>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> Tap(Action onOk, Action onError)
+    public Result<Ok, Error> Tap(Action onOk, Action onError)
     {
         if (IsOk) onOk();
         if (IsError) onError();
@@ -867,7 +941,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> TapOk(params Action<TOk>[] onOk)
+    public Result<Ok, Error> TapOk(params Action<Ok>[] onOk)
     {
         if (IsError) return this;
         var contents = Unwrap();
@@ -902,7 +976,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> TapOk(params Action[] onOk)
+    public Result<Ok, Error> TapOk(params Action[] onOk)
     {
         if (IsError) return this;
         onOk.ToList().ForEach(action => action());
@@ -934,7 +1008,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> TapError(params Action<TError>[] onError)
+    public Result<Ok, Error> TapError(params Action<Error>[] onError)
     {
         if (IsOk) return this;
         var contents = UnwrapError();
@@ -967,7 +1041,7 @@ public sealed record Result<TOk, TError>
     /// </summary>
     /// <param name="onError">Perform this action when the value is Error.</param>
     /// <returns>The input result.</returns>
-    public Result<TOk, TError> TapError(params Action[] onError)
+    public Result<Ok, Error> TapError(params Action[] onError)
     {
         if (IsOk) return this;
         onError.ToList().ForEach(action => action());

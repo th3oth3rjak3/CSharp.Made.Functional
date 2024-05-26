@@ -2,7 +2,6 @@
 
 public static partial class Prelude
 {
-    // TODO: Examples
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
     /// perform work on the result by providing a binding function.
@@ -10,7 +9,29 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// 
+    /// Result&lt;int, Exception&gt; GetSmallNumber(int input) =>
+    ///     input &lt; 10
+    ///         ? Ok(input)
+    ///         : Error&lt;int&gt;("the number was too big");
+    ///
+    /// Ok(5)
+    ///     .Async()
+    ///     .BindAsync(GetSmallNumber)
+    ///     .EffectAsync(output => Assert.IsTrue(output.IsOk));
+    ///
+    /// Ok(20)
+    ///     .Async()
+    ///     .BindAsync(GetSmallNumber)
+    ///     .EffectAsync(
+    ///         output => Assert.IsTrue(output.IsError),
+    ///         output => Asser.AreEqual(output.UnwrapError().Message, "the number was too big"));
+    ///
+    /// Error&lt;int&gt;("error occurred")
+    ///     .Async()
+    ///     .BindAsync(GetSmallNumber)
+    ///     .EffectAsync(
+    ///         output => Assert.IsTrue(output.IsError),
+    ///         output => Assert.AreEqual(output.UnwrapError().Message, "error occurred"));
     /// </code>
     /// </example>
     /// </summary>
@@ -26,24 +47,48 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Func<Ok, Result<Output, Error>> binder)
     {
-        var awaited = await result;
-
-        if (awaited.IsError) return Error<Output, Error>(awaited.UnwrapError());
-
-        var contents = awaited.Unwrap();
-
-        return binder(contents);
+        var theResult = await result;
+        return theResult.IsError
+            ? theResult.UnwrapError()
+            : binder(theResult.Unwrap());
     }
 
-    // TODO: Examples
     /// <summary>
     /// Perform work on a previous result. When the result is Ok, 
     /// perform work on the result by providing a binding function.
     /// On Error, the previous result will be returned as the new result type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task&lt;Result&lt;int, Exception&gt;&gt; GetSmallNumber(int input) =>
+    ///     input &lt; 10
+    ///         ? Ok(input).Async()
+    ///         : Error&lt;int&gt;("the number was too big").Async();
+    ///
+    /// Ok(5)
+    ///     .Async()
+    ///     .BindAsync(GetSmallNumber)
+    ///     .EffectAsync(output => Assert.IsTrue(output.IsOk));
+    ///
+    /// Ok(20)
+    ///     .Async()
+    ///     .BindAsync(GetSmallNumber)
+    ///     .EffectAsync(
+    ///         output => Assert.IsTrue(output.IsError),
+    ///         output => Asser.AreEqual(output.UnwrapError().Message, "the number was too big"));
+    ///
+    /// Error&lt;int&gt;("error occurred")
+    ///     .Async()
+    ///     .BindAsync(GetSmallNumber)
+    ///     .EffectAsync(
+    ///         output => Assert.IsTrue(output.IsError),
+    ///         output => Assert.AreEqual(output.UnwrapError().Message, "error occurred"));
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="Ok">The type of the input.</typeparam>
     /// <typeparam name="Output">The type of the result after performing 
-    /// the binding function.</typeparam>
+    /// the onOk function.</typeparam>
     /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
     /// <param name="result">The previous result to bind.</param>
     /// <param name="binder">The function to perform when the 
@@ -53,12 +98,9 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Func<Ok, Task<Result<Output, Error>>> binder)
     {
-        var awaited = await result;
-
-        if (awaited.IsError) return Error<Output, Error>(awaited.UnwrapError());
-
-        var contents = awaited.Unwrap();
-
-        return await binder(contents);
+        var theResult = await result;
+        return theResult.IsError
+            ? theResult.UnwrapError()
+            : await binder(theResult.Unwrap());
     }
 }

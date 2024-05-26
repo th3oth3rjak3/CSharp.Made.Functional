@@ -29,11 +29,10 @@ public static partial class Prelude
     /// <returns>The resulting contents.</returns>
     public static async Task<T> ReduceAsync<T>(this Task<Option<T>> optional, Func<T> alternate)
     {
-        var result = await optional;
-
-        return result.Match(
-            some => some,
-            alternate);
+        var theOption = await optional;
+        return theOption.IsSome
+            ? theOption.Unwrap()
+            : alternate();
     }
     
     /// <summary>
@@ -65,11 +64,10 @@ public static partial class Prelude
         this Task<Option<T>> optional,
         T alternate)
     {
-        var result = await optional;
-
-        return result.Match(
-            some => some,
-            () => alternate);
+        var theOption = await optional;
+        return theOption.IsSome
+            ? theOption.Unwrap()
+            : alternate;
     }
 
     /// <summary>
@@ -101,9 +99,10 @@ public static partial class Prelude
         this Task<Option<T>> optional,
         Task<T> alternate)
     {
-        var result = await optional;
-
-        return result.IsSome ? result.Unwrap() : await alternate;
+        var theOption = await optional;
+        return theOption.IsSome 
+            ? theOption.Unwrap() 
+            : await alternate;
     }
 
     /// <summary>
@@ -135,7 +134,9 @@ public static partial class Prelude
         this Task<Option<T>> optional,
         Func<Task<T>> alternate)
     {
-        var result = await optional;
-        return result.IsSome ? result.Unwrap() : await alternate();
+        var theOption = await optional;
+        return theOption.IsSome 
+            ? theOption.Unwrap() 
+            : await alternate();
     }
 }

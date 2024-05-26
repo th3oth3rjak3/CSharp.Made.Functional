@@ -506,13 +506,7 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsNone) return theOption;
-
-        var contents = theOption.Unwrap();
-        foreach (var action in whenSome)
-        {
-            await action(contents);
-        }
-        
+        await RunSequential(theOption.Unwrap(), whenSome);
         return theOption;
     }
     
@@ -550,12 +544,7 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsNone) return theOption;
-
-        foreach (var action in whenSome)
-        {
-            await action();
-        }
-
+        await RunSequential(whenSome);
         return theOption;
     }
     
@@ -627,11 +616,7 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsSome) return theOption;
-        foreach (var action in whenNone)
-        {
-            await action();
-        }
-        
+        await RunSequential(whenNone);
         return theOption;
     }
 

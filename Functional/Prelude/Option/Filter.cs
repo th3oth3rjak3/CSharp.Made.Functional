@@ -183,7 +183,10 @@ public static partial class Prelude
     /// <param name="collection">The collection to filter.</param>
     /// <param name="predicate">The predicate filter criteria.</param>
     /// <returns>The collection with unmatched items converted to None.</returns>
-    public static async Task<IEnumerable<Option<T>>> FilterAsync<T>(this Task<IEnumerable<Option<T>>> collection, Func<T, Task<bool>> predicate) where T : notnull
+    public static async Task<IEnumerable<Option<T>>> FilterAsync<T>(
+        this Task<IEnumerable<Option<T>>> collection, 
+        Func<T, Task<bool>> predicate)
+        where T : notnull
     {
         var output = new List<Option<T>>();
 
@@ -218,8 +221,9 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="T">The inner type of the option.</typeparam>
     /// <param name="collection">The collection to collect values from.</param>
-    /// <returns>The inner values from all of the options that were Some.</returns>
-    public static IEnumerable<T> Collect<T>(this IEnumerable<Option<T>> collection) where T : notnull =>
+    /// <returns>The inner values from all the options that were Some.</returns>
+    public static IEnumerable<T> Collect<T>(this IEnumerable<Option<T>> collection) 
+        where T : notnull =>
         collection
             .Where(option => option.IsSome)
             .Select(option => option.Unwrap());
@@ -243,7 +247,7 @@ public static partial class Prelude
     /// </summary>
     /// <typeparam name="T">The inner type of the option.</typeparam>
     /// <param name="collection">The collection to collect values from.</param>
-    /// <returns>The inner values from all of the options that were Some.</returns>
+    /// <returns>The inner values from all the options that were Some.</returns>
     public static async Task<IEnumerable<T>> CollectAsync<T>(this Task<IEnumerable<Option<T>>> collection) where T : notnull =>
         (await collection).Collect();
 }

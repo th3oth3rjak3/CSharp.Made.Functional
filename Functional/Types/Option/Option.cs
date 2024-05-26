@@ -333,6 +333,55 @@ public sealed record Option<T>
             alternate);
 
     /// <summary>
+    /// Used instead of Map when the mapping function produces an Option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; TryGetString(int input) => 
+    ///     input &gt; 10 
+    ///     ? new Option&lt;string&gt;(input.ToString()) 
+    ///     : new Option&lt;string&gt;();
+    ///     
+    /// Option&lt;string&gt; option =
+    ///     new Option&lt;int&gt;(42)
+    ///         .Bind(TryGetString);
+    ///
+    /// Assert.IsTrue(option.IsSome);
+    /// Assert.AreEqual(option.Unwrap(), "42");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TMapped">The type of the output.</typeparam>
+    /// <param name="binder">The binding function.</param>
+    /// <returns>An option of the output type.</returns>
+    public Option<TMapped> Bind<TMapped>(Func<T, Option<TMapped>> binder) where TMapped : notnull =>
+        Map(binder).Reduce(new Option<TMapped>());
+
+    /// <summary>
+    /// Used instead of Map when the mapping function produces an Option type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Option&lt;string&gt; TryGetString(int input) => 
+    ///     input &gt; 10 
+    ///     ? new Option&lt;string&gt;(input.ToString()) 
+    ///     : new Option&lt;string&gt;();
+    ///     
+    /// Option&lt;string&gt; option =
+    ///     new Option&lt;int&gt;(42)
+    ///         .Bind(() => TryGetString(9));
+    ///
+    /// Assert.IsTrue(option.IsNone);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TMapped">The type of the output.</typeparam>
+    /// <param name="binder">The binding function.</param>
+    /// <returns>An option of the output type.</returns>
+    public Option<TMapped> Bind<TMapped>(Func<Option<TMapped>> binder) where TMapped : notnull =>
+        Map(binder).Reduce(new Option<TMapped>());
+    
+    /// <summary>
     /// Perform a side effect on an option type and consume the option.
     /// <example>
     /// <br/><br/>Example:

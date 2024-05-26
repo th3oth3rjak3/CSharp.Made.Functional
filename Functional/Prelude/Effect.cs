@@ -1,6 +1,4 @@
-﻿using System.Security.AccessControl;
-
-using Functional.Types;
+﻿using Functional.Types;
 
 namespace Functional;
 public static partial class Prelude
@@ -110,6 +108,8 @@ public static partial class Prelude
         params Action<T>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -117,14 +117,18 @@ public static partial class Prelude
             await input.PipeAsync(value => 
                 processingOrder == ProcessingOrder.Parallel 
                     ? RunParallel(value, actions) 
-                    : RunSequential(value, actions));
+                    : RunSequential(value, actions).Async());
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Action<T>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -133,7 +137,7 @@ public static partial class Prelude
             await input.PipeAsync(value => 
                 processingOrder == ProcessingOrder.Parallel 
                     ? RunParallel(value, actions, cancellationToken) 
-                    : RunSequential(value, actions, cancellationToken));
+                    : RunSequential(value, actions, cancellationToken).Async());
 
 
     /// <summary>
@@ -163,6 +167,8 @@ public static partial class Prelude
         params Action[] actions) =>
             await input.PipeAsync(() => RunSequential(actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -172,12 +178,16 @@ public static partial class Prelude
                 ? RunParallel(actions) 
                 : RunSequential(actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Action[] actions) =>
             await input.PipeAsync(() => RunSequential(actions, cancellationToken));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -214,6 +224,8 @@ public static partial class Prelude
         params Func<T, Task>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -223,12 +235,16 @@ public static partial class Prelude
                     ? RunParallel(value, actions) 
                     : RunSequential(value, actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Func<T, Task>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -264,6 +280,8 @@ public static partial class Prelude
         params Func<Task>[] actions) =>
             await input.PipeAsync(() => RunSequential(actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -273,12 +291,16 @@ public static partial class Prelude
                     ? RunParallel(actions) 
                     : RunSequential(actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Func<Task>[] actions) =>
             await input.PipeAsync(() => RunSequential(actions, cancellationToken));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
@@ -299,12 +321,14 @@ public static partial class Prelude
     /// </code>
     /// </example>
     /// </summary>
-    /// <param name="action">An action to perform.</param>
+    /// <param name="actions">Actions to perform.</param>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         params Action[] actions) =>
             await RunSequential(actions);
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         params Action[] actions) =>
@@ -312,11 +336,15 @@ public static partial class Prelude
                     ? RunParallel(actions) 
                     : RunSequential(actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync(
         CancellationToken cancellationToken,
         params Action[] actions) =>
             await RunSequential(actions, cancellationToken);
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
@@ -342,6 +370,8 @@ public static partial class Prelude
         params Func<Task>[] actions) =>
             await RunSequential(actions);
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         params Func<Task>[] actions) =>
@@ -349,11 +379,15 @@ public static partial class Prelude
                 ? RunParallel(actions) 
                 : RunSequential(actions));
 
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync(
         CancellationToken cancellationToken,
         params Func<Task>[] actions) =>
             await RunSequential(actions, cancellationToken);
-
+    
+    // todo: docs
+    // todo: examples
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,

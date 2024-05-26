@@ -29,4 +29,11 @@ public class CommonTests
         unit.AssertInstanceOfType(typeof(Unit));
         unit.ShouldBe(Unit.Default);
     }
+
+    [TestMethod]
+    public async Task ItShouldPipeAsyncUnit() =>
+        await Unit()
+            .Async()
+            .PipeAsync("hello")
+            .EffectAsync(output => output.ShouldBe("hello"));
 }

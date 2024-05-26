@@ -1,116 +1,151 @@
 ﻿namespace Functional;
 public static partial class Prelude
 {
-    // TODO: Examples
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var output =
+    ///     "some value"
+    ///         // Writes "some value" to the console.
+    ///         .Tap(Console.WriteLine);
+    ///
+    /// Assert.AreEqual(output, "some value");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the input object.</typeparam>
     /// <param name="input">The input to perform actions on.</param>
     /// <param name="actions">An array of actions to perform on the input.</param>
-    /// <returns></returns>
+    /// <returns>The input.</returns>
     public static T Tap<T>(this T input, params Action<T>[] actions)
     {
-        actions
-            .ToList()
-            .ForEach(action =>
-                action(input));
-
+        actions.ToList().ForEach(action => action(input));
         return input;
     }
-
-    // TODO: Examples
+    
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var output =
+    ///     "some value"
+    ///         // Writes "writing the the console" to the console.
+    ///         .Tap(() => Console.WriteLine("writing the the console"));
+    ///
+    /// Assert.AreEqual(output, "some value");
+    /// </code>
+    /// </example>
     /// </summary>
     /// <typeparam name="T">The type of the input object.</typeparam>
     /// <param name="input">The input to perform actions on.</param>
     /// <param name="actions">An array of actions to perform on the input.</param>
-    /// <returns></returns>
+    /// <returns>The input.</returns>
     public static T Tap<T>(this T input, params Action[] actions)
     {
-        actions
-            .ToList()
-            .ForEach(action =>
-                action());
-
+        actions.ToList().ForEach(action => action());
         return input;
     }
-
-    // TODO: Examples
+    
     /// <summary>
-    /// Used to wrap an action function that is asynchronous.
+    /// Tap into a value to perform a series of actions which could return void.
+    /// This function is used to turn imperative code into functional, fluent syntax.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var output =
+    ///     await "some value"
+    ///         .Async()
+    ///         // Writes "some value" to the console.
+    ///         .TapAsync(Console.WriteLine);
+    ///
+    /// Assert.AreEqual(output, "some value");
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <typeparam name="T">The type of the <paramref name="input"/>.</typeparam>
-    /// <param name="input">The input to use with the <paramref name="actions"/>.</param>
-    /// <param name="actions">The action to await and call on the <paramref name="input"/>.</param>
-    /// <returns>The resulting input as a task.</returns>
+    /// <typeparam name="T">The type of the input object.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">An array of actions to perform on the input.</param>
+    /// <returns>The input.</returns>
+    public static async Task<T> TapAsync<T>(this Task<T> input, params Action<T>[] actions) =>
+        (await input).Tap(actions);
+    
+    /// <summary>
+    /// Tap into a value to perform a series of actions which could return void.
+    /// This function is used to turn imperative code into functional, fluent syntax.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var output =
+    ///     await "some value"
+    ///         .Async()
+    ///         // Writes "writing to the console" to the console.
+    ///         .TapAsync(() => Console.WriteLine("writing to the console"));
+    ///
+    /// Assert.AreEqual(output, "some value");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the input object.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">An array of actions to perform on the input.</param>
+    /// <returns>The input.</returns>
+    public static async Task<T> TapAsync<T>(this Task<T> input, params Action[] actions) =>
+        (await input).Tap(actions);
+
+    /// <summary>
+    /// Tap into a value to perform a series of actions which could return void.
+    /// This function is used to turn imperative code into functional, fluent syntax.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var output =
+    ///     await "some value"
+    ///         .Async()
+    ///         // Writes "some value" to the console.
+    ///         .TapAsync(input => EffectAsync(() => Console.WriteLine(input)));
+    ///
+    /// Assert.AreEqual(output, "some value");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the input object.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">An array of actions to perform on the input.</param>
+    /// <returns>The input.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, params Func<T, Task>[] actions)
     {
         var theInput = await input;
-
-        foreach (var action in actions)
-        {
-            await action(theInput);
-        }
-
-        return theInput;
+        return await RunSequential(theInput, actions).PipeAsync(theInput);
     }
 
-    // TODO: Documentation
-    // TODO: Examples
+    /// <summary>
+    /// Tap into a value to perform a series of actions which could return void.
+    /// This function is used to turn imperative code into functional, fluent syntax.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var output =
+    ///     await "some value"
+    ///         .Async()
+    ///         // Writes "writing to the console" to the console.
+    ///         .TapAsync(() => EffectAsync(() => Console.WriteLine("writing to the console")));
+    ///
+    /// Assert.AreEqual(output, "some value");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the input object.</typeparam>
+    /// <param name="input">The input to perform actions on.</param>
+    /// <param name="actions">An array of actions to perform on the input.</param>
+    /// <returns>The input.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, params Func<Task>[] actions)
     {
         var theInput = await input;
-
-        foreach (var action in actions)
-        {
-            await action();
-        }
-
-        return theInput;
+        return await RunSequential(actions).PipeAsync(theInput);
     }
-
-    // TODO: Examples
-    /// <summary>
-    /// Used to wrap an action that is asynchronous.
-    /// </summary>
-    /// <typeparam name="T">The input type.</typeparam>
-    /// <param name="input">The input used in the async action.</param>
-    /// <param name="actions">The action to perform on the input.</param>
-    /// <typeparam name="TResult">The resulting type after performing actions on the input.</typeparam>
-    /// <returns>The input value.</returns>
-    public static async Task<T> TapAsync<T, TResult>(
-        this Task<T> input,
-        params Func<T, Task<TResult>>[] actions)
-    {
-        await Task
-            .WhenAll(
-                actions
-                    .Select(async action =>
-                        await action(await input)))
-            .IgnoreAsync();
-
-        return await input;
-    }
-
-    // TODO: Examples
-    /// <summary>
-    /// Used to perform an action which returns void on an input that is a Task.
-    /// </summary>
-    /// <typeparam name="T">The type of the input.</typeparam>
-    /// <param name="input">The input to be awaited and then acted upon.</param>
-    /// <param name="actions">The action to perform after awaiting the input.</param>
-    /// <returns>The input as a task.</returns>
-    public static async Task<T> TapAsync<T>(this Task<T> input, params Action<T>[] actions) =>
-        (await input)
-            .Tap(actions);
-
-    // TODO: Examples
-    // TODO: Documentation
-    public static async Task<T> TapAsync<T>(this Task<T> input, params Action[] actions) =>
-        (await input)
-            .Tap(actions);
 }

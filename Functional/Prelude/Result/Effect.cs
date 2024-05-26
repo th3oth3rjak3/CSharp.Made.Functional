@@ -36,13 +36,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
-        Action<TOk> onOk, 
-        Action<TError> onError) =>
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
+        Action<Ok> onOk, 
+        Action<Error> onError) =>
             (await result)
                 .Effect(onOk, onError);
 
@@ -80,12 +80,12 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
-        Action<TOk> onOk, 
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
+        Action<Ok> onOk, 
         Action onError) =>
             (await result)
                 .Effect(onOk, onError);
@@ -124,13 +124,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        Action<TOk> onOk,
-        Func<TError, Task> onError)
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
+        Func<Error, Task> onError)
     {
         var theResult = await result;
         if (theResult.IsOk) onOk(theResult.Unwrap());
@@ -172,12 +172,12 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        Action<TOk> onOk,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
         Func<Task> onError)
     {
         var theResult = await result;
@@ -220,13 +220,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
         Action onOk, 
-        Action<TError> onError) =>
+        Action<Error> onError) =>
             (await result)
                 .Effect(onOk, onError);
     
@@ -264,11 +264,11 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
         Action onOk, 
         Action onError) =>
             (await result)
@@ -308,13 +308,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         Action onOk,
-        Func<TError, Task> onError)
+        Func<Error, Task> onError)
     {
         var theResult = await result;
         if (theResult.IsOk) onOk();
@@ -356,11 +356,11 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         Action onOk,
         Func<Task> onError)
     {
@@ -404,13 +404,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        Func<TOk, Task> onOk,
-        Action<TError> onError)
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task> onOk,
+        Action<Error> onError)
     {
         var theResult = await result;
         if (theResult.IsOk) await onOk(theResult.Unwrap());
@@ -452,12 +452,12 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        Func<TOk, Task> onOk,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task> onOk,
         Action onError)
     {
         var theResult = await result;
@@ -500,13 +500,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        Func<TOk, Task> onOk,
-        Func<TError, Task> onError)
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task> onOk,
+        Func<Error, Task> onError)
     {
         var theResult = await result;
         if (theResult.IsOk) await onOk(theResult.Unwrap());
@@ -548,12 +548,12 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        Func<TOk, Task> onOk,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task> onOk,
         Func<Task> onError)
     {
         var theResult = await result;
@@ -596,13 +596,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         Func<Task> onOk,
-        Action<TError> onError)
+        Action<Error> onError)
     {
         var theResult = await result;
         if (theResult.IsOk) await onOk();
@@ -644,11 +644,11 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         Func<Task> onOk,
         Action onError)
     {
@@ -692,13 +692,13 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         Func<Task> onOk,
-        Func<TError, Task> onError)
+        Func<Error, Task> onError)
     {
         var theResult = await result;
         if (theResult.IsOk) await onOk();
@@ -740,11 +740,11 @@ public static partial class Prelude
     /// <param name="result">The result to perform the effect with.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         Func<Task> onOk,
         Func<Task> onError)
     {
@@ -754,6 +754,7 @@ public static partial class Prelude
         return Unit();
     }
     
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -778,15 +779,16 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectOkAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
-        params Action<TOk>[] onOk) =>
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
+        params Action<Ok>[] onOk) =>
             (await result)
                 .EffectOk(onOk);
 
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -811,15 +813,16 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectOkAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
         params Action[] onOk) =>
             (await result)
                 .EffectOk(onOk);
 
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -844,12 +847,12 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectOkAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        params Func<TOk, Task>[] onOk)
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        params Func<Ok, Task>[] onOk)
     {
         var theResult = await result;
         return theResult.IsOk
@@ -857,6 +860,7 @@ public static partial class Prelude
             : Unit();
     }
     
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -881,11 +885,11 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onOk">Perform this action when the value is Ok.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectOkAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
         params Func<Task>[] onOk)
     {
         var theResult = await result;
@@ -894,6 +898,7 @@ public static partial class Prelude
             : Unit();
     }
 
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -917,15 +922,16 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        params Action<TError>[] onError) =>
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        params Action<Error>[] onError) =>
             (await result)
                 .EffectError(onError);
 
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -949,15 +955,16 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
         params Action[] onError) =>
             (await result)
                 .EffectError(onError);
 
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -981,11 +988,11 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result, 
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result, 
         params Func<Task>[] onError)
     {
         var theResult = await result;
@@ -994,6 +1001,7 @@ public static partial class Prelude
             : Unit();
     }
 
+    // TODO: add variations for ProcessingOrder and CancellationToken
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -1017,12 +1025,12 @@ public static partial class Prelude
     /// </summary>
     /// <param name="result">The result to perform the effect on.</param>
     /// <param name="onError">Perform this action when the value is Error.</param>
-    /// <typeparam name="TOk">The type when the result is Ok.</typeparam>
-    /// <typeparam name="TError">The type when the result is Error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectErrorAsync<TOk, TError>(
-        this Task<Result<TOk, TError>> result,
-        params Func<TError, Task>[] onError)
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        params Func<Error, Task>[] onError)
     {
         var theResult = await result;
         return theResult.IsError

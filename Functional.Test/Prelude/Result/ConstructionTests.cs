@@ -5,7 +5,7 @@
 public class ConstructionTests
 {
     [TestMethod]
-    public void ItShouldConstrucTOkes()
+    public void ItShouldConstructOk()
     {
         Ok<string, int>("success")
             .AssertInstanceOfType(typeof(Result<string, int>))
@@ -19,7 +19,7 @@ public class ConstructionTests
     }
 
     [TestMethod]
-    public void ItShouldConstrucTErrors()
+    public void ItShouldConstructErrors()
     {
         Error<string, int>(-1)
             .AssertInstanceOfType(typeof(Result<string, int>))
@@ -30,5 +30,11 @@ public class ConstructionTests
             .AssertInstanceOfType(typeof(Result<string, Exception>))
             .IsError
             .ShouldBeTrue();
+
+        Error<int>("error")
+            .AssertInstanceOfType(typeof(Result<int, Exception>))
+            .Effect(
+                output => output.IsError.ShouldBeTrue(),
+                output => output.UnwrapError().Message.ShouldBe("error"));
     }
 }

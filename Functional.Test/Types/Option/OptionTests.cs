@@ -125,6 +125,43 @@ public class OptionTests
     }
 
     [TestMethod]
+    public void OptionShouldBind()
+    {
+        Option<string> TryGetString(int input) =>
+            input > 10
+                ? new Option<string>(input.ToString())
+                : new Option<string>();
+
+        Some(42)
+            .Bind(TryGetString)
+            .Effect(
+                some => some.IsSome.ShouldBeTrue(),
+                some => some.Unwrap().ShouldBe("42"));
+
+        Some(8)
+            .Bind(TryGetString)
+            .Effect(none => none.IsNone.ShouldBeTrue());
+
+        None<int>()
+            .Bind(TryGetString)
+            .Effect(none => none.IsNone.ShouldBeTrue());
+
+        Some(42)
+            .Bind(() => TryGetString(30))
+            .Effect(
+                some => some.IsSome.ShouldBeTrue(),
+                some => some.Unwrap().ShouldBe("30"));
+
+        Some(42)
+            .Bind(() => TryGetString(8))
+            .Effect(none => none.IsNone.ShouldBeTrue());
+
+        None<int>()
+            .Bind(() => TryGetString(100))
+            .Effect(none => none.IsNone.ShouldBeTrue());
+    }
+    
+    [TestMethod]
     public void OptionShouldPerformEffects()
     {
         var some = new Option<string>("some value");
@@ -139,13 +176,13 @@ public class OptionTests
             noneResult = string.Empty;
         }
 
-        some.Effect(some => someResult = some, () => noneResult = "none").AssertInstanceOfType(typeof(Unit));
+        some.Effect(s => someResult = s, () => noneResult = "none").AssertInstanceOfType(typeof(Unit));
         someResult.ShouldBe("some value");
         noneResult.ShouldBe(string.Empty);
 
         reset();
 
-        none.Effect(some => someResult = some, () => noneResult = "none").AssertInstanceOfType(typeof(Unit));
+        none.Effect(s => someResult = s, () => noneResult = "none").AssertInstanceOfType(typeof(Unit));
         someResult.ShouldBe(string.Empty);
         noneResult.ShouldBe("none");
 
@@ -177,13 +214,13 @@ public class OptionTests
             noneResult = string.Empty;
         }
 
-        some.EffectSome(some => someResult = some).AssertInstanceOfType(typeof(Unit));
+        some.EffectSome(s => someResult = s).AssertInstanceOfType(typeof(Unit));
         someResult.ShouldBe("some value");
         noneResult.ShouldBe(string.Empty);
 
         reset();
 
-        none.EffectSome(some => someResult = some).AssertInstanceOfType(typeof(Unit));
+        none.EffectSome(s => someResult = s).AssertInstanceOfType(typeof(Unit));
         someResult.ShouldBe(string.Empty);
         noneResult.ShouldBe(string.Empty);
 
