@@ -4,7 +4,6 @@
 [TestClass]
 public class EffectTests
 {
-    // TODO: Fix this test file.
     [TestMethod]
     public async Task OptionShouldPerformEffectsAsync()
     {

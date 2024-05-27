@@ -155,8 +155,20 @@ public static partial class Prelude
         }
     }
 
-    // TODO: Documentation
-    // TODO: Examples
+    /// <summary>
+    /// Try an action which may throw an exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// await TryAsync(() => Console.WriteLine("a message"))
+    ///     .MatchAsync(
+    ///         unit => "return type is unit",
+    ///         exn => "return type is exception");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="toTry">The action to try.</param>
+    /// <returns>The result of trying the action.</returns>
     public static async Task<Result<Unit, Exception>> TryAsync(Action toTry)
     {
         try
@@ -169,8 +181,22 @@ public static partial class Prelude
         }
     }
     
-    // TODO: Documentation
-    // TODO: Examples
+    /// <summary>
+    /// Try an action which may throw an exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// await "input"
+    ///     .TryAsync(Console.WriteLine)
+    ///     .MatchAsync(
+    ///         unit => "return type is unit",
+    ///         exn => "return type is exception");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="input">The input used in the action to try.</param>
+    /// <param name="toTry">The action to try.</param>
+    /// <returns>The result of trying the action.</returns>
     public static async Task<Result<Unit, Exception>> TryAsync<T>(this Task<T> input, Action<T> toTry)
     {
         try
@@ -232,7 +258,6 @@ public static partial class Prelude
         }
     }
     
-    // TODO: Unit tests.
     // TODO: Examples
     /// <summary>
     /// Perform a mapping operation on an Option when the mapping may throw an Exception.
@@ -257,7 +282,6 @@ public static partial class Prelude
         }
     }
     
-    // TODO: Unit tests.
     // TODO: Examples
     /// <summary>
     /// Perform a mapping operation on an Option when the mapping may throw an Exception.

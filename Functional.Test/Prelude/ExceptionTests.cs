@@ -1,4 +1,6 @@
-﻿namespace Functional.Test.Prelude;
+﻿using System.Xml.Serialization;
+
+namespace Functional.Test.Prelude;
 
 [TestClass]
 [ExcludeFromCodeCoverage]
@@ -176,5 +178,69 @@ public class ExceptionTests
         return;
         void ItThrows(string input) => throw new Exception("error");
         void ItDoesntThrow(string input) => output = input;
+    }
+
+    [TestMethod]
+    public void TryMapShouldTryToMapOptions_1()
+    {
+        Some(1)
+            .TryMap(ItThrows)
+            .TapError(error => error.Message.ShouldBe("it threw"))
+            .IsError.ShouldBeTrue();
+
+        None<int>()
+            .TryMap(ItThrows)
+            // True because it won't map when the input is a None.
+            .IsOk.ShouldBeTrue();
+
+        var option = 
+            Some(1)
+                .TryMap(ItDoesntThrow)
+                .Unwrap();
+        option.Unwrap().ShouldBe("1");
+
+        option = None<int>()
+            .TryMap(ItDoesntThrow)
+            .Unwrap();
+        
+        option.IsNone.ShouldBeTrue();
+        
+        return;
+
+        string ItThrows(int input) => throw new Exception("it threw");
+        string ItDoesntThrow(int input) => input.ToString();
+    }
+
+    [TestMethod]
+    public void TryMapShouldTryToMapOptions_2()
+    {
+        Some(1)
+            .TryMap(ItThrows)
+            .TapError(error => error.Message.ShouldBe("it throws"))
+            .IsError
+            .ShouldBeTrue();
+        
+        Some(1)
+            .TryMap(ItMaps)
+            .Unwrap()
+            .Unwrap()
+            .ShouldBe("42");
+
+        None<int>()
+            .TryMap(ItThrows)
+            .TapOk(ok => ok.IsNone.ShouldBeTrue())
+            .IsOk
+            .ShouldBeTrue();
+
+        None<int>()
+            .TryMap(ItMaps)
+            .TapOk(ok => ok.IsNone.ShouldBeTrue())
+            .IsOk
+            .ShouldBeTrue();
+
+        return;
+
+        string ItThrows() => throw new Exception("it throws");
+        string ItMaps() => "42";
     }
 }

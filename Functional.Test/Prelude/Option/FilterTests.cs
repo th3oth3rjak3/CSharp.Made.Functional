@@ -4,42 +4,42 @@
 [TestClass]
 public class FilterTests
 {
-    // TODO: Try to make these tests better.
     [TestMethod]
     public async Task OptionShouldFilterAsync()
     {
-        static bool filterCriteria(string input) => input.Length < 10;
-        static Task<bool> filterCriteriaAsync(string input) => filterCriteria(input).Async();
-
         await Some("short")
             .Async()
-            .FilterAsync(filterCriteria)
+            .FilterAsync(FilterCriteria)
             .EffectAsync(option => option.IsSome.ShouldBeTrue());
 
         await Some("A really long message that should get filtered out")
             .Async()
-            .FilterAsync(filterCriteria)
+            .FilterAsync(FilterCriteria)
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
         await None<string>()
             .Async()
-            .FilterAsync(filterCriteria)
+            .FilterAsync(FilterCriteria)
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
         await Some("short")
             .Async()
-            .FilterAsync(filterCriteriaAsync)
+            .FilterAsync(FilterCriteriaAsync)
             .EffectAsync(option => option.IsSome.ShouldBeTrue());
 
         await Some("A really long message that should get filtered out")
             .Async()
-            .FilterAsync(filterCriteriaAsync)
+            .FilterAsync(FilterCriteriaAsync)
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
 
         await None<string>()
             .Async()
-            .FilterAsync(filterCriteriaAsync)
+            .FilterAsync(FilterCriteriaAsync)
             .EffectAsync(option => option.IsNone.ShouldBeTrue());
+        return;
+
+        static Task<bool> FilterCriteriaAsync(string input) => FilterCriteria(input).Async();
+        static bool FilterCriteria(string input) => input.Length < 10;
     }
 
     [TestMethod]
@@ -48,7 +48,7 @@ public class FilterTests
         static bool filterCriteria(int input) => input > 0;
         static Task<bool> filterCriteriaAsync(int input) => Task.FromResult(input > 0);
 
-        IEnumerable<Option<int>> collection = [Some(1), Some(2), None<int>(), Some(0)];
+        List<Option<int>> collection = [Some(1), Some(2), None<int>(), Some(0)];
 
         var filtered = collection.Filter(filterCriteria).ToList();
         filtered.Count().ShouldBe(4);
@@ -59,6 +59,7 @@ public class FilterTests
 
         filtered =
             await collection
+                .AsEnumerable()
                 .Async()
                 .FilterAsync(filterCriteria)
                 .PipeAsync(values => values.ToList());
@@ -70,6 +71,7 @@ public class FilterTests
 
         filtered =
             await collection
+                .AsEnumerable()
                 .Async()
                 .FilterAsync(filterCriteriaAsync)
                 .PipeAsync(values => values.ToList());
@@ -83,21 +85,22 @@ public class FilterTests
     [TestMethod]
     public async Task CollectionOfOptionsShouldCollectSomeValues()
     {
-        IEnumerable<Option<int>> collection = [Some(1), Some(2), None<int>(), Some(3)];
-        IEnumerable<Option<int>> emptyCollection = [];
+        List<Option<int>> collection = [Some(1), Some(2), None<int>(), Some(3)];
 
         collection.Collect().ShouldBe([1, 2, 3]);
-        emptyCollection.Collect().ShouldBe([]);
+        Enumerable.Empty<Option<int>>().Collect().ShouldBe([]);
 
         var collected =
             await collection
+                .AsEnumerable()
                 .Async()
                 .CollectAsync();
 
         collected.ShouldBe([1, 2, 3]);
 
         collected =
-            await emptyCollection
+            await Enumerable
+                .Empty<Option<int>>()
                 .Async()
                 .CollectAsync();
 
