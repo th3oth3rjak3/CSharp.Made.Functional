@@ -38,7 +38,7 @@ public class ResultTests
             .Unwrap()
             .ShouldBe("hello world");
 
-        Assert.ThrowsException<InvalidOperationException>(() =>
+        Assert.ThrowsException<ResultUnwrapException>(() =>
             new Result<string, Exception>(new Exception("Error"))
                 .Unwrap());
 
@@ -47,7 +47,7 @@ public class ResultTests
             .Message
             .ShouldBe("Error");
 
-        Assert.ThrowsException<InvalidOperationException>(() =>
+        Assert.ThrowsException<ResultUnwrapErrorException>(() =>
             new Result<string, Exception>("success")
                 .UnwrapError());
     }

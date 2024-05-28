@@ -34,7 +34,7 @@ public class OptionTests
         var option = new Option<string>("some value");
         option.Unwrap().ShouldBe("some value");
 
-        Assert.ThrowsException<InvalidOperationException>(() => new Option<string>().Unwrap());
+        Assert.ThrowsException<OptionUnwrapException>(() => new Option<string>().Unwrap());
     }
 
     [TestMethod]
@@ -160,7 +160,7 @@ public class OptionTests
             .Bind(() => TryGetString(100))
             .Effect(none => none.IsNone.ShouldBeTrue());
     }
-    
+
     [TestMethod]
     public void OptionShouldPerformEffects()
     {

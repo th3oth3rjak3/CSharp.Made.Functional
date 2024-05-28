@@ -130,17 +130,16 @@ public sealed record Result<Ok, Error>
     /// </example>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the result was Error and was unwrapped as Ok.</exception>
+    /// <exception cref="ResultUnwrapException">Thrown when the result was Error and was unwrapped as Ok.</exception>
     public Ok Unwrap()
     {
         if (IsOk) return okContents;
-
-        throw new InvalidOperationException("Tried to unwrap Ok when it was Error.");
+        throw new ResultUnwrapException();
     }
 
     /// <summary>
     /// Unwrap the Error contents from the result when it is known to be an Error. 
-    /// This will throw an InvalidOperationException if the inner contents are an Ok. 
+    /// This will throw an exception if the inner contents are an Ok. 
     /// Be sure to check the inner type before unwrapping.
     /// <example>
     /// <br/><br/>Example:
@@ -155,12 +154,11 @@ public sealed record Result<Ok, Error>
     /// </example>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the result was Ok and was unwrapped as Error.</exception>
+    /// <exception cref="ResultUnwrapErrorException">Thrown when the result was Ok and was unwrapped as Error.</exception>
     public Error UnwrapError()
     {
         if (IsError) return errorContents;
-
-        throw new InvalidOperationException("Tried to unwrap Error when it was Ok.");
+        throw new ResultUnwrapErrorException();
     }
 
     /// <summary>
@@ -322,7 +320,7 @@ public sealed record Result<Ok, Error>
         IsOk
             ? new Result<Ok, TMappedError>(Unwrap())
             : new Result<Ok, TMappedError>(errorMapper());
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// <example>
@@ -340,9 +338,9 @@ public sealed record Result<Ok, Error>
     /// </summary>
     /// <param name="alternate">An alternate value.</param>
     /// <returns>When success, the contents, otherwise the alternate.</returns>
-    public Ok Reduce(Ok alternate) => 
-        IsOk 
-            ? Unwrap() 
+    public Ok Reduce(Ok alternate) =>
+        IsOk
+            ? Unwrap()
             : alternate;
 
     /// <summary>
@@ -396,7 +394,7 @@ public sealed record Result<Ok, Error>
         IsOk
             ? Unwrap()
             : alternate(UnwrapError());
-    
+
     /// <summary>
     /// Perform work on a previous result. When the result is Ok,
     /// perform work on the result by providing a function.

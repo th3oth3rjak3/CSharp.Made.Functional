@@ -112,7 +112,7 @@ public sealed record Option<T>
     /// <summary>
     /// Unwrap is used to get the inner value of an Option when the Option type
     /// contains some value. 
-    /// <br/>If an option is None, it will throw an InvalidOperationException.
+    /// <br/>If an option is None, it will throw an Exception.
     /// <br/>For more information, see: <see cref="IsSome"/> or <see cref="IsNone"/>.
     /// <example>
     /// <br/><br/>Example:
@@ -120,7 +120,7 @@ public sealed record Option<T>
     /// // This will be fine
     /// new Option&lt;string&gt;("hello, world!").Unwrap();
     /// 
-    /// // This will throw an InvalidOperationException
+    /// // This will throw an Exception
     /// new Option&lt;string&gt;(null as string).Unwrap();
     /// 
     /// // To use this safely, perform the following steps
@@ -134,11 +134,11 @@ public sealed record Option<T>
     /// </example>
     /// </summary>
     /// <returns>The inner value of the Option.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when unwrapping a None.</exception>
+    /// <exception cref="OptionUnwrapException">Thrown when unwrapping a None.</exception>
     public T Unwrap()
     {
         if (IsSome && contents is not null) return contents;
-        throw new InvalidOperationException("Tried to unwrap a None! Be sure to check with IsSome before unwrapping.");
+        throw new OptionUnwrapException();
     }
 
     /// <summary>
@@ -380,7 +380,7 @@ public sealed record Option<T>
     /// <returns>An option of the output type.</returns>
     public Option<TMapped> Bind<TMapped>(Func<Option<TMapped>> binder) where TMapped : notnull =>
         Map(binder).Reduce(new Option<TMapped>());
-    
+
     /// <summary>
     /// Perform a side effect on an option type and consume the option.
     /// <example>
