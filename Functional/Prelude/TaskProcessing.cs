@@ -2,8 +2,33 @@
 
 public static partial class Prelude
 {
-    // TODO: documentation
-    // TODO: examples
+    /// <summary>
+    /// Run multiple tasks sequentially in the order provided. 
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task DoSomeWork(int input) => Task.Run(() => Console.WriteLine(input.ToString()));
+    /// 
+    /// List&lt;Func&lt;int, Task&gt;&gt; actions = [
+    ///     input => DoSomeWork(input),
+    ///     input => DoSomeWork(input + 1),
+    /// ];
+    /// 
+    /// // This should print 42, then 43 to the console.
+    /// await RunSequential(42, actions);
+    /// 
+    /// // If you want to pass a token.
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunSequential(42, actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the input.</typeparam>
+    /// <param name="input">The input required for the actions.</param>
+    /// <param name="actions">Actions to perform using the input.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> RunSequential<T>(
         T input,
         IEnumerable<Func<T, Task>> actions,
@@ -18,8 +43,29 @@ public static partial class Prelude
         return Unit();
     }
 
-    // TODO: documentation
-    // TODO: examples
+    /// <summary>
+    /// Run multiple tasks sequentially in the order provided.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// List&lt;Func&lt;Task&gt;&gt; actions = [
+    ///     () => Task.Run(() => Console.WriteLine("first")),
+    ///     () => Task.Run(() => Console.WriteLine("second"))
+    /// ];
+    /// 
+    /// // Should print "first" and then "second" to the console.
+    /// await RunSequential(actions);
+    /// 
+    /// // If you want to pass a token.
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunSequential(actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="actions">The actions to perform.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> RunSequential(
         IEnumerable<Func<Task>> actions,
         CancellationToken cancellationToken = default)
@@ -33,8 +79,31 @@ public static partial class Prelude
         return Unit();
     }
 
-    // TODO: documentation
-    // TODO: examples
+    /// <summary>
+    /// Run multiple tasks sequentially in the order provided.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// List&lt;Action&lt;int&gt;&gt; actions = [
+    ///     input => Console.WriteLine(input.ToString()),
+    ///     input => Console.WriteLine((input + 1).ToString()),
+    /// ];
+    /// 
+    /// // This should print 42, then 43 to the console.
+    /// await RunSequential(42, actions);
+    /// 
+    /// // If you want to pass a token.
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunSequential(42, actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static Unit RunSequential<T>(
         T input,
         IEnumerable<Action<T>> actions,
@@ -50,8 +119,29 @@ public static partial class Prelude
         return returnValue;
     }
 
-    // TODO: documentation
-    // TODO: examples
+    /// <summary>
+    /// Run multiple tasks sequentially in the order provided.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// List&lt;Action&gt; actions = [
+    ///     () => Console.WriteLine("first"),
+    ///     () => Console.WriteLine("second"),
+    /// ];
+    /// 
+    /// // This should print "first", then "second" to the console.
+    /// await RunSequential(actions);
+    /// 
+    /// // If you want to pass a token.
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunSequential(actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="actions">The actions to perform.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static Task<Unit> RunSequential(
         IEnumerable<Action> actions,
         CancellationToken cancellationToken = default)
@@ -65,9 +155,33 @@ public static partial class Prelude
         return Unit().Async();
     }
 
-    // TODO: documentation
-    // TODO: examples
-    // todo: tests
+    /// <summary>
+    /// Run multiple tasks in parallel without regard to order.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task DoSomeWork(int input) => Task.Run(() => Console.WriteLine(input.ToString()));
+    /// 
+    /// List&lt;Func&lt;int, Task&gt;&gt; actions = [
+    ///     input => DoSomeWork(input),
+    ///     input => DoSomeWork(input + 1)
+    /// ];
+    /// 
+    /// // This will print "42" and "43" but the order will be determined by the runtime.
+    /// await RunParallel(42, actions);
+    /// 
+    /// // To add CancellationToken support:
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunParallel(42, actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input required for the actions.</param>
+    /// <param name="actions">Actions to be performed.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> RunParallel<T>(
         T input,
         IEnumerable<Func<T, Task>> actions,
@@ -98,9 +212,29 @@ public static partial class Prelude
         return Unit();
     }
 
-    // TODO: documentation
-    // TODO: examples
-    // todo: tests
+    /// <summary>
+    /// Run multiple tasks in parallel without regard to order.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// List&lt;Func&lt;Task&gt;&gt; actions = [
+    ///     () => Task.Run(() => Console.WriteLine("maybe first")),
+    ///     () => Task.Run(() => Console.WriteLine("maybe second"))
+    /// ];
+    /// 
+    /// // This will print "maybe first" and "maybe second" but the order will be determined by the runtime.
+    /// await RunParallel(actions);
+    /// 
+    /// // To add CancellationToken support:
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunParallel(actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="actions">The actions to perform.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> RunParallel(
         IEnumerable<Func<Task>> actions,
         CancellationToken cancellationToken = default)
@@ -122,7 +256,7 @@ public static partial class Prelude
                     await action();
                 });
         }
-        catch (OperationCanceledException _)
+        catch (OperationCanceledException)
         {
             return Unit();
         }
@@ -130,9 +264,31 @@ public static partial class Prelude
         return Unit();
     }
 
-    // TODO: documentation
-    // TODO: examples
-    // todo: tests
+    /// <summary>
+    /// Run multiple tasks in parallel without regard to order.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// List&lt;Action&lt;int&gt;&gt; actions = [
+    ///     input => Console.WriteLine(input),
+    ///     input => Console.WriteLine(input + 1)
+    /// ];
+    /// 
+    /// // This will print "42" and "43" but the order will be determined by the runtime.
+    /// await RunParallel(42, actions);
+    /// 
+    /// // To add CancellationToken support:
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunParallel(42, actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input required for the actions.</param>
+    /// <param name="actions">Actions to be performed.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> RunParallel<T>(
         T input,
         IEnumerable<Action<T>> actions,
@@ -158,7 +314,7 @@ public static partial class Prelude
                     return ValueTask.CompletedTask;
                 });
         }
-        catch (OperationCanceledException _)
+        catch (OperationCanceledException)
         {
             return Unit();
         }
@@ -166,9 +322,29 @@ public static partial class Prelude
         return Unit();
     }
 
-    // todo: tests
-    // TODO: documentation
-    // TODO: examples
+    /// <summary>
+    /// Run multiple tasks in parallel without regard to order.
+    /// When cancelled, the operation will return early and may not finish processing actions.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// List&lt;Action&gt; actions = [
+    ///     () => Console.WriteLine("maybe first"),
+    ///     () => Console.WriteLine("maybe second")
+    /// ];
+    /// 
+    /// // This will print "maybe first" and "maybe second" but the order will be determined by the runtime.
+    /// await RunParallel(actions);
+    /// 
+    /// // To add CancellationToken support:
+    /// CancellationTokenSource tokenSource = new();
+    /// await RunParallel(actions, tokenSource.Token);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="actions">The actions to perform.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> RunParallel(
         IEnumerable<Action> actions,
         CancellationToken cancellationToken = default)
@@ -194,7 +370,7 @@ public static partial class Prelude
                     return ValueTask.CompletedTask;
                 });
         }
-        catch (OperationCanceledException _)
+        catch (OperationCanceledException)
         {
             return Unit();
         }
