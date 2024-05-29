@@ -1,9 +1,4 @@
-﻿using System.CodeDom.Compiler;
-using System.Runtime.CompilerServices;
-
-using Functional.Types;
-
-namespace Functional.Test.Prelude;
+﻿namespace Functional.Test.Prelude;
 
 [ExcludeFromCodeCoverage]
 [TestClass]
@@ -48,7 +43,7 @@ public class EffectTests
     public void EffectStaticMethodShouldWorkWithoutInput()
     {
         Effect(
-            () => PerformEffect("input1"), 
+            () => PerformEffect("input1"),
             () => PerformEffect("input2"));
 
         EffectResult.Count.ShouldBe(2);
@@ -62,7 +57,7 @@ public class EffectTests
         var result = await "input"
             .Async()
             .EffectAsync(
-                PerformEffect, 
+                PerformEffect,
                 value => PerformEffect(value + "!"));
 
         result.AssertInstanceOfType(typeof(Unit));
@@ -70,7 +65,7 @@ public class EffectTests
         EffectResult[0].ShouldBe("input");
         EffectResult[1].ShouldBe("input!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_ActionT_Order()
     {
@@ -84,7 +79,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult[0].ShouldBe("input");
         EffectResult[1].ShouldBe("input!");
-        
+
         Reset();
 
         result = await "input"
@@ -99,7 +94,7 @@ public class EffectTests
         EffectResult.ShouldContain("input");
         EffectResult.ShouldContain("input!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_ActionT_Cancellation()
     {
@@ -126,7 +121,7 @@ public class EffectTests
             await "input".Async()
                 .EffectAsync(TokenSource.Token, PerformEffect, value => PerformEffect(value + "!"));
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_ActionT_Order_Cancellation()
     {
@@ -145,7 +140,7 @@ public class EffectTests
         EffectResult[1].ShouldBe("input!");
 
         Reset();
-        
+
         // Test normal parallel execution
         result = await "input"
             .Async()
@@ -161,7 +156,7 @@ public class EffectTests
         EffectResult.Count.ShouldBe(2);
 
         Reset();
-        
+
         // Test cancellation with sequential during first effect.
         result = await "input"
             .Async()
@@ -178,9 +173,9 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.Count.ShouldBe(1);
         EffectResult.First().ShouldBe("input");
-        
+
         Reset();
-        
+
         // Test cancellation with parallel execution.
         await TokenSource.CancelAsync();
         result = await "input"
@@ -194,7 +189,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_Action_Plain()
     {
@@ -206,12 +201,12 @@ public class EffectTests
                     () => PerformEffect("value!"));
 
         result.AssertInstanceOfType(typeof(Unit));
-        
+
         EffectResult.Count.ShouldBe(2);
         EffectResult[0].ShouldBe("value");
         EffectResult[1].ShouldBe("value!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_Action_Order()
     {
@@ -243,7 +238,7 @@ public class EffectTests
         EffectResult.ShouldContain("value");
         EffectResult.ShouldContain("value!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_Action_Cancellation()
     {
@@ -260,7 +255,7 @@ public class EffectTests
         EffectResult[1].ShouldBe("value!");
 
         Reset();
-        
+
         await TokenSource.CancelAsync();
         result = await "input"
             .Async()
@@ -272,7 +267,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_Action_Order_Cancellation()
     {
@@ -332,7 +327,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTTask_Plain()
     {
@@ -347,7 +342,7 @@ public class EffectTests
         EffectResult[0].ShouldBe("input");
         EffectResult[1].ShouldBe("input!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTTask_Order()
     {
@@ -362,7 +357,7 @@ public class EffectTests
         EffectResult.Count.ShouldBe(2);
         EffectResult[0].ShouldBe("input");
         EffectResult[1].ShouldBe("input!");
-        
+
         Reset();
 
         result = await "input"
@@ -376,7 +371,7 @@ public class EffectTests
         EffectResult.ShouldContain("input");
         EffectResult.ShouldContain("input!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTTask_Cancellation()
     {
@@ -405,7 +400,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTTask_Order_Cancellation()
     {
@@ -464,7 +459,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTask_Plain()
     {
@@ -479,7 +474,7 @@ public class EffectTests
         EffectResult[0].ShouldBe("value");
         EffectResult[1].ShouldBe("value!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTask_Order()
     {
@@ -508,7 +503,7 @@ public class EffectTests
         EffectResult.ShouldContain("value");
         EffectResult.ShouldContain("value!");
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTask_Cancellation()
     {
@@ -525,7 +520,7 @@ public class EffectTests
         EffectResult[1].ShouldBe("value!");
 
         Reset();
-        
+
         await TokenSource.CancelAsync();
         result = await "input"
             .Async()
@@ -537,7 +532,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task EffectAsync_FuncTask_Order_Cancellation()
     {
@@ -609,7 +604,7 @@ public class EffectTests
         EffectResult[0].ShouldBe("value");
         EffectResult[1].ShouldBe("value!");
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_Action_Order()
     {
@@ -635,7 +630,7 @@ public class EffectTests
         EffectResult.ShouldContain("value");
         EffectResult.ShouldContain("value!");
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_Action_Cancellation()
     {
@@ -660,7 +655,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_Action_Order_Cancellation()
     {
@@ -710,9 +705,9 @@ public class EffectTests
 
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
-        
+
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_FuncTask_Plain()
     {
@@ -725,7 +720,7 @@ public class EffectTests
         EffectResult[0].ShouldBe("value");
         EffectResult[1].ShouldBe("value!");
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_FuncTask_Order()
     {
@@ -751,7 +746,7 @@ public class EffectTests
         EffectResult.ShouldContain("value");
         EffectResult.ShouldContain("value!");
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_FuncTask_Cancellation()
     {
@@ -776,7 +771,7 @@ public class EffectTests
         result.AssertInstanceOfType(typeof(Unit));
         EffectResult.ShouldBeEmpty();
     }
-    
+
     [TestMethod]
     public async Task StaticEffectAsync_FuncTask_Order_Cancellation()
     {

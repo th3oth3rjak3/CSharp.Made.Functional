@@ -137,7 +137,7 @@ public static partial class Prelude
             await input.PipeAsync(value =>
                 processingOrder == ProcessingOrder.Parallel
                     ? RunParallel(value, actions)
-                    : RunSequential(value, actions).Async());
+                    : RunSequential(value, actions));
 
     /// <summary>
     /// Perform effects on the input value.
@@ -202,7 +202,7 @@ public static partial class Prelude
             await input.PipeAsync(value =>
                 processingOrder == ProcessingOrder.Parallel
                     ? RunParallel(value, actions, cancellationToken)
-                    : RunSequential(value, actions, cancellationToken).Async());
+                    : RunSequential(value, actions, cancellationToken));
 
 
     /// <summary>

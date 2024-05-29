@@ -104,19 +104,19 @@ public static partial class Prelude
     /// <param name="actions">The actions to perform.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
     /// <returns>Unit.</returns>
-    public static Unit RunSequential<T>(
+    public static async Task<Unit> RunSequential<T>(
         T input,
         IEnumerable<Action<T>> actions,
         CancellationToken cancellationToken = default)
     {
-        var returnValue = Unit();
+        var returnValue = Unit().Async();
         foreach (var action in actions)
         {
-            if (cancellationToken.IsCancellationRequested) return returnValue;
+            if (cancellationToken.IsCancellationRequested) return await returnValue;
             action(input);
         }
 
-        return returnValue;
+        return await returnValue;
     }
 
     /// <summary>
