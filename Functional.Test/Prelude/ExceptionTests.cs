@@ -719,4 +719,281 @@ public class ExceptionTests
         mapped.IsError.ShouldBeTrue();
         mapped.UnwrapError().Message.ShouldBe("an error");
     }
+
+    [TestMethod]
+    public async Task ResultTryMapAsync_3()
+    {
+        var mapped =
+            await Ok("not an integer")
+            .Async()
+            .TryMapAsync(value => int.Parse(value).Async());
+
+        mapped.IsError.ShouldBeTrue();
+
+        mapped =
+            await Ok("42")
+            .Async()
+            .TryMapAsync(value => int.Parse(value).Async());
+
+        mapped.IsOk.ShouldBeTrue();
+        mapped.Unwrap().ShouldBe(42);
+
+        mapped =
+            await Error<string>("an error")
+            .Async()
+            .TryMapAsync(value => int.Parse(value).Async());
+
+        mapped.UnwrapError().Message.ShouldBe("an error");
+    }
+
+    [TestMethod]
+    public async Task ResultTryMapAsync_4()
+    {
+        var mapped =
+            await Ok("100")
+            .Async()
+            .TryMapAsync(() => int.Parse("something that won't parse").Async());
+
+        mapped.IsError.ShouldBeTrue();
+
+        mapped =
+            await Ok("random")
+            .Async()
+            .TryMapAsync(() => int.Parse("100").Async());
+
+        mapped.Unwrap().ShouldBe(100);
+
+        mapped =
+            await Error<string>("an error")
+            .Async()
+            .TryMapAsync(() => int.Parse("anything").Async());
+
+        mapped.UnwrapError().Message.ShouldBe("an error");
+    }
+
+    [TestMethod]
+    public void ResultTryBind_1()
+    {
+        var mapped =
+            Ok(8).TryBind(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("value too low");
+
+
+        mapped =
+            Ok(42).TryBind(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("value too high");
+
+        mapped =
+            Ok(15).TryBind(Unsafe);
+
+        mapped.IsOk.ShouldBeTrue();
+        mapped.Unwrap().ShouldBe("15");
+
+        mapped =
+            Error<int>("an error").TryBind(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("an error");
+
+        return;
+
+        static Result<string, Exception> Unsafe(int input) =>
+            input < 10
+            ? throw new Exception("value too low")
+            : input > 30
+                ? Error<string>("value too high")
+                : Ok(input.ToString());
+    }
+
+    [TestMethod]
+    public void ResultTryBind_2()
+    {
+        var mapped = Ok(8).TryBind(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("error");
+
+        mapped =
+            Ok(42).TryBind(ErrorString);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("something bad happened");
+
+        mapped =
+            Ok(15).TryBind(GetString);
+
+        mapped.Unwrap().ShouldBe("value");
+
+        mapped =
+            Error<string>("original error").TryBind(GetString);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("original error");
+
+        return;
+
+        static Result<string, Exception> Unsafe() => throw new Exception("error");
+        static Result<string, Exception> GetString() => Ok("value");
+        static Result<string, Exception> ErrorString() => Error<string>("something bad happened");
+    }
+
+    [TestMethod]
+    public async Task ResultTryBindAsync_1()
+    {
+        var mapped =
+            await Ok(8).Async().TryBindAsync(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("value too low");
+
+
+        mapped =
+            await Ok(42).Async().TryBindAsync(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("value too high");
+
+        mapped =
+            await Ok(15).Async().TryBindAsync(Unsafe);
+
+        mapped.IsOk.ShouldBeTrue();
+        mapped.Unwrap().ShouldBe("15");
+
+        mapped =
+            await Error<int>("an error").Async().TryBindAsync(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("an error");
+
+        return;
+
+        static Result<string, Exception> Unsafe(int input) =>
+            input < 10
+            ? throw new Exception("value too low")
+            : input > 30
+                ? Error<string>("value too high")
+                : Ok(input.ToString());
+    }
+
+    [TestMethod]
+    public async Task ResultTryBindAsync_2()
+    {
+        var mapped =
+            await Ok(8)
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.IsError.ShouldBeTrue();
+        mapped.UnwrapError().Message.ShouldBe("error");
+
+        mapped =
+            await Ok(42)
+            .Async()
+            .TryBindAsync(ErrorString);
+
+        mapped.UnwrapError().Message.ShouldBe("an error");
+
+        mapped =
+            await Ok(15)
+            .Async()
+            .TryBindAsync(GetString);
+
+        mapped.Unwrap().ShouldBe("value");
+
+        mapped =
+            await Error<string>("original error")
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.UnwrapError().Message.ShouldBe("original error");
+
+        return;
+
+        static Result<string, Exception> Unsafe() => throw new Exception("error");
+        static Result<string, Exception> GetString() => "value";
+        static Result<string, Exception> ErrorString() => Error<string>("an error");
+    }
+
+    [TestMethod]
+    public async Task ResultTryBindAsync_3()
+    {
+        var mapped =
+            await Ok(8)
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.UnwrapError().Message.ShouldBe("value too low");
+
+        mapped =
+            await Ok(42)
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.UnwrapError().Message.ShouldBe("value too high");
+
+        mapped =
+            await Ok(15)
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.Unwrap().ShouldBe("15");
+
+        mapped =
+            await Error<int>("original error")
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.UnwrapError().Message.ShouldBe("original error");
+
+        return;
+
+        static Task<Result<string, Exception>> Unsafe(int input) =>
+            input < 10
+            ? throw new Exception("value too low")
+            : input > 30
+                ? Error<string>("value too high").Async()
+                : Ok(input.ToString()).Async();
+    }
+
+    [TestMethod]
+    public async Task ResultTryBindAsync_4()
+    {
+        var mapped =
+            await Ok(8)
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.UnwrapError().Message.ShouldBe("error");
+
+        mapped =
+            await Ok(42)
+            .Async()
+            .TryBindAsync(ErrorString);
+
+        mapped.UnwrapError().Message.ShouldBe("something bad happened");
+
+        mapped =
+            await Ok(15)
+            .Async()
+            .TryBindAsync(GetString);
+
+        mapped.Unwrap().ShouldBe("value");
+
+        mapped =
+            await Error<int>("original error")
+            .Async()
+            .TryBindAsync(Unsafe);
+
+        mapped.UnwrapError().Message.ShouldBe("original error");
+
+        return;
+
+        static Task<Result<string, Exception>> Unsafe() => throw new Exception("error");
+        static Task<Result<string, Exception>> GetString() => Ok("value").Async();
+        static Task<Result<string, Exception>> ErrorString() => Error<string>("something bad happened").Async();
+    }
 }

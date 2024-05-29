@@ -103,4 +103,100 @@ public static partial class Prelude
             ? theResult.UnwrapError()
             : await binder(theResult.Unwrap());
     }
+
+    /// <summary>
+    /// Perform work on a previous result. When the result is Ok, 
+    /// perform work on the result by providing a binding function.
+    /// On Error, the previous result will be returned as the new result type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; mapped = 
+    ///     await Ok(42)
+    ///     .Async()
+    ///     .BindAsync(() => Ok("some value"));
+    ///     
+    /// Assert.AreEqual(mapped.Unwrap(), "some value");
+    /// 
+    /// mapped = 
+    ///     await Ok(42)
+    ///     .Async()
+    ///     .BindAsync(() => Error&lt;string&gt;("an error"));
+    ///     
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an error");
+    /// 
+    /// mapped = 
+    ///     await Error&lt;int&gt;("original error")
+    ///     .Async()
+    ///     .BindAsync(() => Ok("anything"));
+    ///     
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "original error");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Output">The type of the result after performing 
+    /// the onOk function.</typeparam>
+    /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
+    /// <param name="result">The previous result to bind.</param>
+    /// <param name="binder">The function to perform when the 
+    /// previous result is Ok.</param>
+    /// <returns>The result of the bind operation.</returns>
+    public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Result<Output, Error>> binder)
+    {
+        var theResult = await result;
+        return theResult.IsError
+            ? theResult.UnwrapError()
+            : binder();
+    }
+
+    /// <summary>
+    /// Perform work on a previous result. When the result is Ok, 
+    /// perform work on the result by providing a binding function.
+    /// On Error, the previous result will be returned as the new result type.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; mapped = 
+    ///     await Ok(42)
+    ///     .Async()
+    ///     .BindAsync(() => Ok("some value").Async());
+    ///     
+    /// Assert.AreEqual(mapped.Unwrap(), "some value");
+    /// 
+    /// mapped = 
+    ///     await Ok(42)
+    ///     .Async()
+    ///     .BindAsync(() => Error&lt;string&gt;("an error").Async());
+    ///     
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an error");
+    /// 
+    /// mapped = 
+    ///     await Error&lt;int&gt;("original error")
+    ///     .Async()
+    ///     .BindAsync(() => Ok("anything").Async());
+    ///     
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "original error");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="Ok">The type of the input.</typeparam>
+    /// <typeparam name="Output">The type of the result after performing 
+    /// the onOk function.</typeparam>
+    /// <typeparam name="Error">The type of the error that may result from the binding operation.</typeparam>
+    /// <param name="result">The previous result to bind.</param>
+    /// <param name="binder">The function to perform when the 
+    /// previous result is Ok.</param>
+    /// <returns>The result of the bind operation.</returns>
+    public static async Task<Result<Output, Error>> BindAsync<Ok, Output, Error>(
+        this Task<Result<Ok, Error>> result,
+        Func<Task<Result<Output, Error>>> binder)
+    {
+        var theResult = await result;
+        return theResult.IsError
+            ? theResult.UnwrapError()
+            : await binder();
+    }
 }

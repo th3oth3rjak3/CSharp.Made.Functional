@@ -282,7 +282,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;Option&lt;int&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;int&gt;, Exception&gt; mapped = 
     ///     Some("maybe an integer")
     ///         // This will throw an exception when it can't parse the input to an integer
     ///         // resulting in "mapped" being an Error Result.
@@ -332,7 +332,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;Option&lt;int&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;int&gt;, Exception&gt; mapped = 
     ///     Some("100")
     ///         // This will throw an exception when it can't parse the input to an integer
     ///         // resulting in "mapped" being an Error Result.
@@ -382,7 +382,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;Option&lt;int&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;int&gt;, Exception&gt; mapped = 
     ///     await Some("maybe an integer")
     ///         .Async()
     ///         // This will throw an exception when it can't parse the input to an integer
@@ -436,7 +436,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;Option&lt;int&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;int&gt;, Exception&gt; mapped = 
     ///     await Some("100")
     ///         .Async()
     ///         // This will throw an exception when it can't parse the input to an integer
@@ -490,7 +490,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;Option&lt;int&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;int&gt;, Exception&gt; mapped = 
     ///     await Some("maybe an integer")
     ///         .Async()
     ///         // This will throw an exception when it can't parse the input to an integer
@@ -544,7 +544,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;Option&lt;int&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;int&gt;, Exception&gt; mapped = 
     ///     await Some("100")
     ///         .Async()
     ///         // This will throw an exception when it can't parse the input to an integer
@@ -601,11 +601,11 @@ public static partial class Prelude
     /// Option&lt;string&gt; UnsafeToString(int input) =>
     ///     input &lt; 10
     ///         ? throw new Exception("value too low")
-    ///         : value &gt; 30
+    ///         : input &gt; 30
     ///             ? None&lt;string&gt;()
     ///             : Some(input.ToString());
     ///             
-    /// Result&lt;Option&lt;string&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;string&gt;, Exception&gt; mapped = 
     ///     Some(8)
     ///         .TryBind(UnsafeToString);
     ///         
@@ -666,7 +666,7 @@ public static partial class Prelude
     /// Option&lt;string&gt; GetString() => Some("value");
     /// Option&lt;string&gt; NoneString() => None&lt;string&gt;();
     ///             
-    /// Result&lt;Option&lt;string&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;string&gt;, Exception&gt; mapped = 
     ///     Some(8)
     ///         .TryBind(Unsafe);
     ///         
@@ -726,11 +726,11 @@ public static partial class Prelude
     /// Option&lt;string&gt; UnsafeToString(int input) =>
     ///     input &lt; 10
     ///         ? throw new Exception("value too low")
-    ///         : value &gt; 30
+    ///         : input &gt; 30
     ///             ? None&lt;string&gt;()
     ///             : Some(input.ToString());
     ///             
-    /// Result&lt;Option&lt;string&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;string&gt;, Exception&gt; mapped = 
     ///     await Some(8)
     ///         .Async()
     ///         .TryBindAsync(UnsafeToString);
@@ -795,7 +795,7 @@ public static partial class Prelude
     /// Option&lt;string&gt; GetString() => Some("value");
     /// Option&lt;string&gt; NoneString() => None&lt;string&gt;();
     ///             
-    /// Result&lt;Option&lt;string&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;string&gt;, Exception&gt; mapped = 
     ///     await Some(8)
     ///         .Async()
     ///         .TryBindAsync(Unsafe);
@@ -859,11 +859,11 @@ public static partial class Prelude
     /// Task&lt;Option&lt;string&gt;&gt; UnsafeToString(int input) =>
     ///     input &lt; 10
     ///         ? throw new Exception("value too low")
-    ///         : value &gt; 30
+    ///         : input &gt; 30
     ///             ? None&lt;string&gt;().Async()
     ///             : Some(input.ToString()).Async();
     ///             
-    /// Result&lt;Option&lt;string&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;string&gt;, Exception&gt; mapped = 
     ///     await Some(8)
     ///         .Async()
     ///         .TryBindAsync(UnsafeToString);
@@ -928,7 +928,7 @@ public static partial class Prelude
     /// Task&lt;Option&lt;string&gt;&gt; GetString() => Some("value").Async();
     /// Task&lt;Option&lt;string&gt;&gt; NoneString() => None&lt;string&gt;().Async();
     ///             
-    /// Result&lt;Option&lt;string&gt;&gt; mapped = 
+    /// Result&lt;Option&lt;string&gt;, Exception&gt; mapped = 
     ///     await Some(8)
     ///         .Async()
     ///         .TryBindAsync(Unsafe);
@@ -989,7 +989,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;int&gt; mapped = 
+    /// Result&lt;int, Exception&gt; mapped = 
     ///     Ok("not an integer")
     ///         // This will throw an exception when it can't parse the input to an integer
     ///         // resulting in "mapped" being an Error Result.
@@ -1038,7 +1038,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;int&gt; mapped = 
+    /// Result&lt;int, Exception&gt; mapped = 
     ///     Ok("100")
     ///         // This will throw an exception when it can't parse the input to an integer
     ///         // resulting in "mapped" being an Error Result.
@@ -1087,7 +1087,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;int&gt; mapped = 
+    /// Result&lt;int, Exception&gt; mapped = 
     ///     await Ok("not an integer")
     ///         .Async()
     ///         // This will throw an exception when it can't parse the input to an integer
@@ -1139,7 +1139,7 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Result&lt;int&gt; mapped = 
+    /// Result&lt;int, Exception&gt; mapped = 
     ///     await Ok("100")
     ///         .Async()
     ///         // This will throw an exception when it can't parse the input to an integer
@@ -1186,38 +1186,158 @@ public static partial class Prelude
         }
     }
 
-    // TODO: Unit tests.
-    // TODO: Documentation
-    // TODO: Examples
-    // TODO: Implementation
-    public static Task<Result<TMapped, Exception>> TryMapAsync<T, TMapped>(
+    /// <summary>
+    /// Perform a mapping operation on Result when the mapping may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;int&gt; mapped = 
+    ///     await Ok("not an integer")
+    ///         .Async()
+    ///         // This will throw an exception when it can't parse the input to an integer
+    ///         // resulting in "mapped" being an Error Result.
+    ///         .TryMapAsync(value => int.Parse(value).Async());
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// 
+    /// mapped = 
+    ///     await Ok("42")
+    ///         .Async()
+    ///         .TryMapAsync(value => int.Parse(value).Async());
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap(), 42);
+    /// 
+    /// mapped =
+    ///     await Error&lt;string&gt;("an existing error")
+    ///         .Async()
+    ///         // Since the input is already an Error, the mapping won't take place and the output will be the same error.
+    ///         .TryMapAsync(value => int.Parse(value).Async());
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an existing error");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform a mapping to.</param>
+    /// <param name="mapping">The mapping function to perform.</param>
+    /// <typeparam name="T">The type of the result Ok type.</typeparam>
+    /// <typeparam name="TMapped">The output type of the result.</typeparam>
+    /// <returns>The result of mapping.</returns>
+    public static async Task<Result<TMapped, Exception>> TryMapAsync<T, TMapped>(
         this Task<Result<T, Exception>> result,
         Func<T, Task<TMapped>> mapping)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await result.MapAsync(mapping);
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
     }
 
-    // TODO: Unit tests.
-    // TODO: Documentation
-    // TODO: Examples
-    // TODO: Implementation
-    public static Task<Result<TMapped, Exception>> TryMapAsync<T, TMapped>(
+    /// <summary>
+    /// Perform a mapping operation on Result when the mapping may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;int&gt; mapped = 
+    ///     await Ok("100")
+    ///         .Async()
+    ///         // This will throw an exception when it can't parse the input to an integer
+    ///         // resulting in "mapped" being an Error Result.
+    ///         .TryMapAsync(() => int.Parse("something that won't parse").Async());
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// 
+    /// mapped = 
+    ///     await Ok("42")
+    ///         .Async()
+    ///         .TryMapAsync(() => int.Parse("100").Async());
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap(), 100);
+    /// 
+    /// mapped =
+    ///     await Error&lt;string&gt;("an existing error")
+    ///         .Async()
+    ///         // Since the input is already an Error, the mapping won't take place and the output will be the same error.
+    ///         .TryMapAsync(() => int.Parse("anything").Async());
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an existing error");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform a mapping to.</param>
+    /// <param name="mapping">The mapping function to perform.</param>
+    /// <typeparam name="T">The type of the result Ok type.</typeparam>
+    /// <typeparam name="TMapped">The output type of the result.</typeparam>
+    /// <returns>The result of mapping.</returns>
+    public static async Task<Result<TMapped, Exception>> TryMapAsync<T, TMapped>(
         this Task<Result<T, Exception>> result,
         Func<Task<TMapped>> mapping)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await result.MapAsync(mapping);
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
     }
 
-    // TODO: Unit tests.
-    // TODO: Examples.
     /// <summary>
-    /// Try to perform a binding function which could throw.
+    /// Used instead of Map when the mapping function produces a Result type and may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; UnsafeToString(int input) =>
+    ///     input &lt; 10
+    ///         ? throw new Exception("value too low")
+    ///         : input &gt; 30
+    ///             ? Error&lt;string&gt;("value too high")
+    ///             : Ok(input.ToString());
+    ///             
+    /// Result&lt;string&gt; mapped = 
+    ///     Ok(8)
+    ///         .TryBind(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "value too low");
+    /// 
+    /// mapped = 
+    ///     Ok(42)
+    ///         .TryBind(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.IsTrue(mapped.UnwrapError().Message, "value too high");
+    /// 
+    /// mapped = 
+    ///     Ok(15)
+    ///         .TryBind(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap().Unwrap(), "15");
+    /// 
+    /// mapped =
+    ///     Error&lt;int&gt;("there was an error")
+    ///         .TryBind(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "there was an error");
+    ///         
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="result">The input result.</param>
-    /// <param name="toTry">A binding function which could throw.</param>
-    /// <typeparam name="T">The original result Ok type.</typeparam>
-    /// <typeparam name="TBoundResult">The new result Ok type.</typeparam>
-    /// <returns>A result which either a mapped value or an exception.</returns>
+    /// <typeparam name="TBoundResult">The type of the output.</typeparam>
+    /// <typeparam name="T">The inner type of the input option.</typeparam>
+    /// <param name="result">The result to try binding.</param>
+    /// <param name="toTry">The binding function.</param>
+    /// <returns>The result of binding.</returns>
     public static Result<TBoundResult, Exception> TryBind<T, TBoundResult>(
         this Result<T, Exception> result,
         Func<T, Result<TBoundResult, Exception>> toTry)
@@ -1232,16 +1352,51 @@ public static partial class Prelude
         }
     }
 
-    // TODO: Unit tests.
-    // TODO: Examples.
     /// <summary>
-    /// Try to perform a binding function which could throw.
+    /// Used instead of Map when the mapping function produces a Result type and may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; Unsafe() => throw new Exception("error");
+    /// Result&lt;string, Exception&gt; GetString() => Ok("value");
+    /// Result&lt;string, Exception&gt; ErrorString() => Error&lt;string&gt;("Something bad happened");
+    ///             
+    /// Result&lt;string, Exception&gt; mapped = 
+    ///     Ok(8)
+    ///         .TryBind(Unsafe);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "error");
+    /// 
+    /// mapped = 
+    ///     Ok(42)
+    ///         .TryBind(ErrorString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.IsTrue(mapped.Unwrap().IsNone);
+    /// 
+    /// mapped = 
+    ///     Ok(15)
+    ///         .TryBind(GetString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap().Unwrap(), "value");
+    /// 
+    /// mapped =
+    ///     Error&lt;int&gt;("an error")
+    ///         .TryBind(Unsafe);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an error");
+    ///         
+    /// </code>
+    /// </example>
     /// </summary>
-    /// <param name="result">The input result.</param>
-    /// <param name="toTry">A binding function which could throw.</param>
-    /// <typeparam name="T">The original result Ok type.</typeparam>
-    /// <typeparam name="TBoundResult">The new result Ok type.</typeparam>
-    /// <returns>A result which either a mapped value or an exception.</returns>
+    /// <typeparam name="TBoundResult">The type of the output.</typeparam>
+    /// <typeparam name="T">The inner type of the input result.</typeparam>
+    /// <param name="result">The result to try binding.</param>
+    /// <param name="toTry">The binding function.</param>
+    /// <returns>The result of binding.</returns>
     public static Result<TBoundResult, Exception> TryBind<T, TBoundResult>(
         this Result<T, Exception> result,
         Func<Result<TBoundResult, Exception>> toTry)
@@ -1256,47 +1411,261 @@ public static partial class Prelude
         }
     }
 
-    // TODO: Unit tests.
-    // TODO: Documentation
-    // TODO: Examples
-    // TODO: Implementation
-    public static Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
+    /// <summary>
+    /// Used instead of Map when the mapping function produces a Result type and may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; UnsafeToString(int input) =>
+    ///     input &lt; 10
+    ///         ? throw new Exception("value too low")
+    ///         : input &gt; 30
+    ///             ? Error&lt;string&gt;("value too high")
+    ///             : Ok(input.ToString());
+    ///             
+    /// Result&lt;string&gt; mapped = 
+    ///     await Ok(8)
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "value too low");
+    /// 
+    /// mapped = 
+    ///     await Ok(42)
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.IsTrue(mapped.UnwrapError().Message, "value too high");
+    /// 
+    /// mapped = 
+    ///     await Ok(15)
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap().Unwrap(), "15");
+    /// 
+    /// mapped =
+    ///     await Error&lt;int&gt;("there was an error")
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "there was an error");
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TMapped">The type of the output.</typeparam>
+    /// <typeparam name="T">The inner type of the input option.</typeparam>
+    /// <param name="result">The result to try binding.</param>
+    /// <param name="mapping">The binding function.</param>
+    /// <returns>The result of binding.</returns>
+    public static async Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
         this Task<Result<T, Exception>> result,
         Func<T, Result<TMapped, Exception>> mapping)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await result.BindAsync(mapping);
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
     }
 
-    // TODO: Unit tests.
-    // TODO: Documentation
-    // TODO: Examples
-    // TODO: Implementation
-    public static Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
+    /// <summary>
+    /// Used instead of Map when the mapping function produces a Result type and may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; Unsafe() => throw new Exception("error");
+    /// Result&lt;string, Exception&gt; GetString() => Ok("value");
+    /// Result&lt;string, Exception&gt; ErrorString() => Error&lt;string&gt;("Something bad happened");
+    ///             
+    /// Result&lt;string, Exception&gt; mapped = 
+    ///     await Ok(8)
+    ///         .Async()
+    ///         .TryBindAsync(Unsafe);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "error");
+    /// 
+    /// mapped = 
+    ///     await Ok(42)
+    ///         .Async()
+    ///         .TryBindAsync(ErrorString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.IsTrue(mapped.Unwrap().IsNone);
+    /// 
+    /// mapped = 
+    ///     await Ok(15)
+    ///         .Async()
+    ///         .TryBindAsync(GetString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap().Unwrap(), "value");
+    /// 
+    /// mapped =
+    ///     await Error&lt;int&gt;("an error")
+    ///         .Async()
+    ///         .TryBindAsync(Unsafe);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an error");
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TMapped">The type of the output.</typeparam>
+    /// <typeparam name="T">The inner type of the input result.</typeparam>
+    /// <param name="result">The result to try binding.</param>
+    /// <param name="mapping">The binding function.</param>
+    /// <returns>The result of binding.</returns>
+    public static async Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
         this Task<Result<T, Exception>> result,
         Func<Result<TMapped, Exception>> mapping)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await result.BindAsync(mapping);
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
     }
 
-    // TODO: Unit tests.
-    // TODO: Documentation
-    // TODO: Examples
-    // TODO: Implementation
-    public static Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
+    /// <summary>
+    /// Used instead of Map when the mapping function produces a Result type and may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task&lt;Result&lt;string, Exception&gt;&gt; UnsafeToString(int input) =>
+    ///     input &lt; 10
+    ///         ? throw new Exception("value too low")
+    ///         : input &gt; 30
+    ///             ? Error&lt;string&gt;("value too high").Async()
+    ///             : Ok(input.ToString()).Async();
+    ///             
+    /// Result&lt;string&gt; mapped = 
+    ///     await Ok(8)
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "value too low");
+    /// 
+    /// mapped = 
+    ///     await Ok(42)
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.IsTrue(mapped.UnwrapError().Message, "value too high");
+    /// 
+    /// mapped = 
+    ///     await Ok(15)
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap().Unwrap(), "15");
+    /// 
+    /// mapped =
+    ///     await Error&lt;int&gt;("there was an error")
+    ///         .Async()
+    ///         .TryBindAsync(UnsafeToString);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "there was an error");
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TMapped">The type of the output.</typeparam>
+    /// <typeparam name="T">The inner type of the input option.</typeparam>
+    /// <param name="result">The result to try binding.</param>
+    /// <param name="mapping">The binding function.</param>
+    /// <returns>The result of binding.</returns>
+    public static async Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
         this Task<Result<T, Exception>> result,
         Func<T, Task<Result<TMapped, Exception>>> mapping)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await result.BindAsync(mapping);
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
     }
 
-    // TODO: Unit tests.
-    // TODO: Documentation
-    // TODO: Examples
-    // TODO: Implementation
-    public static Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
+    /// <summary>
+    /// Used instead of Map when the mapping function produces a Result type and may throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Result&lt;string, Exception&gt; Unsafe() => throw new Exception("error");
+    /// Result&lt;string, Exception&gt; GetString() => Ok("value");
+    /// Result&lt;string, Exception&gt; ErrorString() => Error&lt;string&gt;("Something bad happened");
+    ///             
+    /// Result&lt;string, Exception&gt; mapped = 
+    ///     await Ok(8)
+    ///         .Async()
+    ///         .TryBindAsync(Unsafe);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "error");
+    /// 
+    /// mapped = 
+    ///     await Ok(42)
+    ///         .Async()
+    ///         .TryBindAsync(ErrorString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.IsTrue(mapped.Unwrap().IsNone);
+    /// 
+    /// mapped = 
+    ///     await Ok(15)
+    ///         .Async()
+    ///         .TryBindAsync(GetString);
+    ///         
+    /// Assert.IsTrue(mapped.IsOk);
+    /// Assert.AreEqual(mapped.Unwrap().Unwrap(), "value");
+    /// 
+    /// mapped =
+    ///     await Error&lt;int&gt;("an error")
+    ///         .Async()
+    ///         .TryBindAsync(Unsafe);
+    ///         
+    /// Assert.IsTrue(mapped.IsError);
+    /// Assert.AreEqual(mapped.UnwrapError().Message, "an error");
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="TMapped">The type of the output.</typeparam>
+    /// <typeparam name="T">The inner type of the input result.</typeparam>
+    /// <param name="result">The result to try binding.</param>
+    /// <param name="mapping">The binding function.</param>
+    /// <returns>The result of binding.</returns>
+    public static async Task<Result<TMapped, Exception>> TryBindAsync<T, TMapped>(
         this Task<Result<T, Exception>> result,
         Func<Task<Result<TMapped, Exception>>> mapping)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await result.BindAsync(mapping);
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
     }
 }

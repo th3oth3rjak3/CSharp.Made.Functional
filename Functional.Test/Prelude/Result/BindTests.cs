@@ -78,4 +78,54 @@ public class BindTests
                 output.UnwrapError().Message.ShouldBe("Initial Error");
             });
     }
+
+    [TestMethod]
+    public async Task ItShouldBindAsync_3()
+    {
+        var mapped =
+            await Ok(10)
+            .Async()
+            .BindAsync(() => Ok("else"));
+
+        mapped.Unwrap().ShouldBe("else");
+
+        mapped =
+            await Ok(10)
+            .Async()
+            .BindAsync(() => Error<string>("an error"));
+
+        mapped.UnwrapError().Message.ShouldBe("an error");
+
+        mapped =
+            await Error<int>("original error")
+            .Async()
+            .BindAsync(() => Ok("anything"));
+
+        mapped.UnwrapError().Message.ShouldBe("original error");
+    }
+
+    [TestMethod]
+    public async Task ItShouldBindAsync_4()
+    {
+        var mapped =
+            await Ok(10)
+            .Async()
+            .BindAsync(() => Ok("else").Async());
+
+        mapped.Unwrap().ShouldBe("else");
+
+        mapped =
+            await Ok(10)
+            .Async()
+            .BindAsync(() => Error<string>("an error").Async());
+
+        mapped.UnwrapError().Message.ShouldBe("an error");
+
+        mapped =
+            await Error<int>("original error")
+            .Async()
+            .BindAsync(() => Ok("anything").Async());
+
+        mapped.UnwrapError().Message.ShouldBe("original error");
+    }
 }
