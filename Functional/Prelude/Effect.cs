@@ -108,35 +108,102 @@ public static partial class Prelude
         params Action<T>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects on the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string saved = string.Empty;
+    /// 
+    /// await "some value"
+    ///     .Async()
+    ///     .EffectAsync(
+    ///         // Example using Sequential processing
+    ///         ProcessingOrder.Sequential,
+    ///         value => Console.WriteLine(value),
+    ///         value => saved = value);
+    ///         
+    /// Assert.AreEqual(saved, "some value");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="processingOrder">The order to process the actions.</param>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         params Action<T>[] actions) =>
-            await input.PipeAsync(value => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(value, actions) 
+            await input.PipeAsync(value =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(value, actions)
                     : RunSequential(value, actions).Async());
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects on the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string saved = string.Empty;
+    /// CancellationTokenSource source = new();
+    /// await "some value"
+    ///     .Async()
+    ///     .EffectAsync(
+    ///         source.Token,
+    ///         value => Console.WriteLine(value),
+    ///         value => saved = value);
+    ///         
+    /// Assert.AreEqual(saved, "some value");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Action<T>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
 
-    // todo: docs
-    // todo: examples
+
+    /// <summary>
+    /// Perform effects on the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string saved = string.Empty;
+    /// CancellationTokenSource source = new();
+    /// await "some value"
+    ///     .Async()
+    ///     .EffectAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         source.Token,
+    ///         value => Console.WriteLine(value),
+    ///         value => saved = value);
+    ///         
+    /// Assert.AreEqual(saved, "some value");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="processingOrder">The order to process the actions.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action<T>[] actions) =>
-            await input.PipeAsync(value => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(value, actions, cancellationToken) 
+            await input.PipeAsync(value =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(value, actions, cancellationToken)
                     : RunSequential(value, actions, cancellationToken).Async());
 
 
@@ -167,35 +234,105 @@ public static partial class Prelude
         params Action[] actions) =>
             await input.PipeAsync(() => RunSequential(actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string savedValue = string.Empty;
+    /// 
+    /// Unit output = 
+    ///     await "ignored value"
+    ///         .Async()
+    ///         .EffectAsync(
+    ///             ProcessingOrder.Sequential,
+    ///             () => savedValue = "performed effect",
+    ///             () => Console.WriteLine("Performing effect"));
+    ///             
+    /// Assert.AreEqual(savedValue, "performed effect");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="processingOrder">The processing order.</param>
+    /// <param name="input">The input value to ignore.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         params Action[] actions) =>
-        await input.PipeAsync(() => 
-            processingOrder == ProcessingOrder.Parallel 
-                ? RunParallel(actions) 
+        await input.PipeAsync(() =>
+            processingOrder == ProcessingOrder.Parallel
+                ? RunParallel(actions)
                 : RunSequential(actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string savedValue = string.Empty;
+    /// CancellationTokenSource source = new();
+    /// 
+    /// Unit output = 
+    ///     await "ignored value"
+    ///         .Async()
+    ///         .EffectAsync(
+    ///             source.Token,
+    ///             () => savedValue = "performed effect",
+    ///             () => Console.WriteLine("Performing effect"));
+    ///             
+    /// Assert.AreEqual(savedValue, "performed effect");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="input">The input value to ignore.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Action[] actions) =>
             await input.PipeAsync(() => RunSequential(actions, cancellationToken));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string savedValue = string.Empty;
+    /// CancellationTokenSource source = new();
+    /// 
+    /// Unit output = 
+    ///     await "ignored value"
+    ///         .Async()
+    ///         .EffectAsync(
+    ///             ProcessingOrder.Sequential,
+    ///             source.Token,
+    ///             () => savedValue = "performed effect",
+    ///             () => Console.WriteLine("Performing effect"));
+    ///             
+    /// Assert.AreEqual(savedValue, "performed effect");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="input">The input value to ignore.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action[] actions) =>
-            await input.PipeAsync(() => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(actions, cancellationToken) 
+            await input.PipeAsync(() =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(actions, cancellationToken)
                     : RunSequential(actions, cancellationToken));
 
     /// <summary>
@@ -224,35 +361,102 @@ public static partial class Prelude
         params Func<T, Task>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects on the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// Task doAsyncWork(string input) => Task.Run(Console.WriteLine(input));
+    /// 
+    /// await "some value"
+    ///     .Async()
+    ///     .EffectAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         value => doAsyncWork(value),
+    ///         value => doAsyncWork(value + "!"));
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="processingOrder">The order to process the actions.</param>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         params Func<T, Task>[] actions) =>
-            await input.PipeAsync(value => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(value, actions) 
+            await input.PipeAsync(value =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(value, actions)
                     : RunSequential(value, actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects on the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// CancellationTokenSource source = new();
+    /// 
+    /// Task doAsyncWork(string input) => Task.Run(Console.WriteLine(input));
+    /// 
+    /// await "some value"
+    ///     .Async()
+    ///     .EffectAsync(
+    ///         source.Token,
+    ///         value => doAsyncWork(value),
+    ///         value => doAsyncWork(value + "!"));
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Func<T, Task>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects on the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// 
+    /// Task doAsyncWork(string input) => Task.Run(Console.WriteLine(input));
+    /// CancellationTokenSource source = new();
+    /// 
+    /// await "some value"
+    ///     .Async()
+    ///     .EffectAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         source.Token,
+    ///         value => doAsyncWork(value),
+    ///         value => doAsyncWork(value + "!"));
+    ///         
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="input">The input value to perform effects on.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<T, Task>[] actions) =>
-            await input.PipeAsync(value => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(value, actions, cancellationToken) 
+            await input.PipeAsync(value =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(value, actions, cancellationToken)
                     : RunSequential(value, actions, cancellationToken));
 
     /// <summary>
@@ -280,35 +484,104 @@ public static partial class Prelude
         params Func<Task>[] actions) =>
             await input.PipeAsync(() => RunSequential(actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task doAsyncWork() => Task.Run(Console.WriteLine("Performed effect"));
+    /// 
+    /// Unit output = 
+    ///     await "ignored value"
+    ///         .Async()
+    ///         .EffectAsync(
+    ///             ProcessingOrder.Sequential,
+    ///             () => doAsyncWork(),
+    ///             () => doAsyncWork());
+    ///             
+    /// Assert.AreEqual(savedValue, "performed effect");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="input">The ignored input value.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         params Func<Task>[] actions) =>
-            await input.PipeAsync(() => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(actions) 
+            await input.PipeAsync(() =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(actions)
                     : RunSequential(actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task doAsyncWork() => Task.Run(Console.WriteLine("Performed effect"));
+    /// CancellationTokenSource source = new();
+    /// 
+    /// Unit output = 
+    ///     await "ignored value"
+    ///         .Async()
+    ///         .EffectAsync(
+    ///             source.Token,
+    ///             () => doAsyncWork());
+    ///             
+    /// Assert.AreEqual(savedValue, "performed effect");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="input">The ignored input value.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         CancellationToken cancellationToken,
         params Func<Task>[] actions) =>
             await input.PipeAsync(() => RunSequential(actions, cancellationToken));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform effects ignoring the input value.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task doAsyncWork() => Task.Run(Console.WriteLine("Performed effect"));
+    /// CancellationTokenSource source = new();
+    /// 
+    /// Unit output = 
+    ///     await "ignored value"
+    ///         .Async()
+    ///         .EffectAsync(
+    ///             ProcessingOrder.Sequential,
+    ///             source.Token,
+    ///             () => doAsyncWork(),
+    ///             () => doAsyncWork());
+    ///             
+    /// Assert.AreEqual(savedValue, "performed effect");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="input">The ignored input value.</param>
+    /// <param name="actions">The actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<T>(
         this Task<T> input,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<Task>[] actions) =>
-            await input.PipeAsync(() => 
-                processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(actions, cancellationToken) 
+            await input.PipeAsync(() =>
+                processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(actions, cancellationToken)
                     : RunSequential(actions, cancellationToken));
 
     /// <summary>
@@ -327,30 +600,81 @@ public static partial class Prelude
         params Action[] actions) =>
             await RunSequential(actions);
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task somethingToDo() => 
+    ///     EffectAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Console.WriteLine("Hello, world!"),
+    ///         () => Console.WriteLine("Hello, again..."));
+    /// await somethingToDo()
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         params Action[] actions) =>
-            await (processingOrder == ProcessingOrder.Parallel 
-                    ? RunParallel(actions) 
+            await (processingOrder == ProcessingOrder.Parallel
+                    ? RunParallel(actions)
                     : RunSequential(actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// CancellationTokenSource source = new();
+    /// Task somethingToDo() => 
+    ///     EffectAsync(
+    ///         source.Token,
+    ///         () => Console.WriteLine("Hello, world!"));
+    ///         
+    /// await somethingToDo()
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         CancellationToken cancellationToken,
         params Action[] actions) =>
             await RunSequential(actions, cancellationToken);
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// CancellationTokenSource source = new();
+    /// 
+    /// Task somethingToDo() => 
+    ///     EffectAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         source.Token,
+    ///         () => Console.WriteLine("Hello, world!"),
+    ///         () => Console.WriteLine("Hello, again..."));
+    ///         
+    /// await somethingToDo()
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action[] actions) =>
-        await (processingOrder == ProcessingOrder.Parallel 
-                ? RunParallel(actions, cancellationToken) 
+        await (processingOrder == ProcessingOrder.Parallel
+                ? RunParallel(actions, cancellationToken)
                 : RunSequential(actions, cancellationToken));
 
     /// <summary>
@@ -370,30 +694,78 @@ public static partial class Prelude
         params Func<Task>[] actions) =>
             await RunSequential(actions);
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task doWork() => Effect(() => Console.WriteLine("doing work")).Async();
+    /// 
+    /// await EffectAsync(
+    ///     ProcessingOrder.Sequential,
+    ///     () => doWork(),
+    ///     () => doWork());
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="processingOrder">The order to process the actions.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         params Func<Task>[] actions) =>
-        await (processingOrder == ProcessingOrder.Parallel 
-                ? RunParallel(actions) 
+        await (processingOrder == ProcessingOrder.Parallel
+                ? RunParallel(actions)
                 : RunSequential(actions));
 
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task doWork() => Effect(() => Console.WriteLine("doing work")).Async();
+    /// CancellationTokenSource source = new();
+    /// 
+    /// await EffectAsync(
+    ///     source.Token,
+    ///     () => doWork());
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         CancellationToken cancellationToken,
         params Func<Task>[] actions) =>
             await RunSequential(actions, cancellationToken);
-    
-    // todo: docs
-    // todo: examples
+
+    /// <summary>
+    /// Perform an effect which returns unit.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task doWork() => Effect(() => Console.WriteLine("doing work")).Async();
+    /// CancellationTokenSource source = new();
+    /// 
+    /// await EffectAsync(
+    ///     ProcessingOrder.Sequential,
+    ///     source.Token,
+    ///     () => doWork(),
+    ///     () => doWork());
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="processingOrder">The order to process the tasks.</param>
+    /// <param name="actions">Actions to perform.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync(
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<Task>[] actions) =>
-        await (processingOrder == ProcessingOrder.Parallel 
-                ? RunParallel(actions, cancellationToken) 
+        await (processingOrder == ProcessingOrder.Parallel
+                ? RunParallel(actions, cancellationToken)
                 : RunSequential(actions, cancellationToken));
 
 }
