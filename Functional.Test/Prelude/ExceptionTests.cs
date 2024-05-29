@@ -92,7 +92,7 @@ public class ExceptionTests
 
         output.ShouldBeEmpty();
 
-        Try(ItDoesntThrow)
+        Try(Safe)
             .Effect(
                 ok => ok.ShouldBe(Unit()),
                 _ => throw new ShouldAssertException("it should have been ok"));
@@ -101,7 +101,7 @@ public class ExceptionTests
 
         return;
         void ItThrows() => throw new Exception("error");
-        void ItDoesntThrow() => output = "success";
+        void Safe() => output = "success";
     }
 
     [TestMethod]
@@ -117,7 +117,7 @@ public class ExceptionTests
         output.ShouldBeEmpty();
 
         "input"
-            .Try(ItDoesntThrow)
+            .Try(Safe)
             .Effect(
                 ok => ok.ShouldBe(Unit()),
                 _ => throw new ShouldAssertException("it should have been ok"));
@@ -126,7 +126,7 @@ public class ExceptionTests
 
         return;
         void ItThrows(string input) => throw new Exception("error");
-        void ItDoesntThrow(string input) => output = input;
+        void Safe(string input) => output = input;
     }
 
     [TestMethod]
@@ -139,7 +139,7 @@ public class ExceptionTests
 
         var output = string.Empty;
 
-        await TryAsync(ItDoesntThrow)
+        await TryAsync(Safe)
             .EffectAsync(
                 ok => ok.ShouldBe(Unit()),
                 err => throw new ShouldAssertException("It should have been ok"));
@@ -149,7 +149,7 @@ public class ExceptionTests
         return;
 
         void ItThrows() => throw new Exception("error");
-        void ItDoesntThrow() => output = "success";
+        void Safe() => output = "success";
     }
 
     [TestMethod]
@@ -166,7 +166,7 @@ public class ExceptionTests
 
         await "input"
             .Async()
-            .TryAsync(ItDoesntThrow)
+            .TryAsync(Safe)
             .EffectAsync(
                 ok => ok.ShouldBe(Unit()),
                 err => throw new ShouldAssertException("it should have been ok"));
@@ -175,7 +175,7 @@ public class ExceptionTests
 
         return;
         void ItThrows(string input) => throw new Exception("error");
-        void ItDoesntThrow(string input) => output = input;
+        void Safe(string input) => output = input;
     }
 
     [TestMethod]
@@ -193,12 +193,12 @@ public class ExceptionTests
 
         var option =
             Some(1)
-                .TryMap(ItDoesntThrow)
+                .TryMap(Safe)
                 .Unwrap();
         option.Unwrap().ShouldBe("1");
 
         option = None<int>()
-            .TryMap(ItDoesntThrow)
+            .TryMap(Safe)
             .Unwrap();
 
         option.IsNone.ShouldBeTrue();
@@ -206,7 +206,7 @@ public class ExceptionTests
         return;
 
         string ItThrows(int input) => throw new Exception("it threw");
-        string ItDoesntThrow(int input) => input.ToString();
+        string Safe(int input) => input.ToString();
     }
 
     [TestMethod]
@@ -383,7 +383,7 @@ public class ExceptionTests
 
         return;
 
-        Option<string> UnsafeToString(int input) =>
+        static Option<string> UnsafeToString(int input) =>
             input < 10
                 ? throw new Exception("value too low")
                 : input > 30
@@ -481,7 +481,7 @@ public class ExceptionTests
 
         return;
 
-        Option<string> UnsafeToString(int input) =>
+        static Option<string> UnsafeToString(int input) =>
             input < 10
             ? throw new Exception("value too low")
             : input > 30
@@ -568,7 +568,7 @@ public class ExceptionTests
 
         return;
 
-        Task<Option<string>> UnsafeToString(int input) =>
+        static Task<Option<string>> UnsafeToString(int input) =>
             input < 10
             ? throw new Exception("value too low")
             : input > 30

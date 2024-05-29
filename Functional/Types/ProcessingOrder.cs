@@ -1,4 +1,4 @@
-﻿namespace Functional.Types;
+﻿namespace Functional;
 
 /// <summary>
 /// Define how a series of Tasks should be processed.

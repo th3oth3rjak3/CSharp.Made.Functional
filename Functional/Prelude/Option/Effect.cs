@@ -354,9 +354,53 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Action<T>[] doWhenSome) where T : notnull =>
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        params Action<T>[] doWhenSome) where T : notnull =>
         (await optional)
             .EffectSome(doWhenSome);
+
+    // todo: examples
+    // todo: tests
+    // todo: docs
+    // todo: implement
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Action<T>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+
+    }
+
+    // todo: examples
+    // todo: tests
+    // todo: docs
+    // todo: implement
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Action<T>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: tests
+    // todo: docs
+    // todo: implement
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<T>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is Some.
@@ -381,10 +425,52 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Action[] doWhenSome)
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        params Action[] doWhenSome)
         where T : notnull =>
             (await optional)
                 .EffectSome(doWhenSome);
+
+    // todo: docs
+    // todo: examples
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Action[] doWhenSome)
+    where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Action[] doWhenSome)
+    where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] doWhenSome)
+    where T : notnull
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is Some.
@@ -413,12 +499,55 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Func<T, Task>[] doWhenSome) where T : notnull
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        params Func<T, Task>[] doWhenSome)
+        where T : notnull
     {
         var option = await optional;
         return option.IsSome
             ? await RunSequential(option.Unwrap(), doWhenSome)
             : Unit();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Func<T, Task>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Func<T, Task>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<T, Task>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -448,12 +577,55 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenSome">Perform this action when the value is Some.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectSomeAsync<T>(this Task<Option<T>> optional, params Func<Task>[] doWhenSome) where T : notnull
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        params Func<Task>[] doWhenSome)
+        where T : notnull
     {
         var option = await optional;
         return option.IsSome
             ? await RunSequential(doWhenSome)
             : Unit();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Func<Task>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] doWhenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -480,10 +652,52 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, params Action[] doWhenNone)
+    public static async Task<Unit> EffectNoneAsync<T>(
+        this Task<Option<T>> optional,
+        params Action[] doWhenNone)
         where T : notnull =>
             (await optional)
                 .EffectNone(doWhenNone);
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectNoneAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Action[] doWhenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectNoneAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Action[] doWhenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectNoneAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] doWhenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is None.
@@ -513,11 +727,54 @@ public static partial class Prelude
     /// <param name="optional">The option to perform the side effect on.</param>
     /// <param name="doWhenNone">Perform this action when the value is None.</param>
     /// <returns>Unit.</returns>
-    public static async Task<Unit> EffectNoneAsync<T>(this Task<Option<T>> optional, params Func<Task>[] doWhenNone) where T : notnull
+    public static async Task<Unit> EffectNoneAsync<T>(
+        this Task<Option<T>> optional,
+        params Func<Task>[] doWhenNone)
+        where T : notnull
     {
         var option = await optional;
         return option.IsNone
             ? await RunSequential(doWhenNone)
             : Unit();
+    }
+
+    // todo: docs
+    // todo: example
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectNoneAsync<T>(
+    this Task<Option<T>> optional,
+    ProcessingOrder processingOrder,
+    params Func<Task>[] doWhenNone)
+    where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: example
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectNoneAsync<T>(
+    this Task<Option<T>> optional,
+    CancellationToken cancellationToken,
+    params Func<Task>[] doWhenNone)
+    where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: example
+    // todo: implement
+    // todo: test
+    public static async Task<Unit> EffectNoneAsync<T>(
+    this Task<Option<T>> optional,
+    ProcessingOrder processingOrder,
+    CancellationToken cancellationToken,
+    params Func<Task>[] doWhenNone)
+    where T : notnull
+    {
+        throw new NotImplementedException();
     }
 }

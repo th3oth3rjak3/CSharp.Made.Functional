@@ -1,6 +1,4 @@
-﻿using Functional.Types;
-
-namespace Functional;
+﻿namespace Functional;
 public static partial class Prelude
 {
     /// <summary>
@@ -589,8 +587,8 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Task somethingToDo() => EffectAsync(() => Console.WriteLine("Hello, world!"));
-    /// await somethingToDo()
+    /// Task DoWork() => EffectAsync(() => Console.WriteLine("Hello, world!"));
+    /// await DoWork()
     /// </code>
     /// </example>
     /// </summary>
@@ -605,12 +603,12 @@ public static partial class Prelude
     /// <example>
     /// <br/><br/>Example:
     /// <code>
-    /// Task somethingToDo() => 
+    /// Task DoWork() => 
     ///     EffectAsync(
     ///         ProcessingOrder.Sequential,
     ///         () => Console.WriteLine("Hello, world!"),
     ///         () => Console.WriteLine("Hello, again..."));
-    /// await somethingToDo()
+    /// await DoWork()
     /// </code>
     /// </example>
     /// </summary>
@@ -630,12 +628,12 @@ public static partial class Prelude
     /// <br/><br/>Example:
     /// <code>
     /// CancellationTokenSource source = new();
-    /// Task somethingToDo() => 
+    /// Task DoWork() => 
     ///     EffectAsync(
     ///         source.Token,
     ///         () => Console.WriteLine("Hello, world!"));
     ///         
-    /// await somethingToDo()
+    /// await DoWork()
     /// </code>
     /// </example>
     /// </summary>
@@ -654,14 +652,14 @@ public static partial class Prelude
     /// <code>
     /// CancellationTokenSource source = new();
     /// 
-    /// Task somethingToDo() => 
+    /// Task DoWork() => 
     ///     EffectAsync(
     ///         ProcessingOrder.Sequential,
     ///         source.Token,
     ///         () => Console.WriteLine("Hello, world!"),
     ///         () => Console.WriteLine("Hello, again..."));
     ///         
-    /// await somethingToDo()
+    /// await DoWork()
     /// </code>
     /// </example>
     /// </summary>

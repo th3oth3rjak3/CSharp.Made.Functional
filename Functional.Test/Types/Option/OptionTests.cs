@@ -127,7 +127,7 @@ public class OptionTests
     [TestMethod]
     public void OptionShouldBind()
     {
-        Option<string> TryGetString(int input) =>
+        static Option<string> TryGetString(int input) =>
             input > 10
                 ? new Option<string>(input.ToString())
                 : new Option<string>();

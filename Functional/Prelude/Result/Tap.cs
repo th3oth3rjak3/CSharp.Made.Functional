@@ -35,8 +35,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action<Ok> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
         Action<Error> onError) =>
             (await result).Tap(onOk, onError);
 
@@ -73,8 +73,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action<Ok> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
         Action onError) =>
             (await result).Tap(onOk, onError);
 
@@ -111,8 +111,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action<Ok> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
         Func<Task> onError)
     {
         var theResult = await result;
@@ -155,7 +155,7 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         Action<Ok> onOk,
         Func<Error, Task> onError)
     {
@@ -199,8 +199,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action onOk,
         Action<Error> onError) =>
             (await result).Tap(onOk, onError);
 
@@ -237,8 +237,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action onOk,
         Action onError) =>
             (await result).Tap(onOk, onError);
 
@@ -275,8 +275,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action onOk,
         Func<Task> onError)
     {
         var theResult = await result;
@@ -320,7 +320,7 @@ public static partial class Prelude
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
-        Action onOk, 
+        Action onOk,
         Func<Error, Task> onError)
     {
         var theResult = await result;
@@ -363,8 +363,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Func<Task> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Func<Task> onOk,
         Action<Error> onError)
     {
         var theResult = await result;
@@ -451,8 +451,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Func<Task> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Func<Task> onOk,
         Func<Task> onError)
     {
         var theResult = await result;
@@ -495,8 +495,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Func<Task> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Func<Task> onOk,
         Func<Error, Task> onError)
     {
         var theResult = await result;
@@ -539,7 +539,7 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         Func<Ok, Task> onOk,
         Action<Error> onError)
     {
@@ -583,8 +583,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Func<Ok, Task> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task> onOk,
         Action onError)
     {
         var theResult = await result;
@@ -627,8 +627,8 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Func<Ok, Task> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Func<Ok, Task> onOk,
         Func<Task> onError)
     {
         var theResult = await result;
@@ -671,7 +671,7 @@ public static partial class Prelude
     /// <param name="onError">An action to perform when error.</param>
     /// <returns>The input result.</returns>
     public static async Task<Result<Ok, Error>> TapAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         Func<Ok, Task> onOk,
         Func<Error, Task> onError)
     {
@@ -681,7 +681,7 @@ public static partial class Prelude
 
         return theResult;
     }
-    
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// <example>
@@ -715,9 +715,46 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Action<Ok>[] onOk) =>
             (await result).TapOk(onOk);
+
+    // todo: docs
+    // todo: example
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action<Ok>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: example
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action<Ok>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: example
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<Ok>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
@@ -752,11 +789,47 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Action[] onOk) =>
         (await result).TapOk(onOk);
-    
-    // todo: processing order and cancellation token variant
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// <example>
@@ -798,7 +871,43 @@ public static partial class Prelude
         return theResult;
     }
 
-    // todo: processing order and cancellation token variant
+    // todo: examples
+    // todo: docs
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Ok.
     /// <example>
@@ -839,7 +948,44 @@ public static partial class Prelude
         if (theResult.IsOk) await RunSequential(theResult.Unwrap(), onOk);
         return theResult;
     }
-    
+
+    // todo: tests
+    // todo: docs
+    // todo: examples
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Ok, Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: tests
+    // todo: docs
+    // todo: examples
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Ok, Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: tests
+    // todo: docs
+    // todo: examples
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Ok, Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// <example>
@@ -873,10 +1019,47 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Action<Error>[] onError) =>
             (await result).TapError(onError);
-    
+
+    // todo: examples
+    // todo: docs
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action<Error>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action<Error>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: implementation
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<Error>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// <example>
@@ -913,8 +1096,44 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         params Action[] onError) =>
             (await result).TapError(onError);
-    
-    // todo: processing order and cancellation token variant
+
+    // todo: examples
+    // todo: implementation
+    // todo: docs
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: implementation
+    // todo: docs
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: implementation
+    // todo: docs
+    // todo: tests
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// <example>
@@ -948,15 +1167,51 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Func<Task>[] onError)
     {
         var theResult = await result;
         if (theResult.IsError) await RunSequential(onError);
         return theResult;
     }
-    
-    // todo: processing order and cancellation token variant
+
+    // todo: examples
+    // todo: docs
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into the result and perform an action when the result is Error.
     /// <example>
@@ -990,11 +1245,48 @@ public static partial class Prelude
     /// <typeparam name="Ok">The type when the result is ok.</typeparam>
     /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Func<Error, Task>[] onError)
     {
         var theResult = await result;
         if (theResult.IsError) await RunSequential(theResult.UnwrapError(), onError);
         return theResult;
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Error, Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Error, Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: examples
+    // todo: docs
+    // todo: tests
+    // todo: implementation
+    public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Error, Task>[] onError)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -41,9 +41,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Action<T> whenSome, 
-        Action whenNone) 
+        this Task<Option<T>> optional,
+        Action<T> whenSome,
+        Action whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -52,7 +52,7 @@ public static partial class Prelude
 
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -92,9 +92,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Action<T> whenSome, 
-        Func<Task> whenNone) 
+        this Task<Option<T>> optional,
+        Action<T> whenSome,
+        Func<Task> whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -103,7 +103,7 @@ public static partial class Prelude
 
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -143,9 +143,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Action whenSome, 
-        Action whenNone) 
+        this Task<Option<T>> optional,
+        Action whenSome,
+        Action whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -153,7 +153,7 @@ public static partial class Prelude
         if (theOption.IsNone) whenNone();
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -193,9 +193,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Action whenSome, 
-        Func<Task> whenNone) 
+        this Task<Option<T>> optional,
+        Action whenSome,
+        Func<Task> whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -203,7 +203,7 @@ public static partial class Prelude
         if (theOption.IsNone) await whenNone();
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -243,9 +243,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Func<T, Task> whenSome, 
-        Action whenNone) 
+        this Task<Option<T>> optional,
+        Func<T, Task> whenSome,
+        Action whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -253,7 +253,7 @@ public static partial class Prelude
         if (theOption.IsNone) whenNone();
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -293,9 +293,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Func<T, Task> whenSome, 
-        Func<Task> whenNone) 
+        this Task<Option<T>> optional,
+        Func<T, Task> whenSome,
+        Func<Task> whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -303,7 +303,7 @@ public static partial class Prelude
         if (theOption.IsNone) await whenNone();
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -343,9 +343,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Func<Task> whenSome, 
-        Action whenNone) 
+        this Task<Option<T>> optional,
+        Func<Task> whenSome,
+        Action whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -353,7 +353,7 @@ public static partial class Prelude
         if (theOption.IsNone) whenNone();
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option.
     /// <example>
@@ -393,9 +393,9 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapAsync<T>(
-        this Task<Option<T>> optional, 
-        Func<Task> whenSome, 
-        Func<Task> whenNone) 
+        this Task<Option<T>> optional,
+        Func<Task> whenSome,
+        Func<Task> whenNone)
         where T : notnull
     {
         var theOption = await optional;
@@ -403,7 +403,7 @@ public static partial class Prelude
         if (theOption.IsNone) await whenNone();
         return theOption;
     }
-    
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option when the option is Some.
     /// <example>
@@ -432,12 +432,52 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapSomeAsync<T>(
-        this Task<Option<T>> optional, 
-        params Action<T>[] whenSome) 
+        this Task<Option<T>> optional,
+        params Action<T>[] whenSome)
         where T : notnull =>
         (await optional)
             .TapSome(whenSome);
-    
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Action<T>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Action<T>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<T>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option when the option is Some.
     /// <example>
@@ -466,12 +506,52 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapSomeAsync<T>(
-        this Task<Option<T>> optional, 
-        params Action[] whenSome) 
+        this Task<Option<T>> optional,
+        params Action[] whenSome)
         where T : notnull =>
         (await optional)
             .TapSome(whenSome);
-    
+
+    // todo: example
+    // todo: docs
+    // todo: implementation
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Action[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implementation
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Action[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implementation
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option when the option is Some.
     /// <example>
@@ -500,8 +580,8 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapSomeAsync<T>(
-        this Task<Option<T>> optional, 
-        params Func<T, Task>[] whenSome) 
+        this Task<Option<T>> optional,
+        params Func<T, Task>[] whenSome)
         where T : notnull
     {
         var theOption = await optional;
@@ -509,7 +589,47 @@ public static partial class Prelude
         await RunSequential(theOption.Unwrap(), whenSome);
         return theOption;
     }
-    
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Func<T, Task>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Func<T, Task>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<T, Task>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option when the option is Some.
     /// <example>
@@ -538,8 +658,8 @@ public static partial class Prelude
     /// <param name="whenSome">The action to perform when Some.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapSomeAsync<T>(
-        this Task<Option<T>> optional, 
-        params Func<Task>[] whenSome) 
+        this Task<Option<T>> optional,
+        params Func<Task>[] whenSome)
         where T : notnull
     {
         var theOption = await optional;
@@ -547,7 +667,47 @@ public static partial class Prelude
         await RunSequential(whenSome);
         return theOption;
     }
-    
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Func<Task>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapSomeAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] whenSome)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option when the option is None.
     /// <example>
@@ -576,12 +736,52 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapNoneAsync<T>(
-        this Task<Option<T>> optional, 
-        params Action[] whenNone) 
+        this Task<Option<T>> optional,
+        params Action[] whenNone)
         where T : notnull =>
         (await optional)
             .TapNone(whenNone);
-    
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapNoneAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Action[] whenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapNoneAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Action[] whenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: test
+    public static async Task<Option<T>> TapNoneAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] whenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Tap into an option and perform a side effect without consuming the option when the option is None.
     /// <example>
@@ -610,14 +810,54 @@ public static partial class Prelude
     /// <param name="whenNone">The action to perform when None.</param>
     /// <returns>The input option.</returns>
     public static async Task<Option<T>> TapNoneAsync<T>(
-        this Task<Option<T>> optional, 
-        params Func<Task>[] whenNone) 
+        this Task<Option<T>> optional,
+        params Func<Task>[] whenNone)
         where T : notnull
     {
         var theOption = await optional;
         if (theOption.IsSome) return theOption;
         await RunSequential(whenNone);
         return theOption;
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: tests
+    public static async Task<Option<T>> TapNoneAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] whenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: tests
+    public static async Task<Option<T>> TapNoneAsync<T>(
+        this Task<Option<T>> optional,
+        CancellationToken cancellationToken,
+        params Func<Task>[] whenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: example
+    // todo: docs
+    // todo: implement
+    // todo: tests
+    public static async Task<Option<T>> TapNoneAsync<T>(
+        this Task<Option<T>> optional,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] whenNone)
+        where T : notnull
+    {
+        throw new NotImplementedException();
     }
 
 }

@@ -1,7 +1,5 @@
 ﻿namespace Functional.Test.Prelude.Option;
 
-// TODO: Try to fix this test file.
-
 [ExcludeFromCodeCoverage]
 [TestClass]
 public class OptionalTests

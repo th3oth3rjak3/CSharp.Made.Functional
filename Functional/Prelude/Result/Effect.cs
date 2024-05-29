@@ -40,8 +40,8 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action<Ok> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
         Action<Error> onError) =>
             (await result)
                 .Effect(onOk, onError);
@@ -84,8 +84,8 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action<Ok> onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action<Ok> onOk,
         Action onError) =>
             (await result)
                 .Effect(onOk, onError);
@@ -185,7 +185,7 @@ public static partial class Prelude
         if (theResult.IsError) await onError();
         return Unit();
     }
-    
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
     /// <example>
@@ -224,12 +224,12 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action onOk,
         Action<Error> onError) =>
             (await result)
                 .Effect(onOk, onError);
-    
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
     /// <example>
@@ -268,12 +268,12 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
-        Action onOk, 
+        this Task<Result<Ok, Error>> result,
+        Action onOk,
         Action onError) =>
             (await result)
                 .Effect(onOk, onError);
-    
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result.
     /// <example>
@@ -753,8 +753,7 @@ public static partial class Prelude
         if (theResult.IsError) await onError();
         return Unit();
     }
-    
-    // TODO: add variations for ProcessingOrder and CancellationToken
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -783,12 +782,48 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Action<Ok>[] onOk) =>
             (await result)
                 .EffectOk(onOk);
 
-    // TODO: add variations for ProcessingOrder and CancellationToken
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action<Ok>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action<Ok>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<Ok>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -817,12 +852,48 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Action[] onOk) =>
             (await result)
                 .EffectOk(onOk);
 
-    // TODO: add variations for ProcessingOrder and CancellationToken
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -859,8 +930,44 @@ public static partial class Prelude
             ? await RunSequential(theResult.Unwrap(), onOk)
             : Unit();
     }
-    
-    // TODO: add variations for ProcessingOrder and CancellationToken
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Ok, Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Ok, Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Ok, Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -889,7 +996,7 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Func<Task>[] onOk)
     {
         var theResult = await result;
@@ -898,7 +1005,43 @@ public static partial class Prelude
             : Unit();
     }
 
-    // TODO: add variations for ProcessingOrder and CancellationToken
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectOkAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onOk)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -931,7 +1074,43 @@ public static partial class Prelude
             (await result)
                 .EffectError(onError);
 
-    // TODO: add variations for ProcessingOrder and CancellationToken
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action<Error>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action<Error>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action<Error>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -964,7 +1143,43 @@ public static partial class Prelude
             (await result)
                 .EffectError(onError);
 
-    // TODO: add variations for ProcessingOrder and CancellationToken
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Action[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Action[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Action[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -992,7 +1207,7 @@ public static partial class Prelude
     /// <typeparam name="Error">The type when the result is Error.</typeparam>
     /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
-        this Task<Result<Ok, Error>> result, 
+        this Task<Result<Ok, Error>> result,
         params Func<Task>[] onError)
     {
         var theResult = await result;
@@ -1001,7 +1216,43 @@ public static partial class Prelude
             : Unit();
     }
 
-    // TODO: add variations for ProcessingOrder and CancellationToken
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Perform a side effect on a result type and consume the result when the result is Ok.
     /// <example>
@@ -1036,5 +1287,42 @@ public static partial class Prelude
         return theResult.IsError
             ? await RunSequential(theResult.UnwrapError(), onError)
             : Unit();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        params Func<Error, Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        CancellationToken cancellationToken,
+        params Func<Error, Task>[] onError)
+    {
+        throw new NotImplementedException();
+    }
+
+    // todo: docs
+    // todo: examples
+    // todo: tests
+    // todo: implementation
+    public static async Task<Unit> EffectErrorAsync<Ok, Error>(
+        this Task<Result<Ok, Error>> result,
+        ProcessingOrder processingOrder,
+        CancellationToken cancellationToken,
+        params Func<Error, Task>[] onError)
+    {
+        throw new NotImplementedException();
     }
 }

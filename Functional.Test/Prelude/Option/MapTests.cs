@@ -4,7 +4,6 @@
 [TestClass]
 public class MapTests
 {
-    // TODO: Try to make these tests better.
     [TestMethod]
     public async Task OptionShouldMapAsync()
     {
