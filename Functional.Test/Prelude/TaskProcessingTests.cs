@@ -89,7 +89,6 @@ public class TaskProcessingTests
 
 
         await RunSequential(1, actions, tokenSource.Token)
-            .Async()
             .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(2);
@@ -200,7 +199,6 @@ public class TaskProcessingTests
         ];
 
         await RunSequential(1, actions, tokenSource.Token)
-            .Async()
             .AssertInstanceOfType(typeof(Task<Unit>));
 
         values.Count.ShouldBe(1);

@@ -790,38 +790,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Action<Ok>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.Unwrap(), onOk),
+                () => RunSequential(theResult.Unwrap(), onOk));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Action<Ok>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await RunSequential(theResult.Unwrap(), onOk, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action<Ok>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.Unwrap(), onOk, cancellationToken),
+                () => RunSequential(theResult.Unwrap(), onOk, cancellationToken));
     }
 
     /// <summary>
@@ -860,38 +871,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Action[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onOk),
+                () => RunSequential(onOk));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Action[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await RunSequential(onOk, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onOk, cancellationToken),
+                () => RunSequential(onOk, cancellationToken));
     }
 
     /// <summary>
@@ -934,38 +956,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Func<Ok, Task>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.Unwrap(), onOk),
+                () => RunSequential(theResult.Unwrap(), onOk));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Func<Ok, Task>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await RunSequential(theResult.Unwrap(), onOk, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<Ok, Task>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.Unwrap(), onOk, cancellationToken),
+                () => RunSequential(theResult.Unwrap(), onOk, cancellationToken));
     }
 
     /// <summary>
@@ -1008,38 +1041,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Func<Task>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onOk),
+                () => RunSequential(onOk));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Func<Task>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await RunSequential(onOk, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<Task>[] onOk)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsError) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onOk, cancellationToken),
+                () => RunSequential(onOk, cancellationToken));
     }
 
     /// <summary>
@@ -1077,38 +1121,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Action<Error>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.UnwrapError(), onError),
+                () => RunSequential(theResult.UnwrapError(), onError));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Action<Error>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await RunSequential(theResult.UnwrapError(), onError, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action<Error>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.UnwrapError(), onError, cancellationToken),
+                () => RunSequential(theResult.UnwrapError(), onError, cancellationToken));
     }
 
     /// <summary>
@@ -1146,38 +1201,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Action[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onError),
+                () => RunSequential(onError));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Action[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await RunSequential(onError, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Action[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onError, cancellationToken),
+                () => RunSequential(onError, cancellationToken));
     }
 
     /// <summary>
@@ -1219,38 +1285,49 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Func<Task>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onError),
+                () => RunSequential(onError));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Func<Task>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await RunSequential(onError, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<Task>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(onError, cancellationToken),
+                () => RunSequential(onError, cancellationToken));
     }
 
     /// <summary>
@@ -1292,37 +1369,48 @@ public static partial class Prelude
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         params Func<Error, Task>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.UnwrapError(), onError),
+                () => RunSequential(theResult.UnwrapError(), onError));
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
         params Func<Error, Task>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await RunSequential(theResult.UnwrapError(), onError, cancellationToken);
     }
 
     // todo: docs
     // todo: examples
     // todo: tests
-    // todo: implementation
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
         CancellationToken cancellationToken,
         params Func<Error, Task>[] onError)
     {
-        throw new NotImplementedException();
+        var theResult = await result;
+        if (theResult.IsOk) return Unit();
+        return await (processingOrder == ProcessingOrder.Parallel)
+            .Async()
+            .MatchAsync(
+                () => RunParallel(theResult.UnwrapError(), onError, cancellationToken),
+                () => RunSequential(theResult.UnwrapError(), onError, cancellationToken));
     }
 }

@@ -371,9 +371,9 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsNone) return Unit();
-        return processingOrder == ProcessingOrder.Sequential
-            ? await RunSequential(theOption.Unwrap(), doWhenSome)
-            : await RunParallel(theOption.Unwrap(), doWhenSome);
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(theOption.Unwrap(), doWhenSome)
+            : await RunSequential(theOption.Unwrap(), doWhenSome);
     }
 
     // todo: examples
@@ -402,9 +402,9 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsNone) return Unit();
-        return (processingOrder == ProcessingOrder.Sequential)
-            ? await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken)
-            : await RunParallel(theOption.Unwrap(), doWhenSome, cancellationToken);
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(theOption.Unwrap(), doWhenSome, cancellationToken)
+            : await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
     }
 
 
@@ -449,9 +449,9 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsNone) return Unit();
-        return (processingOrder == ProcessingOrder.Sequential)
-            ? await RunSequential(doWhenSome)
-            : await RunParallel(doWhenSome);
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenSome)
+            : await RunSequential(doWhenSome);
     }
 
     // todo: docs
@@ -480,9 +480,9 @@ public static partial class Prelude
     {
         var theOption = await optional;
         if (theOption.IsNone) return Unit();
-        return (processingOrder == ProcessingOrder.Sequential)
-            ? await RunSequential(doWhenSome, cancellationToken)
-            : await RunParallel(doWhenSome, cancellationToken);
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenSome, cancellationToken)
+            : await RunSequential(doWhenSome, cancellationToken);
     }
 
     /// <summary>
@@ -525,7 +525,6 @@ public static partial class Prelude
 
     // todo: examples
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
@@ -533,12 +532,15 @@ public static partial class Prelude
         params Func<T, Task>[] doWhenSome)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsNone) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(theOption.Unwrap(), doWhenSome)
+            : await RunSequential(theOption.Unwrap(), doWhenSome);
     }
 
     // todo: examples
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
@@ -546,12 +548,13 @@ public static partial class Prelude
         params Func<T, Task>[] doWhenSome)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsNone) return Unit();
+        return await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
     }
 
     // todo: examples
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
@@ -560,7 +563,11 @@ public static partial class Prelude
         params Func<T, Task>[] doWhenSome)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsNone) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(theOption.Unwrap(), doWhenSome, cancellationToken)
+            : await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
     }
 
     /// <summary>
@@ -595,15 +602,14 @@ public static partial class Prelude
         params Func<Task>[] doWhenSome)
         where T : notnull
     {
-        var option = await optional;
-        return option.IsSome
+        var theOption = await optional;
+        return theOption.IsSome
             ? await RunSequential(doWhenSome)
             : Unit();
     }
 
     // todo: examples
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
@@ -611,12 +617,15 @@ public static partial class Prelude
         params Func<Task>[] doWhenSome)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsNone) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenSome)
+            : await RunSequential(doWhenSome);
     }
 
     // todo: examples
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
@@ -624,12 +633,13 @@ public static partial class Prelude
         params Func<Task>[] doWhenSome)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsNone) return Unit();
+        return await RunSequential(doWhenSome, cancellationToken);
     }
 
     // todo: examples
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
@@ -638,7 +648,11 @@ public static partial class Prelude
         params Func<Task>[] doWhenSome)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsNone) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenSome, cancellationToken)
+            : await RunSequential(doWhenSome, cancellationToken);
     }
 
     /// <summary>
@@ -674,7 +688,6 @@ public static partial class Prelude
 
     // todo: example
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectNoneAsync<T>(
         this Task<Option<T>> optional,
@@ -682,12 +695,15 @@ public static partial class Prelude
         params Action[] doWhenNone)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsSome) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenNone)
+            : await RunSequential(doWhenNone);
     }
 
     // todo: example
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectNoneAsync<T>(
         this Task<Option<T>> optional,
@@ -695,12 +711,13 @@ public static partial class Prelude
         params Action[] doWhenNone)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsSome) return Unit();
+        return await RunSequential(doWhenNone, cancellationToken);
     }
 
     // todo: example
     // todo: docs
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectNoneAsync<T>(
         this Task<Option<T>> optional,
@@ -709,7 +726,11 @@ public static partial class Prelude
         params Action[] doWhenNone)
         where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsSome) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenNone, cancellationToken)
+            : await RunSequential(doWhenNone, cancellationToken);
     }
 
     /// <summary>
@@ -753,7 +774,6 @@ public static partial class Prelude
 
     // todo: docs
     // todo: example
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectNoneAsync<T>(
     this Task<Option<T>> optional,
@@ -761,12 +781,15 @@ public static partial class Prelude
     params Func<Task>[] doWhenNone)
     where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsSome) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenNone)
+            : await RunSequential(doWhenNone);
     }
 
     // todo: docs
     // todo: example
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectNoneAsync<T>(
     this Task<Option<T>> optional,
@@ -774,12 +797,13 @@ public static partial class Prelude
     params Func<Task>[] doWhenNone)
     where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsSome) return Unit();
+        return await RunSequential(doWhenNone, cancellationToken);
     }
 
     // todo: docs
     // todo: example
-    // todo: implement
     // todo: test
     public static async Task<Unit> EffectNoneAsync<T>(
     this Task<Option<T>> optional,
@@ -788,6 +812,10 @@ public static partial class Prelude
     params Func<Task>[] doWhenNone)
     where T : notnull
     {
-        throw new NotImplementedException();
+        var theOption = await optional;
+        if (theOption.IsSome) return Unit();
+        return processingOrder == ProcessingOrder.Parallel
+            ? await RunParallel(doWhenNone, cancellationToken)
+            : await RunSequential(doWhenNone, cancellationToken);
     }
 }
