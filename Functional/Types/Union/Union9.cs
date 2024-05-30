@@ -1,178 +1,227 @@
-﻿//namespace Functional.Unions;
+﻿namespace Functional;
 
-///// <summary>
-///// Represents a Discriminated Union which contains nine Variants.
-///// </summary>
-///// <typeparam name="A">The type of the first variant.</typeparam>
-///// <typeparam name="B">The type of the second variant.</typeparam>
-///// <typeparam name="C">The type of the third variant.</typeparam>
-///// <typeparam name="D">The type of the fourth variant.</typeparam>
-///// <typeparam name="E">The type of the fifth variant.</typeparam>
-///// <typeparam name="F">The type of the sixth variant.</typeparam>
-///// <typeparam name="G">The type of the seventh variant.</typeparam>
-///// <typeparam name="H">The type of the eighth variant.</typeparam>
-///// <typeparam name="I">The type of the ninth variant.</typeparam>
-//public sealed class Union9<A, B, C, D, E, F, G, H, I>
-//{
-//    private A Item1 { get; init; } = default!;
-//    private B Item2 { get; init; } = default!;
-//    private C Item3 { get; init; } = default!;
-//    private D Item4 { get; init; } = default!;
-//    private E Item5 { get; init; } = default!;
-//    private F Item6 { get; init; } = default!;
-//    private G Item7 { get; init; } = default!;
-//    private H Item8 { get; init; } = default!;
-//    private I Item9 { get; init; } = default!;
-//    private readonly int tag;
+/// <summary>
+/// Represents a Discriminated Union which contains nine Variants.
+/// </summary>
+/// <typeparam name="A">The type of the first variant.</typeparam>
+/// <typeparam name="B">The type of the second variant.</typeparam>
+/// <typeparam name="C">The type of the third variant.</typeparam>
+/// <typeparam name="D">The type of the fourth variant.</typeparam>
+/// <typeparam name="E">The type of the fifth variant.</typeparam>
+/// <typeparam name="F">The type of the sixth variant.</typeparam>
+/// <typeparam name="G">The type of the seventh variant.</typeparam>
+/// <typeparam name="H">The type of the eighth variant.</typeparam>
+/// <typeparam name="I">The type of the ninth variant.</typeparam>
+public sealed record Union<A, B, C, D, E, F, G, H, I>
+{
+    /// <summary>
+    /// The inner state of the Union.
+    /// </summary>
+    private enum State
+    {
+        A,
+        B,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I
+    }
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="A"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(A item) { Item1 = item; tag = 1; }
+    /// <summary>
+    /// The inner value when the State is A.
+    /// </summary>
+    private readonly A _a = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="B"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(B item) { Item2 = item; tag = 2; }
+    /// <summary>
+    /// The inner value when the State is B.
+    /// </summary>
+    private readonly B _b = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="C"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(C item) { Item3 = item; tag = 3; }
+    /// <summary>
+    /// The inner value when the State is C.
+    /// </summary>
+    private readonly C _c = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="D"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(D item) { Item4 = item; tag = 4; }
+    /// <summary>
+    /// The inner value when the State is D.
+    /// </summary>
+    private readonly D _d = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="E"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(E item) { Item5 = item; tag = 5; }
+    /// <summary>
+    /// The inner value when the State is E.
+    /// </summary>
+    private readonly E _e = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="F"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(F item) { Item6 = item; tag = 6; }
+    /// <summary>
+    /// The inner value when the State is F.
+    /// </summary>
+    private readonly F _f = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="G"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(G item) { Item7 = item; tag = 7; }
+    /// <summary>
+    /// The inner value when the State is G.
+    /// </summary>
+    private readonly G _g = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="H"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(H item) { Item8 = item; tag = 8; }
+    /// <summary>
+    /// The inner value when the State is H.
+    /// </summary>
+    private readonly H _h = default!;
 
-//    /// <summary>
-//    /// Construct a new Union from <typeparamref name="I"/>
-//    /// </summary>
-//    /// <param name="item">The value of the Union.</param>
-//    public Union9(I item) { Item9 = item; tag = 9; }
+    /// <summary>
+    /// The inner value when the State is H.
+    /// </summary>
+    private readonly I _i = default!;
 
-//    /// <summary>
-//    /// Match the inner value of one of the variants and perform a mapping function.
-//    /// </summary>
-//    /// <typeparam name="T">The mapping output type.</typeparam>
-//    /// <param name="caseOne">The function to execute if the type is <typeparamref name="A"/></param>
-//    /// <param name="caseTwo">The function to execute if the type is <typeparamref name="B"/></param>
-//    /// <param name="caseThree">The function to execute if the type is <typeparamref name="C"/></param>
-//    /// <param name="caseFour">The function to execute if the type is <typeparamref name="D"/></param>
-//    /// <param name="caseFive">The function to execute if the type is <typeparamref name="E"/></param>
-//    /// <param name="caseSix">The function to execute if the type is <typeparamref name="F"/></param>
-//    /// <param name="caseSeven">The function to execute if the type is <typeparamref name="G"/></param>
-//    /// <param name="caseEight">The function to execute if the type is <typeparamref name="H"/></param>
-//    /// <param name="caseNine">The function to execute if the type is <typeparamref name="I"/></param>
-//    /// <returns>The result of the mapping function that was executed.</returns>
-//    [ExcludeFromCodeCoverage]
-//    public T Match<T>(
-//        Func<A, T> caseOne,
-//        Func<B, T> caseTwo,
-//        Func<C, T> caseThree,
-//        Func<D, T> caseFour,
-//        Func<E, T> caseFive,
-//        Func<F, T> caseSix,
-//        Func<G, T> caseSeven,
-//        Func<H, T> caseEight,
-//        Func<I, T> caseNine) =>
-//        tag switch
-//        {
-//            1 => caseOne(Item1),
-//            2 => caseTwo(Item2),
-//            3 => caseThree(Item3),
-//            4 => caseFour(Item4),
-//            5 => caseFive(Item5),
-//            6 => caseSix(Item6),
-//            7 => caseSeven(Item7),
-//            8 => caseEight(Item8),
-//            9 => caseNine(Item9),
-//            _ => throw new NotImplementedException()
-//        };
+    /// <summary>
+    /// The state of the Union. Either A or B.
+    /// </summary>
+    private readonly State _state;
 
-//    /// <summary>
-//    /// Match the inner value of one of the variants and perform an action based on its type.
-//    /// </summary>
-//    /// <param name="caseOne">The action to execute when the inner type is <typeparamref name="A"/></param>
-//    /// <param name="caseTwo">The action to execute when the inner type is <typeparamref name="B"/></param>
-//    /// <param name="caseThree">The action to execute when the inner type is <typeparamref name="C"/></param>
-//    /// <param name="caseFour">The action to execute when the inner type is <typeparamref name="D"/></param>
-//    /// <param name="caseFive">The action to execute when the inner type is <typeparamref name="E"/></param>
-//    /// <param name="caseSix">The action to execute when the inner type is <typeparamref name="F"/></param>
-//    /// <param name="caseSeven">The action to execute when the inner type is <typeparamref name="G"/></param>
-//    /// <param name="caseEight">The action to execute when the inner type is <typeparamref name="H"/></param>
-//    /// <param name="caseNine">The action to execute when the inner type is <typeparamref name="I"/></param>
-//    /// <returns>Unit.</returns>
-//    public Unit Effect(
-//        Action<A> caseOne,
-//        Action<B> caseTwo,
-//        Action<C> caseThree,
-//        Action<D> caseFour,
-//        Action<E> caseFive,
-//        Action<F> caseSix,
-//        Action<G> caseSeven,
-//        Action<H> caseEight,
-//        Action<I> caseNine)
-//    {
-//        switch (tag)
-//        {
-//            case 1:
-//                caseOne(Item1);
-//                break;
-//            case 2:
-//                caseTwo(Item2);
-//                break;
-//            case 3:
-//                caseThree(Item3);
-//                break;
-//            case 4:
-//                caseFour(Item4);
-//                break;
-//            case 5:
-//                caseFive(Item5);
-//                break;
-//            case 6:
-//                caseSix(Item6);
-//                break;
-//            case 7:
-//                caseSeven(Item7);
-//                break;
-//            case 8:
-//                caseEight(Item8);
-//                break;
-//            case 9:
-//                caseNine(Item9);
-//                break;
-//        }
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="A"/>
+    /// </summary>
+    /// <param name="a">The value of the Union.</param>
+    public Union(A a)
+    {
+        _a = a;
+        _state = State.A;
+    }
 
-//        return Unit.Default;
-//    }
-//}
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="B"/>
+    /// </summary>
+    /// <param name="b">The value of the Union.</param>
+    public Union(B b)
+    {
+        _b = b;
+        _state = State.B;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="C"/>
+    /// </summary>
+    /// <param name="c">The value of the Union.</param>
+    public Union(C c)
+    {
+        _c = c;
+        _state = State.C;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="D"/>
+    /// </summary>
+    /// <param name="d">The value of the Union.</param>
+    public Union(D d)
+    {
+        _d = d;
+        _state = State.D;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="E"/>
+    /// </summary>
+    /// <param name="e">The value of the Union.</param>
+    public Union(E e)
+    {
+        _e = e;
+        _state = State.E;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="F"/>
+    /// </summary>
+    /// <param name="f">The value of the Union.</param>
+    public Union(F f)
+    {
+        _f = f;
+        _state = State.F;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="G"/>
+    /// </summary>
+    /// <param name="g">The value of the Union.</param>
+    public Union(G g)
+    {
+        _g = g;
+        _state = State.G;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="H"/>
+    /// </summary>
+    /// <param name="h">The value of the Union.</param>
+    public Union(H h)
+    {
+        _h = h;
+        _state = State.H;
+    }
+
+    /// <summary>
+    /// Construct a new Union from <typeparamref name="I"/>
+    /// </summary>
+    /// <param name="i">The value of the Union.</param>
+    public Union(I i)
+    {
+        _i = i;
+        _state = State.I;
+    }
+
+    /// <summary>
+    /// Match the inner value of one of the variants and perform a mapping function.
+    /// </summary>
+    /// <typeparam name="T">The mapping output type.</typeparam>
+    /// <param name="whenA">The function to execute if the type is <typeparamref name="A"/></param>
+    /// <param name="whenB">The function to execute if the type is <typeparamref name="B"/></param>
+    /// <param name="whenC">The function to execute if the type is <typeparamref name="C"/></param>
+    /// <param name="whenD">The function to execute if the type is <typeparamref name="D"/></param>
+    /// <param name="whenE">The function to execute if the type is <typeparamref name="E"/></param>
+    /// <param name="whenF">The function to execute if the type is <typeparamref name="F"/></param>
+    /// <param name="whenG">The function to execute if the type is <typeparamref name="G"/></param>
+    /// <param name="whenH">The function to execute if the type is <typeparamref name="H"/></param>
+    /// <param name="whenI">The function to execute if the type is <typeparamref name="I"/></param>
+    /// <returns>The result of the mapping function that was executed.</returns>
+    public T Match<T>(Func<A, T> whenA, Func<B, T> whenB, Func<C, T> whenC, Func<D, T> whenD, Func<E, T> whenE, Func<F, T> whenF, Func<G, T> whenG, Func<H, T> whenH, Func<I, T> whenI)
+    {
+        if (_state == State.A) return whenA(_a);
+        if (_state == State.B) return whenB(_b);
+        if (_state == State.C) return whenC(_c);
+        if (_state == State.D) return whenD(_d);
+        if (_state == State.E) return whenE(_e);
+        if (_state == State.F) return whenF(_f);
+        if (_state == State.G) return whenG(_g);
+        if (_state == State.H) return whenH(_h);
+        return whenI(_i);
+    }
+
+    /// <summary>
+    /// Perform a side effect on the Union based on its inner type.
+    /// </summary>
+    /// <param name="whenA">The action to perform when the Union is a <typeparamref name="A"/>.</param>
+    /// <param name="whenB">The action to perform when the Union is a <typeparamref name="B"/>.</param>
+    /// <param name="whenC">The action to perform when the Union is a <typeparamref name="C"/>.</param>
+    /// <param name="whenD">The action to perform when the Union is a <typeparamref name="D"/>.</param>
+    /// <param name="whenE">The action to perform when the Union is a <typeparamref name="E"/>.</param>
+    /// <param name="whenF">The action to perform when the Union is a <typeparamref name="F"/>.</param>
+    /// <param name="whenG">The action to perform when the Union is a <typeparamref name="G"/>.</param>
+    /// <param name="whenH">The action to perform when the Union is a <typeparamref name="H"/>.</param>
+    /// <param name="whenI">The action to perform when the Union is a <typeparamref name="I"/>.</param>
+    /// <returns>Unit.</returns>
+    public Unit Effect(Action<A> whenA, Action<B> whenB, Action<C> whenC, Action<D> whenD, Action<E> whenE, Action<F> whenF, Action<G> whenG, Action<H> whenH, Action<I> whenI)
+    {
+        if (_state == State.A) whenA(_a);
+        if (_state == State.B) whenB(_b);
+        if (_state == State.C) whenC(_c);
+        if (_state == State.D) whenD(_d);
+        if (_state == State.E) whenE(_e);
+        if (_state == State.F) whenF(_f);
+        if (_state == State.G) whenG(_g);
+        if (_state == State.H) whenH(_h);
+        if (_state == State.I) whenI(_i);
+
+        return new();
+    }
+}

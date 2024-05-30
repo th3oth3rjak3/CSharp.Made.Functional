@@ -1,82 +1,78 @@
-﻿//using System.Diagnostics.CodeAnalysis;
+﻿namespace Functional.Test.Unions;
 
-//using Functional.Unions;
+[TestClass]
+[ExcludeFromCodeCoverage]
+public class Union3Tests
+{
+    [TestMethod]
+    public void ItShouldMatchCase1() =>
+        new Union<TypeOne, TypeTwo, TypeThree>(new TypeOne())
+            .Match(_ => "type one", _ => "type two", _ => "type three")
+            .ShouldBe("type one");
 
-//namespace Functional.Test.Unions;
+    [TestMethod]
+    public void ItShouldMatchCase2() =>
+        new Union<TypeOne, TypeTwo, TypeThree>(new TypeTwo())
+            .Match(_ => "type one", _ => "type two", _ => "type three")
+            .ShouldBe("type two");
 
-//[TestClass]
-//[ExcludeFromCodeCoverage]
-//public class Union3Tests
-//{
-//    [TestMethod]
-//    public void ItShouldMatchCase1() =>
-//        new Union3<TypeOne, TypeTwo, TypeThree>(new TypeOne())
-//            .Match(_ => "type one", _ => "type two", _ => "type three")
-//            .ShouldBe("type one");
+    [TestMethod]
+    public void ItShouldMatchCase3() =>
+        new Union<TypeOne, TypeTwo, TypeThree>(new TypeThree())
+            .Match(_ => "type one", _ => "type two", _ => "type three")
+            .ShouldBe("type three");
 
-//    [TestMethod]
-//    public void ItShouldMatchCase2() =>
-//        new Union3<TypeOne, TypeTwo, TypeThree>(new TypeTwo())
-//            .Match(_ => "type one", _ => "type two", _ => "type three")
-//            .ShouldBe("type two");
+    [TestMethod]
+    public void ItShouldPerformTypeOneEffect()
+    {
+        var typeOneEffect = false;
+        var typeTwoEffect = false;
+        var typeThreeEffect = false;
 
-//    [TestMethod]
-//    public void ItShouldMatchCase3() =>
-//        new Union3<TypeOne, TypeTwo, TypeThree>(new TypeThree())
-//            .Match(_ => "type one", _ => "type two", _ => "type three")
-//            .ShouldBe("type three");
+        new Union<TypeOne, TypeTwo, TypeThree>(new TypeOne())
+            .Effect(
+                _ => typeOneEffect = true,
+                _ => typeTwoEffect = true,
+                _ => typeThreeEffect = true);
 
-//    [TestMethod]
-//    public void ItShouldPerformTypeOneEffect()
-//    {
-//        var typeOneEffect = false;
-//        var typeTwoEffect = false;
-//        var typeThreeEffect = false;
+        typeOneEffect.ShouldBeTrue();
+        typeTwoEffect.ShouldBeFalse();
+        typeThreeEffect.ShouldBeFalse();
+    }
 
-//        new Union3<TypeOne, TypeTwo, TypeThree>(new TypeOne())
-//            .Effect(
-//                _ => typeOneEffect = true,
-//                _ => typeTwoEffect = true,
-//                _ => typeThreeEffect = true);
+    [TestMethod]
+    public void ItShouldPerformTypeTwoEffect()
+    {
+        var typeOneEffect = false;
+        var typeTwoEffect = false;
+        var typeThreeEffect = false;
 
-//        typeOneEffect.ShouldBeTrue();
-//        typeTwoEffect.ShouldBeFalse();
-//        typeThreeEffect.ShouldBeFalse();
-//    }
+        new Union<TypeOne, TypeTwo, TypeThree>(new TypeTwo())
+            .Effect(
+                _ => typeOneEffect = true,
+                _ => typeTwoEffect = true,
+                _ => typeThreeEffect = true);
 
-//    [TestMethod]
-//    public void ItShouldPerformTypeTwoEffect()
-//    {
-//        var typeOneEffect = false;
-//        var typeTwoEffect = false;
-//        var typeThreeEffect = false;
+        typeOneEffect.ShouldBeFalse();
+        typeTwoEffect.ShouldBeTrue();
+        typeThreeEffect.ShouldBeFalse();
+    }
 
-//        new Union3<TypeOne, TypeTwo, TypeThree>(new TypeTwo())
-//            .Effect(
-//                _ => typeOneEffect = true,
-//                _ => typeTwoEffect = true,
-//                _ => typeThreeEffect = true);
+    [TestMethod]
+    public void ItShouldPerformTypeThreeEffect()
+    {
+        var typeOneEffect = false;
+        var typeTwoEffect = false;
+        var typeThreeEffect = false;
 
-//        typeOneEffect.ShouldBeFalse();
-//        typeTwoEffect.ShouldBeTrue();
-//        typeThreeEffect.ShouldBeFalse();
-//    }
+        new Union<TypeOne, TypeTwo, TypeThree>(new TypeThree())
+            .Effect(
+                _ => typeOneEffect = true,
+                _ => typeTwoEffect = true,
+                _ => typeThreeEffect = true);
 
-//    [TestMethod]
-//    public void ItShouldPerformTypeThreeEffect()
-//    {
-//        var typeOneEffect = false;
-//        var typeTwoEffect = false;
-//        var typeThreeEffect = false;
-
-//        new Union3<TypeOne, TypeTwo, TypeThree>(new TypeThree())
-//            .Effect(
-//                _ => typeOneEffect = true,
-//                _ => typeTwoEffect = true,
-//                _ => typeThreeEffect = true);
-
-//        typeOneEffect.ShouldBeFalse();
-//        typeTwoEffect.ShouldBeFalse();
-//        typeThreeEffect.ShouldBeTrue();
-//    }
-//}
+        typeOneEffect.ShouldBeFalse();
+        typeTwoEffect.ShouldBeFalse();
+        typeThreeEffect.ShouldBeTrue();
+    }
+}

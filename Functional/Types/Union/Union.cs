@@ -55,25 +55,25 @@ public sealed record Union<A, B>
     /// Match the inner value of one of the variants and perform a mapping function.
     /// </summary>
     /// <typeparam name="T">The mapping output type.</typeparam>
-    /// <param name="caseOne">The function to execute if the type is <typeparamref name="A"/></param>
-    /// <param name="caseTwo">The function to execute if the type is <typeparamref name="B"/></param>
+    /// <param name="whenA">The function to execute if the type is <typeparamref name="A"/></param>
+    /// <param name="whenB">The function to execute if the type is <typeparamref name="B"/></param>
     /// <returns>The result of the mapping function that was executed.</returns>
-    public T Match<T>(Func<A, T> caseOne, Func<B, T> caseTwo)
+    public T Match<T>(Func<A, T> whenA, Func<B, T> whenB)
     {
-        if (_state == State.A) return caseOne(_a);
-        return caseTwo(_b);
+        if (_state == State.A) return whenA(_a);
+        return whenB(_b);
     }
 
     /// <summary>
     /// Perform a side effect on the Union based on its inner type.
     /// </summary>
-    /// <param name="caseOne">The action to perform when the Union is a <typeparamref name="A"/>.</param>
-    /// <param name="caseTwo">The action to perform when the Union is a <typeparamref name="B"/>.</param>
+    /// <param name="whenA">The action to perform when the Union is a <typeparamref name="A"/>.</param>
+    /// <param name="whenB">The action to perform when the Union is a <typeparamref name="B"/>.</param>
     /// <returns>Unit.</returns>
-    public Unit Effect(Action<A> caseOne, Action<B> caseTwo)
+    public Unit Effect(Action<A> whenA, Action<B> whenB)
     {
-        if (_state == State.A) caseOne(_a);
-        if (_state == State.B) caseTwo(_b);
+        if (_state == State.A) whenA(_a);
+        if (_state == State.B) whenB(_b);
 
         return new();
     }
