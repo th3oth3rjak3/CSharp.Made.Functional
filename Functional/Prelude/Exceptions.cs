@@ -278,6 +278,75 @@ public static partial class Prelude
     }
 
     /// <summary>
+    /// Try something async that might throw.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task TryDoWork() => Task.Run(() => throw new Exception("not implemented yet"));
+    /// 
+    /// string result = 
+    ///     await TryAsync(TryDoWork)
+    ///         .MatchAsync(
+    ///             ok => ok,
+    ///             error => error.Message);
+    ///             
+    /// Assert.AreEqual(result, "not implemented yet");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="toTry">The function to try.</param>
+    /// <returns>A result that is Ok or an Exception.</returns>
+    public static async Task<Result<Unit, Exception>> TryAsync(Func<Task> toTry)
+    {
+        try
+        {
+            await toTry();
+            return Unit();
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
+    }
+
+    /// <summary>
+    /// Try something async which could throw an Exception.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// Task TryDoWork() => Task.Run(() => throw new Exception("not implemented yet"));
+    /// 
+    /// string result = 
+    ///     await 42
+    ///         .Async()
+    ///         .TryAsync(TryDoWork)
+    ///         .MatchAsync(
+    ///             ok => ok,
+    ///             error => error.Message);
+    ///             
+    /// Assert.AreEqual(result, "not implemented yet");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The input type.</typeparam>
+    /// <param name="input">The input to try something on.</param>
+    /// <param name="toTry">The function to try.</param>
+    /// <returns>A result that is Ok or an Exception.</returns>
+    public static async Task<Result<Unit, Exception>> TryAsync<T>(this Task<T> input, Func<Task> toTry)
+    {
+        try
+        {
+            await input;
+            await toTry();
+            return Unit();
+        }
+        catch (Exception exn)
+        {
+            return exn;
+        }
+    }
+
+    /// <summary>
     /// Perform a mapping operation on an Option when the mapping may throw an Exception.
     /// <example>
     /// <br/><br/>Example:
