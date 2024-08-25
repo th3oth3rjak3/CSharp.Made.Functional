@@ -11,28 +11,8 @@ dotnet add package CSharp.Made.Functional
 The namespace does not match the package name to keep using statements shorter.
 
 ```cs title="Usings.cs"
-// Base using statement:
+// Required Usings
+
 global using Functional;
-
-// To use Option types:
-global using Functional.Options;
-
-// To use Result types:
-global using Functional.Results;
-
-// To use Union types:
-global using Functional.Unions;
-
-// For extension methods like Pipe/Tap:
-global using Functional.Common;
-
-// For exception handling extensions:
-global using static Functional.Exceptions.ExceptionExtensions;
-
-// For static methods like Cons:
-global using static Functional.Common.CommonExtensions;
-
-// Other usings for other static methods:
-global using static Functional.Options.OptionExtensions;
-global using static Functional.Results.ResultExtensions;
+global using static Functional.Prelude;
 ```
