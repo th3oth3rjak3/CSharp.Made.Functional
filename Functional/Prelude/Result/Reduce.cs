@@ -28,7 +28,7 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Ok alternate) =>
             (await result).Reduce(alternate);
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, otherwise return an alternate value discarding the error.
     /// <example>
@@ -60,7 +60,7 @@ public static partial class Prelude
             ? theResult.Unwrap()
             : await alternate;
     }
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value using the error.
@@ -90,7 +90,7 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Func<Error, Ok> alternate) =>
             (await result).Reduce(alternate);
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value using the error.
@@ -125,7 +125,7 @@ public static partial class Prelude
             ? theResult.Unwrap()
             : await alternate(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value by discarding the error.
@@ -157,7 +157,7 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Func<Ok> alternate) =>
             (await result).Reduce(alternate);
-    
+
     /// <summary>
     /// When the result is Ok, return its contents, 
     /// otherwise execute the function to produce an alternate value by discarding the error.

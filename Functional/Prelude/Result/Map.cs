@@ -49,7 +49,7 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Func<TMappedOk> mapper) =>
             (await result).Map(mapper);
-    
+
     /// <summary>
     /// Map an Ok result from a previous operation to a new result.
     /// <example>
@@ -105,7 +105,7 @@ public static partial class Prelude
         if (theResult.IsOk) return await mapper();
         return theResult.UnwrapError();
     }
-    
+
     /// <summary>
     /// Map an Error result from a previous operation to a new result.
     /// <example>
@@ -153,7 +153,7 @@ public static partial class Prelude
         this Task<Result<Ok, Error>> result,
         Func<TMappedError> errorMapper) =>
         (await result).MapError(errorMapper);
-    
+
     /// <summary>
     /// Map an Error result from a previous operation to a new result.
     /// <example>
@@ -180,7 +180,7 @@ public static partial class Prelude
         if (theResult.IsOk) return theResult.Unwrap();
         return await errorMapper(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Map an Error result from a previous operation to a new result.
     /// <example>

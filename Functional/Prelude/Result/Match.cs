@@ -39,7 +39,7 @@ public static partial class Prelude
         return theResult
             .Match(onOk, onError);
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -78,7 +78,7 @@ public static partial class Prelude
             ? await onOk(theResult.Unwrap())
             : onError(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -117,7 +117,7 @@ public static partial class Prelude
             ? onOk(theResult.Unwrap())
             : await onError(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -156,7 +156,7 @@ public static partial class Prelude
             ? await onOk(theResult.Unwrap())
             : await onError(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -194,7 +194,7 @@ public static partial class Prelude
         return theResult
             .Match(onOk, onError);
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -233,7 +233,7 @@ public static partial class Prelude
             ? onOk()
             : await onError(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -272,7 +272,7 @@ public static partial class Prelude
             ? await onOk()
             : onError(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -311,7 +311,7 @@ public static partial class Prelude
             ? await onOk()
             : await onError(theResult.UnwrapError());
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -349,7 +349,7 @@ public static partial class Prelude
         return theResult
             .Match(onOk, onError);
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -388,7 +388,7 @@ public static partial class Prelude
             ? onOk(theResult.Unwrap())
             : await onError();
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -427,7 +427,7 @@ public static partial class Prelude
             ? await onOk(theResult.Unwrap())
             : onError();
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -466,7 +466,7 @@ public static partial class Prelude
             ? await onOk(theResult.Unwrap())
             : await onError();
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -504,7 +504,7 @@ public static partial class Prelude
         return theResult
             .Match(onOk, onError);
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -543,7 +543,7 @@ public static partial class Prelude
             ? await onOk()
             : onError();
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>
@@ -582,7 +582,7 @@ public static partial class Prelude
             ? onOk()
             : await onError();
     }
-    
+
     /// <summary>
     /// Match the result to an Ok or an Error and perform some function on either case.
     /// <example>

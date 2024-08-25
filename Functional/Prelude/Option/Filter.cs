@@ -38,7 +38,6 @@ public static partial class Prelude
         (await optional)
             .Filter(predicate);
 
-
     /// <summary>
     /// Convert a Some into a None when it doesn't match the provided predicate.
     /// <example>
@@ -184,7 +183,7 @@ public static partial class Prelude
     /// <param name="predicate">The predicate filter criteria.</param>
     /// <returns>The collection with unmatched items converted to None.</returns>
     public static async Task<IEnumerable<Option<T>>> FilterAsync<T>(
-        this Task<IEnumerable<Option<T>>> collection, 
+        this Task<IEnumerable<Option<T>>> collection,
         Func<T, Task<bool>> predicate)
         where T : notnull
     {
@@ -222,7 +221,7 @@ public static partial class Prelude
     /// <typeparam name="T">The inner type of the option.</typeparam>
     /// <param name="collection">The collection to collect values from.</param>
     /// <returns>The inner values from all the options that were Some.</returns>
-    public static IEnumerable<T> Collect<T>(this IEnumerable<Option<T>> collection) 
+    public static IEnumerable<T> Collect<T>(this IEnumerable<Option<T>> collection)
         where T : notnull =>
         collection
             .Where(option => option.IsSome)

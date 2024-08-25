@@ -311,6 +311,7 @@ public static partial class Prelude
                     {
                         action(input);
                     }
+
                     return ValueTask.CompletedTask;
                 });
         }

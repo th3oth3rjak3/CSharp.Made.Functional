@@ -34,7 +34,7 @@ public static partial class Prelude
             ? theOption.Unwrap()
             : alternate();
     }
-    
+
     /// <summary>
     /// Extract the contents of an Option when Some, otherwise return the alternate value when None.
     /// <example>
@@ -100,8 +100,8 @@ public static partial class Prelude
         Task<T> alternate)
     {
         var theOption = await optional;
-        return theOption.IsSome 
-            ? theOption.Unwrap() 
+        return theOption.IsSome
+            ? theOption.Unwrap()
             : await alternate;
     }
 
@@ -135,8 +135,8 @@ public static partial class Prelude
         Func<Task<T>> alternate)
     {
         var theOption = await optional;
-        return theOption.IsSome 
-            ? theOption.Unwrap() 
+        return theOption.IsSome
+            ? theOption.Unwrap()
             : await alternate();
     }
 }

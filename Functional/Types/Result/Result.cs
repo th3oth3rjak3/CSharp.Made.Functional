@@ -155,11 +155,10 @@ public sealed record Result<Ok, Error>
     /// </summary>
     /// <returns>The inner value of the result.</returns>
     /// <exception cref="ResultUnwrapErrorException">Thrown when the result was Ok and was unwrapped as Error.</exception>
-    public Error UnwrapError()
-    {
-        if (IsError) return errorContents;
-        throw new ResultUnwrapErrorException();
-    }
+    public Error UnwrapError() =>
+        IsError
+        ? errorContents
+        : throw new ResultUnwrapErrorException();
 
     /// <summary>
     /// Match the result to a Ok or Error and perform some function on either case.

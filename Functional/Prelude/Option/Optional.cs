@@ -37,7 +37,6 @@ public static partial class Prelude
             false => Some(entity)
         };
 
-
     /// <summary>
     /// <example>
     /// <br/><br/>Example:

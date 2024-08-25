@@ -1,4 +1,5 @@
 ﻿namespace Functional;
+
 public static partial class Prelude
 {
     /// <summary>
@@ -168,7 +169,6 @@ public static partial class Prelude
         params Action<T>[] actions) =>
             await input.PipeAsync(value => RunSequential(value, actions, cancellationToken));
 
-
     /// <summary>
     /// Perform effects on the input value.
     /// <example>
@@ -203,7 +203,6 @@ public static partial class Prelude
                 processingOrder == ProcessingOrder.Parallel
                     ? RunParallel(value, actions, cancellationToken)
                     : RunSequential(value, actions, cancellationToken));
-
 
     /// <summary>
     /// Perform effects ignoring the input value.

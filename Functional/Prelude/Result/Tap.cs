@@ -719,9 +719,42 @@ public static partial class Prelude
         params Action<Ok>[] onOk) =>
             (await result).TapOk(onOk);
 
-    // todo: docs
-    // todo: example
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         ok => effects.Add(ok),
+    ///         ok => effects.Add(ok + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         ok => effects.Add(ok),
+    ///         ok => effects.Add(ok + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "input");
+    /// Assert.AreEqual(effects[1], "input!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, sequential or parallel.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -737,9 +770,42 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: docs
-    // todo: example
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         ok => effects.Add(ok),
+    ///         ok => effects.Add(ok + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         ok => effects.Add(ok),
+    ///         ok => effects.Add(ok + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "input");
+    /// Assert.AreEqual(effects[1], "input!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -751,9 +817,45 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: docs
-    // todo: example
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         ok => effects.Add(ok),
+    ///         ok => effects.Add(ok + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         ok => effects.Add(ok),
+    ///         ok => effects.Add(ok + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "input");
+    /// Assert.AreEqual(effects[1], "input!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, sequential or parallel.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -807,9 +909,42 @@ public static partial class Prelude
         params Action[] onOk) =>
         (await result).TapOk(onOk);
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => effects.Add("ok"),
+    ///         () => effects.Add("ok!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => effects.Add("ok"),
+    ///         () => effects.Add("ok!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "ok");
+    /// Assert.AreEqual(effects[1], "ok!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, either sequential or parallel.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -825,9 +960,42 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         () => effects.Add("ok"),
+    ///         () => effects.Add("ok!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         () => effects.Add("ok"),
+    ///         () => effects.Add("ok!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "ok");
+    /// Assert.AreEqual(effects[1], "ok!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -839,9 +1007,45 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => effects.Add("ok"),
+    ///         () => effects.Add("ok!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => effects.Add("ok"),
+    ///         () => effects.Add("ok!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "ok");
+    /// Assert.AreEqual(effects[1], "ok!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, either sequential or parallel.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -899,9 +1103,42 @@ public static partial class Prelude
         return theResult;
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => effects.Add("ok")),
+    ///         () => Task.Run(() => effects.Add("ok!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => effects.Add("ok")),
+    ///         () => Task.Run(() => effects.Add("ok!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "ok");
+    /// Assert.AreEqual(effects[1], "ok!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, sequential or parallel.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -917,9 +1154,42 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("ok")),
+    ///         () => Task.Run(() => effects.Add("ok!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("ok")),
+    ///         () => Task.Run(() => effects.Add("ok!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "ok");
+    /// Assert.AreEqual(effects[1], "ok!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -931,9 +1201,45 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("ok")),
+    ///         () => Task.Run(() => effects.Add("ok!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("ok")),
+    ///         () => Task.Run(() => effects.Add("ok!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "ok");
+    /// Assert.AreEqual(effects[1], "ok!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, sequential or parallel.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -992,8 +1298,41 @@ public static partial class Prelude
     }
 
     // todo: tests
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         ok => Task.Run(() => effects.Add(ok)),
+    ///         ok => Task.Run(() => effects.Add(ok + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         ok => Task.Run(() => effects.Add(ok)),
+    ///         ok => Task.Run(() => effects.Add(ok + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "input");
+    /// Assert.AreEqual(effects[1], "input!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, either sequential or parallel.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1010,8 +1349,41 @@ public static partial class Prelude
     }
 
     // todo: tests
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         ok => Task.Run(() => effects.Add(ok)),
+    ///         ok => Task.Run(() => effects.Add(ok + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         CancellationToken.None,
+    ///         ok => Task.Run(() => effects.Add(ok)),
+    ///         ok => Task.Run(() => effects.Add(ok + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "input");
+    /// Assert.AreEqual(effects[1], "input!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1024,8 +1396,44 @@ public static partial class Prelude
     }
 
     // todo: tests
-    // todo: docs
-    // todo: examples
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         ok => Task.Run(() => effects.Add(ok)),
+    ///         ok => Task.Run(() => effects.Add(ok + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         ok => Task.Run(() => effects.Add(ok)),
+    ///         ok => Task.Run(() => effects.Add(ok + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "input");
+    /// Assert.AreEqual(effects[1], "input!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, either sequential or parallel.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">The action to perform when the value is ok.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1079,9 +1487,42 @@ public static partial class Prelude
         params Action<Error>[] onError) =>
             (await result).TapError(onError);
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         err => effects.Add(err.Message),
+    ///         err => effects.Add(err.Message + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         err => effects.Add(err.Message),
+    ///         err => effects.Add(err.Message + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "error");
+    /// Assert.AreEqual(effects[1], "error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1097,9 +1538,42 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         err => effects.Add(err.Message),
+    ///         err => effects.Add(err.Message + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         err => effects.Add(err.Message),
+    ///         err => effects.Add(err.Message + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "error");
+    /// Assert.AreEqual(effects[1], "error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1111,9 +1585,45 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         err => effects.Add(err.Message),
+    ///         err => effects.Add(err.Message + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         err => effects.Add(err.Message),
+    ///         err => effects.Add(err.Message + "!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "error");
+    /// Assert.AreEqual(effects[1], "error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1167,9 +1677,42 @@ public static partial class Prelude
         params Action[] onError) =>
             (await result).TapError(onError);
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => effects.Add("err"),
+    ///         () => effects.Add("err!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => effects.Add("err"),
+    ///         () => effects.Add("err!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "err");
+    /// Assert.AreEqual(effects[1], "err!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1185,9 +1728,42 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => effects.Add("err"),
+    ///         () => effects.Add("err!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => effects.Add("err"),
+    ///         () => effects.Add("err!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "err");
+    /// Assert.AreEqual(effects[1], "err!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1202,6 +1778,44 @@ public static partial class Prelude
     // todo: examples
     // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => effects.Add("err"),
+    ///         () => effects.Add("err!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => effects.Add("err"),
+    ///         () => effects.Add("err!"));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "err");
+    /// Assert.AreEqual(effects[1], "err!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1259,9 +1873,43 @@ public static partial class Prelude
         return theResult;
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => effects.Add("err")),
+    ///         () => Task.Run(() => effects.Add("err!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => effects.Add("err")),
+    ///         () => Task.Run(() => effects.Add("err!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "err");
+    /// Assert.AreEqual(effects[1], "err!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
+
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1277,9 +1925,43 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("err")),
+    ///         () => Task.Run(() => effects.Add("err!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("err")),
+    ///         () => Task.Run(() => effects.Add("err!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "err");
+    /// Assert.AreEqual(effects[1], "err!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
+
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1291,9 +1973,46 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("err")),
+    ///         () => Task.Run(() => effects.Add("err!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => effects.Add("err")),
+    ///         () => Task.Run(() => effects.Add("err!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "err");
+    /// Assert.AreEqual(effects[1], "err!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
+
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1351,9 +2070,42 @@ public static partial class Prelude
         return theResult;
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         err => Task.Run(() => effects.Add(err.Message)),
+    ///         err => Task.Run(() => effects.Add(err.Message + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         err => Task.Run(() => effects.Add(err.Message)),
+    ///         err => Task.Run(() => effects.Add(err.Message + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "error");
+    /// Assert.AreEqual(effects[1], "error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1369,9 +2121,42 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         err => Task.Run(() => effects.Add(err.Message)),
+    ///         err => Task.Run(() => effects.Add(err.Message + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         CancellationToken.None,
+    ///         err => Task.Run(() => effects.Add(err.Message)),
+    ///         err => Task.Run(() => effects.Add(err.Message + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "error");
+    /// Assert.AreEqual(effects[1], "error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1383,9 +2168,45 @@ public static partial class Prelude
             .PipeAsync(theResult);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: tests
+    /// <summary>
+    /// Tap into the result and perform an action when the result is Error.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// var effects = new List&lt;string&gt;();
+    ///
+    /// await Ok("input")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.rSequential,
+    ///         CancellationToken.None,
+    ///         err => Task.Run(() => effects.Add(err.Message)),
+    ///         err => Task.Run(() => effects.Add(err.Message + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 0);
+    /// 
+    /// await Error&lt;string&gt;("error")
+    ///     .Async()
+    ///     .TapErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         err => Task.Run(() => effects.Add(err.Message)),
+    ///         err => Task.Run(() => effects.Add(err.Message + "!")));
+    ///
+    /// Assert.AreEqual(effects.Count, 2);
+    /// Assert.AreEqual(effects[0], "error");
+    /// Assert.AreEqual(effects[1], "error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to tap into.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">The action to perform when the value is error.</param>
+    /// <typeparam name="Error">The type when the result is an error.</typeparam>
+    /// <typeparam name="Ok">The type when the result is ok.</typeparam>
+    /// <returns>The input value.</returns>
     public static async Task<Result<Ok, Error>> TapErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,

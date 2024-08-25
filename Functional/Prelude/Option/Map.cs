@@ -68,7 +68,6 @@ public static partial class Prelude
 
         return (await mapper(result.Unwrap()))
             .Optional();
-
     }
 
     /// <summary>
@@ -226,7 +225,6 @@ public static partial class Prelude
         where T : notnull
         where TResult : notnull =>
             (await collection).Map(mapper);
-
 
     /// <summary>
     /// Map a collection of options using a mapping function when an option is Some.

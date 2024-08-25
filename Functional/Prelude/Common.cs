@@ -1,7 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Functional;
 
-
-namespace Functional;
+using System.Diagnostics.CodeAnalysis;
 
 public static partial class Prelude
 {

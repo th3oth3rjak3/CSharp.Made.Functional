@@ -325,5 +325,4 @@ public static partial class Prelude
         if (theOption.IsSome) return await whenSome();
         return await whenNone();
     }
-
 }

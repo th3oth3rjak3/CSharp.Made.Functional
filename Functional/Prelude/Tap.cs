@@ -25,7 +25,7 @@ public static partial class Prelude
         actions.ToList().ForEach(action => action(input));
         return input;
     }
-    
+
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
@@ -50,7 +50,7 @@ public static partial class Prelude
         actions.ToList().ForEach(action => action());
         return input;
     }
-    
+
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.
@@ -73,7 +73,7 @@ public static partial class Prelude
     /// <returns>The input.</returns>
     public static async Task<T> TapAsync<T>(this Task<T> input, params Action<T>[] actions) =>
         (await input).Tap(actions);
-    
+
     /// <summary>
     /// Tap into a value to perform a series of actions which could return void.
     /// This function is used to turn imperative code into functional, fluent syntax.

@@ -360,9 +360,31 @@ public static partial class Prelude
         (await optional)
             .EffectSome(doWhenSome);
 
-    // todo: examples
     // todo: tests
-    // todo: docs
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void someAction(string input) => message = input;
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "123" since the input is Some.
+    ///     .EffectSomeAsync(ProcessingOrder.Sequential, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(ProcessingOrder.Sequential, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, sequential or parallel.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -376,9 +398,31 @@ public static partial class Prelude
             : await RunSequential(theOption.Unwrap(), doWhenSome);
     }
 
-    // todo: examples
     // todo: tests
-    // todo: docs
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void someAction(string input) => message = input;
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "123" since the input is Some.
+    ///     .EffectSomeAsync(CancellationToken.None, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(CancellationToken.None, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         CancellationToken cancellationToken,
@@ -390,9 +434,32 @@ public static partial class Prelude
         return await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
     }
 
-    // todo: examples
     // todo: tests
-    // todo: docs
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void someAction(string input) => message = input;
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "123" since the input is Some.
+    ///     .EffectSomeAsync(ProcessingOrder.Parallel, CancellationToken.None, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(ProcessingOrder.Parallel, CancellationToken.None, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, sequential or parallel.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -406,7 +473,6 @@ public static partial class Prelude
             ? await RunParallel(theOption.Unwrap(), doWhenSome, cancellationToken)
             : await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
     }
-
 
     /// <summary>
     /// Perform a side effect on an option type when the inner value is Some.
@@ -438,9 +504,31 @@ public static partial class Prelude
             (await optional)
                 .EffectSome(doWhenSome);
 
-    // todo: docs
-    // todo: examples
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void someAction() => message = "Some";
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "Some" since the input is Some.
+    ///     .EffectSomeAsync(ProcessingOrder.Parllel, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(ProcessingOrder.Parallel, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -454,9 +542,31 @@ public static partial class Prelude
             : await RunSequential(doWhenSome);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void someAction() => message = "Some";
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "Some" since the input is Some.
+    ///     .EffectSomeAsync(CancellationToken.None, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(CancellationToken.None, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the actions.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         CancellationToken cancellationToken,
@@ -468,9 +578,32 @@ public static partial class Prelude
         return await RunSequential(doWhenSome, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void someAction() => message = "Some";
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "Some" since the input is Some.
+    ///     .EffectSomeAsync(ProcessingOrder.Sequential, CancellationToken.None, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(ProcessingOrder.Sequential, CancellationToken.None, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token to cancel the actions.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -523,9 +656,35 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: examples
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task someAction(string input)
+    /// {
+    ///     message = input;
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "123" since the input is Some.
+    ///     .EffectSomeAsync(ProcessingOrder.Parallel, someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(ProcessingOrder.Parallel, someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The order to process the tasks, parallel or sequential.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -539,9 +698,39 @@ public static partial class Prelude
             : await RunSequential(theOption.Unwrap(), doWhenSome);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task someAction(string input)
+    /// {
+    ///     message = input;
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "123" since the input is Some.
+    ///     .EffectSomeAsync(
+    ///         CancellationToken.None,
+    ///         someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(
+    ///         CancellationToken.None,
+    ///         someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         CancellationToken cancellationToken,
@@ -549,13 +738,45 @@ public static partial class Prelude
         where T : notnull
     {
         var theOption = await optional;
-        if (theOption.IsNone) return Unit();
-        return await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
+        return theOption.IsNone ? Unit() : await RunSequential(theOption.Unwrap(), doWhenSome, cancellationToken);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task someAction(string input)
+    /// {
+    ///     message = input;
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "123" since the input is Some.
+    ///     .EffectSomeAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -608,9 +829,39 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: examples
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task someAction()
+    /// {
+    ///     message = "Some";
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "Some" since the input is Some.
+    ///     .EffectSomeAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -624,9 +875,39 @@ public static partial class Prelude
             : await RunSequential(doWhenSome);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task someAction()
+    /// {
+    ///     message = "Some";
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "Some" since the input is Some.
+    ///     .EffectSomeAsync(
+    ///         CancellationToken.None,
+    ///         someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(
+    ///         CancellationToken.None,
+    ///         someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         CancellationToken cancellationToken,
@@ -634,13 +915,45 @@ public static partial class Prelude
         where T : notnull
     {
         var theOption = await optional;
-        if (theOption.IsNone) return Unit();
-        return await RunSequential(doWhenSome, cancellationToken);
+        return theOption.IsNone ? Unit() : await RunSequential(doWhenSome, cancellationToken);
     }
 
-    // todo: examples
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is Some.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task someAction()
+    /// {
+    ///     message = "Some";
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This sets message to "Some" since the input is Some.
+    ///     .EffectSomeAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         someAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This doesn't do anything since the input is None.
+    ///     .EffectSomeAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         someAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenSome">Perform this action when the value is Some.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectSomeAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -686,9 +999,36 @@ public static partial class Prelude
             (await optional)
                 .EffectNone(doWhenNone);
 
-    // todo: example
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void noneAction() => message = "None";
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This doesn't do anything since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         noneAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This sets message to "None" since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         noneAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option if it were some.</typeparam>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -702,9 +1042,36 @@ public static partial class Prelude
             : await RunSequential(doWhenNone);
     }
 
-    // todo: example
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void noneAction() => message = "None";
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This doesn't do anything since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         CancellationToken.None,
+    ///         noneAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This sets message to "None" since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         CancellationToken.None,
+    ///         noneAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option if it were some.</typeparam>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(
         this Task<Option<T>> optional,
         CancellationToken cancellationToken,
@@ -712,13 +1079,42 @@ public static partial class Prelude
         where T : notnull
     {
         var theOption = await optional;
-        if (theOption.IsSome) return Unit();
-        return await RunSequential(doWhenNone, cancellationToken);
+        return theOption.IsSome ? Unit() : await RunSequential(doWhenNone, cancellationToken);
     }
 
-    // todo: example
-    // todo: docs
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// void noneAction() => message = "None";
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This doesn't do anything since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         noneAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This sets message to "None" since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         noneAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option if it were some.</typeparam>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(
         this Task<Option<T>> optional,
         ProcessingOrder processingOrder,
@@ -772,9 +1168,40 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: docs
-    // todo: example
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task noneAction()
+    /// {
+    ///     message = "None";
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This doesn't do anything since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         noneAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This sets message to "None" since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         noneAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option if it were some.</typeparam>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(
     this Task<Option<T>> optional,
     ProcessingOrder processingOrder,
@@ -788,9 +1215,40 @@ public static partial class Prelude
             : await RunSequential(doWhenNone);
     }
 
-    // todo: docs
-    // todo: example
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task noneAction()
+    /// {
+    ///     message = "None";
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This doesn't do anything since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         CancellationToken.None,
+    ///         noneAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This sets message to "None" since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         CancellationToken.None,
+    ///         noneAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option if it were some.</typeparam>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(
     this Task<Option<T>> optional,
     CancellationToken cancellationToken,
@@ -802,9 +1260,43 @@ public static partial class Prelude
         return await RunSequential(doWhenNone, cancellationToken);
     }
 
-    // todo: docs
-    // todo: example
     // todo: test
+    /// <summary>
+    /// Perform a side effect on an option type when the inner value is None.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string message = "";
+    /// Task noneAction()
+    /// {
+    ///     message = "None";
+    ///     return Task.CompletedTask;
+    /// }
+    /// 
+    /// await Some("123")
+    ///     .Async()
+    ///     // This doesn't do anything since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         noneAction);
+    ///     
+    /// await None&lt;string&gt;()
+    ///     .Async()
+    ///     // This sets message to "None" since the input is Some.
+    ///     .EffectNoneAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         noneAction);
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <typeparam name="T">The type of the option if it were some.</typeparam>
+    /// <param name="optional">The option to perform the side effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="doWhenNone">Perform this action when the value is None.</param>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectNoneAsync<T>(
     this Task<Option<T>> optional,
     ProcessingOrder processingOrder,

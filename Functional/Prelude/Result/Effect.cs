@@ -787,9 +787,39 @@ public static partial class Prelude
             (await result)
                 .EffectOk(onOk);
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -804,9 +834,39 @@ public static partial class Prelude
                 () => RunSequential(theResult.Unwrap(), onOk));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -817,9 +877,42 @@ public static partial class Prelude
         return await RunSequential(theResult.Unwrap(), onOk, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         success => successResult = success);
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -868,9 +961,39 @@ public static partial class Prelude
             (await result)
                 .EffectOk(onOk);
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -885,9 +1008,39 @@ public static partial class Prelude
                 () => RunSequential(onOk));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         () => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         () => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -898,9 +1051,42 @@ public static partial class Prelude
         return await RunSequential(onOk, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => successResult = "success");
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -953,9 +1139,39 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         success => Task.Run(() => successResult = success));
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         success => Task.Run(() => successResult = success));
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -970,9 +1186,39 @@ public static partial class Prelude
                 () => RunSequential(theResult.Unwrap(), onOk));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         success => Task.Run(() => successResult = success));
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         success => Task.Run(() => successResult = success));
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -983,9 +1229,42 @@ public static partial class Prelude
         return await RunSequential(theResult.Unwrap(), onOk, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         success => Task.Run(() => successResult = success));
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         success => Task.Run(() => successResult = success));
+    ///         
+    /// Assert.AreEqual(successResult, "hello, world!");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1038,9 +1317,39 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => successResult = "success"));
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => successResult = "success"));
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">Processing order, parallel or sequential.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1055,9 +1364,39 @@ public static partial class Prelude
                 () => RunSequential(onOk));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => successResult = "success"));
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => successResult = "success"));
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1068,9 +1407,42 @@ public static partial class Prelude
         return await RunSequential(onOk, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string successResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => successResult = "success"));
+    ///         
+    /// Assert.AreEqual(successResult, string.Empty);
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectOkAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => successResult = "success"));
+    ///         
+    /// Assert.AreEqual(successResult, "success");
+    /// 
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onOk">Perform this action when the value is Ok.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectOkAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1118,9 +1490,38 @@ public static partial class Prelude
             (await result)
                 .EffectError(onError);
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         Error => ErrorResult = Error.Message);
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         Error => ErrorResult = Error.Message);
+    ///         
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1135,9 +1536,38 @@ public static partial class Prelude
                 () => RunSequential(theResult.UnwrapError(), onError));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         Error => ErrorResult = Error.Message);
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         Error => ErrorResult = Error.Message);
+    ///         
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1148,9 +1578,41 @@ public static partial class Prelude
         return await RunSequential(theResult.UnwrapError(), onError, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         Error => ErrorResult = Error.Message);
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         Error => ErrorResult = Error.Message);
+    ///         
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1198,9 +1660,38 @@ public static partial class Prelude
             (await result)
                 .EffectError(onError);
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => ErrorResult = "fail");
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => ErrorResult = "fail");
+    ///         
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1215,9 +1706,38 @@ public static partial class Prelude
                 () => RunSequential(onError));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => ErrorResult = "fail");
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => ErrorResult = "fail");
+    ///         
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1228,9 +1748,41 @@ public static partial class Prelude
         return await RunSequential(onError, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => ErrorResult = "fail");
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => ErrorResult = "fail");
+    ///         
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1282,9 +1834,38 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => ErrorResult = "fail"));
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         () => Task.Run(() => ErrorResult = "fail"));
+    ///         
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1299,9 +1880,38 @@ public static partial class Prelude
                 () => RunSequential(onError));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => ErrorResult = "fail"));
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => ErrorResult = "fail"));
+    ///         
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1312,9 +1922,41 @@ public static partial class Prelude
         return await RunSequential(onError, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => ErrorResult = "fail"));
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         () => Task.Run(() => ErrorResult = "fail"));
+    ///         
+    /// Assert.AreEqual(ErrorResult, "fail");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1366,9 +2008,38 @@ public static partial class Prelude
             : Unit();
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
+    ///         
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,
@@ -1383,9 +2054,38 @@ public static partial class Prelude
                 () => RunSequential(theResult.UnwrapError(), onError));
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         CancellationToken.None,
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
+    ///         
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         CancellationToken cancellationToken,
@@ -1396,9 +2096,41 @@ public static partial class Prelude
         return await RunSequential(theResult.UnwrapError(), onError, cancellationToken);
     }
 
-    // todo: docs
-    // todo: examples
     // todo: tests
+    /// <summary>
+    /// Perform a side effect on a result type and consume the result when the result is Ok.
+    /// <example>
+    /// <br/><br/>Example:
+    /// <code>
+    /// string ErrorResult = string.Empty;
+    /// 
+    /// await new Result&lt;string, Exception&gt;("hello, world!")
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
+    ///         
+    /// Assert.AreEqual(ErrorResult, string.Empty);
+    ///
+    /// await new Result&lt;string, Exception&gt;(new Exception("Error!"))
+    ///     .Async()
+    ///     .EffectErrorAsync(
+    ///         ProcessingOrder.Sequential,
+    ///         CancellationToken.None,
+    ///         Error => Task.Run(() => ErrorResult = Error.Message));
+    ///         
+    /// Assert.AreEqual(ErrorResult, "Error!");
+    /// </code>
+    /// </example>
+    /// </summary>
+    /// <param name="result">The result to perform the effect on.</param>
+    /// <param name="processingOrder">The processing order, parallel or sequential.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <param name="onError">Perform this action when the value is Error.</param>
+    /// <typeparam name="Ok">The type when the result is Ok.</typeparam>
+    /// <typeparam name="Error">The type when the result is Error.</typeparam>
+    /// <returns>Unit.</returns>
     public static async Task<Unit> EffectErrorAsync<Ok, Error>(
         this Task<Result<Ok, Error>> result,
         ProcessingOrder processingOrder,

@@ -135,11 +135,10 @@ public sealed record Option<T>
     /// </summary>
     /// <returns>The inner value of the Option.</returns>
     /// <exception cref="OptionUnwrapException">Thrown when unwrapping a None.</exception>
-    public T Unwrap()
-    {
-        if (IsSome && contents is not null) return contents;
-        throw new OptionUnwrapException();
-    }
+    public T Unwrap() =>
+        IsSome && contents is not null
+            ? contents
+            : throw new OptionUnwrapException();
 
     /// <summary>
     /// Match the option to either Some or None and provide functions to handle each case.
